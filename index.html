@@ -127,82 +127,6 @@
       transform: scale(0.98);
     }
 
-    .orders-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .orders-table th,
-    .orders-table td {
-      padding: 0.75rem 1rem;
-      text-align: left;
-      border-bottom: 1px solid #334155;
-    }
-
-    .orders-table th {
-      color: #94a3b8;
-      font-size: 0.75rem;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-
-    .orders-table td {
-      font-size: 0.9375rem;
-    }
-
-    .orders-table tr:last-child td {
-      border-bottom: none;
-    }
-
-    .masaco-tag {
-      display: inline-block;
-      background: #334155;
-      padding: 0.25rem 0.625rem;
-      border-radius: 9999px;
-      font-size: 0.8125rem;
-      margin: 0.125rem;
-    }
-
-    .delete-btn {
-      background: none;
-      border: none;
-      color: #ef4444;
-      cursor: pointer;
-      font-size: 0.8125rem;
-      padding: 0.25rem 0.5rem;
-      border-radius: 4px;
-      transition: background 0.2s;
-    }
-
-    .delete-btn:hover {
-      background: rgba(239, 68, 68, 0.15);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 2rem;
-      color: #64748b;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: #22c55e;
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 500;
-      opacity: 0;
-      transition: transform 0.3s ease, opacity 0.3s ease;
-    }
-
-    .toast.show {
-      transform: translateX(-50%) translateY(0);
-      opacity: 1;
-    }
-
     .stats {
       display: flex;
       gap: 1rem;
@@ -229,12 +153,195 @@
       text-transform: uppercase;
     }
 
-    @media (max-width: 640px) {
-      .orders-table th:nth-child(2),
-      .orders-table td:nth-child(2) {
-        display: none;
-      }
+    .person-card {
+      background: #0f172a;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+      border: 1px solid #334155;
+    }
 
+    .person-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+
+    .person-name {
+      font-weight: 600;
+      font-size: 1.0625rem;
+      color: #f1f5f9;
+    }
+
+    .person-progress {
+      font-size: 0.875rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .progress-0 {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .progress-1, .progress-2 {
+      background: rgba(250, 204, 21, 0.2);
+      color: #facc15;
+    }
+
+    .progress-3 {
+      background: rgba(34, 197, 94, 0.2);
+      color: #22c55e;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: #334155;
+      border-radius: 9999px;
+      margin-bottom: 0.75rem;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #f59e0b);
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+
+    .progress-bar-fill.complete {
+      background: #22c55e;
+    }
+
+    .masaco-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .masaco-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      background: #1e293b;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .masaco-item:hover {
+      background: #334155;
+    }
+
+    .masaco-item.delivered {
+      opacity: 0.6;
+    }
+
+    .masaco-item.delivered .masaco-item-name {
+      text-decoration: line-through;
+      color: #94a3b8;
+    }
+
+    .masaco-checkbox {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #64748b;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .masaco-item.delivered .masaco-checkbox {
+      background: #22c55e;
+      border-color: #22c55e;
+    }
+
+    .masaco-item.delivered .masaco-checkbox::after {
+      content: '✓';
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .masaco-item-name {
+      font-size: 0.9375rem;
+      color: #e2e8f0;
+    }
+
+    .masaco-item-number {
+      background: #475569;
+      color: white;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .person-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.5rem;
+    }
+
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #ef4444;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      padding: 0.375rem 0.75rem;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .delete-btn:hover {
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 2rem;
+      color: #64748b;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #22c55e;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      opacity: 0;
+      transition: transform 0.3s ease, opacity 0.3s ease;
+      z-index: 999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    .toast.undo {
+      background: #f97316;
+    }
+
+    @media (max-width: 640px) {
       .stats {
         flex-direction: column;
       }
@@ -252,20 +359,24 @@
         <div class="stat-label">Personas</div>
       </div>
       <div class="stat">
-        <div class="stat-value" id="totalMasacos">0</div>
-        <div class="stat-label">Masacos total</div>
+        <div class="stat-value" id="totalDelivered">0</div>
+        <div class="stat-label">Entregados</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value" id="totalPending">0</div>
+        <div class="stat-label">Pendientes</div>
       </div>
     </div>
 
     <div class="card">
-      <h2>Nuevo Pedido</h2>
-      <form id="orderForm">
+      <h2>Registrar Persona</h2>
+      <form id="personForm">
         <div class="form-group">
           <label for="name">Nombre</label>
           <input type="text" id="name" placeholder="Nombre de la persona" required autocomplete="off">
         </div>
         <div class="form-group">
-          <label>Masacos (3 obligatorios)</label>
+          <label>Masacos a entregar</label>
           <div class="masacos-grid">
             <div class="masaco-input">
               <span class="badge">1</span>
@@ -281,75 +392,94 @@
             </div>
           </div>
         </div>
-        <button type="submit" class="btn">Registrar Pedido</button>
+        <button type="submit" class="btn">Registrar</button>
       </form>
     </div>
 
     <div class="card">
-      <h2>Pedidos Registrados</h2>
-      <div id="ordersContainer">
-        <div class="empty-state">No hay pedidos registrados todavia</div>
+      <h2>Pizarra de Entregas</h2>
+      <div id="boardContainer">
+        <div class="empty-state">No hay personas registradas todavia</div>
       </div>
     </div>
   </div>
 
-  <div class="toast" id="toast">Pedido registrado correctamente!</div>
+  <div class="toast" id="toast"></div>
 
   <script>
-    const STORAGE_KEY = 'masaco_orders';
+    const STORAGE_KEY = 'masaco_board';
 
-    function getOrders() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    function getData() {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"people": []}');
     }
 
-    function saveOrders(orders) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(orders));
+    function saveData(data) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
 
     function updateStats() {
-      const orders = getOrders();
-      document.getElementById('totalPeople').textContent = orders.length;
-      document.getElementById('totalMasacos').textContent = orders.length * 3;
+      const data = getData();
+      const totalPeople = data.people.length;
+      let delivered = 0;
+      data.people.forEach(p => {
+        p.masacos.forEach(m => {
+          if (m.delivered) delivered++;
+        });
+      });
+      const pending = (totalPeople * 3) - delivered;
+
+      document.getElementById('totalPeople').textContent = totalPeople;
+      document.getElementById('totalDelivered').textContent = delivered;
+      document.getElementById('totalPending').textContent = pending;
     }
 
-    function renderOrders() {
-      const orders = getOrders();
-      const container = document.getElementById('ordersContainer');
+    function renderBoard() {
+      const data = getData();
+      const container = document.getElementById('boardContainer');
 
-      if (orders.length === 0) {
-        container.innerHTML = '<div class="empty-state">No hay pedidos registrados todavia</div>';
+      if (data.people.length === 0) {
+        container.innerHTML = '<div class="empty-state">No hay personas registradas todavia</div>';
         return;
       }
 
-      let html = `
-        <table class="orders-table">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Nombre</th>
-              <th>Masacos</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-      `;
+      let html = '';
+      data.people.forEach((person, personIndex) => {
+        const deliveredCount = person.masacos.filter(m => m.delivered).length;
+        const progressClass = `progress-${deliveredCount}`;
+        const isComplete = deliveredCount === 3;
+        const barWidth = (deliveredCount / 3) * 100;
 
-      orders.forEach((order, index) => {
         html += `
-          <tr>
-            <td>${index + 1}</td>
-            <td>${escapeHtml(order.name)}</td>
-            <td>
-              ${order.masacos.map(m => `<span class="masaco-tag">${escapeHtml(m)}</span>`).join('')}
-            </td>
-            <td>
-              <button class="delete-btn" onclick="deleteOrder(${index})">Eliminar</button>
-            </td>
-          </tr>
+          <div class="person-card">
+            <div class="person-header">
+              <span class="person-name">${escapeHtml(person.name)}</span>
+              <span class="person-progress ${progressClass}">${deliveredCount}/3</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-bar-fill ${isComplete ? 'complete' : ''}" style="width: ${barWidth}%"></div>
+            </div>
+            <div class="masaco-list">
+        `;
+
+        person.masacos.forEach((masaco, masacoIndex) => {
+          html += `
+            <div class="masaco-item ${masaco.delivered ? 'delivered' : ''}" onclick="toggleMasaco(${personIndex}, ${masacoIndex})">
+              <span class="masaco-item-number">${masacoIndex + 1}</span>
+              <div class="masaco-checkbox"></div>
+              <span class="masaco-item-name">${escapeHtml(masaco.name)}</span>
+            </div>
+          `;
+        });
+
+        html += `
+            </div>
+            <div class="person-actions">
+              <button class="delete-btn" onclick="deletePerson(${personIndex})">Eliminar persona</button>
+            </div>
+          </div>
         `;
       });
 
-      html += '</tbody></table>';
       container.innerHTML = html;
     }
 
@@ -359,24 +489,37 @@
       return div.innerHTML;
     }
 
-    function showToast(message) {
+    function showToast(message, isUndo = false) {
       const toast = document.getElementById('toast');
       toast.textContent = message;
-      toast.classList.add('show');
+      toast.className = isUndo ? 'toast undo show' : 'toast show';
       setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    function deleteOrder(index) {
-      if (confirm('Eliminar este pedido?')) {
-        const orders = getOrders();
-        orders.splice(index, 1);
-        saveOrders(orders);
-        renderOrders();
+    function toggleMasaco(personIndex, masacoIndex) {
+      const data = getData();
+      data.people[personIndex].masacos[masacoIndex].delivered = !data.people[personIndex].masacos[masacoIndex].delivered;
+      saveData(data);
+      renderBoard();
+      updateStats();
+
+      const masaco = data.people[personIndex].masacos[masacoIndex];
+      const status = masaco.delivered ? 'entregado' : 'pendiente';
+      showToast(`Masaco "${masaco.name}" marcado como ${status}`);
+    }
+
+    function deletePerson(index) {
+      if (confirm('Eliminar esta persona y todos sus masacos?')) {
+        const data = getData();
+        data.people.splice(index, 1);
+        saveData(data);
+        renderBoard();
         updateStats();
+        showToast('Persona eliminada');
       }
     }
 
-    document.getElementById('orderForm').addEventListener('submit', function(e) {
+    document.getElementById('personForm').addEventListener('submit', function(e) {
       e.preventDefault();
 
       const name = document.getElementById('name').value.trim();
@@ -389,21 +532,25 @@
         return;
       }
 
-      const orders = getOrders();
-      orders.push({
+      const data = getData();
+      data.people.push({
         name: name,
-        masacos: [m1, m2, m3]
+        masacos: [
+          { name: m1, delivered: false },
+          { name: m2, delivered: false },
+          { name: m3, delivered: false }
+        ]
       });
-      saveOrders(orders);
+      saveData(data);
 
       this.reset();
       document.getElementById('name').focus();
-      renderOrders();
+      renderBoard();
       updateStats();
-      showToast('Pedido registrado correctamente!');
+      showToast(`${name} registrado con 3 masacos`);
     });
 
-    renderOrders();
+    renderBoard();
     updateStats();
   </script>
 </body>
