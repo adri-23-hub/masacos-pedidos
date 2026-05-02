@@ -406,25 +406,62 @@
 
   <div class="toast" id="toast"></div>
 
-  <script>
-    const STORAGE_KEY = 'masaco_board';
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+    import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js";
 
-    function getData() {
-      return JSON.parse(localStorage.getItem(STORAGE_KEY) || '{"people": []}');
+    const firebaseConfig = {
+      apiKey: "TU_API_KEY",
+      authDomain: "TU_PROYECTO.firebaseapp.com",
+      databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+      projectId: "TU_PROYECTO",
+      storageBucket: "TU_PROYECTO.appspot.com",
+      messagingSenderId: "TU_SENDER_ID",
+      appId: "TU_APP_ID"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
     }
 
-    function saveData(data) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = 'toast show';
+      setTimeout(() => toast.classList.remove('show'), 2500);
     }
 
-    function updateStats() {
-      const data = getData();
-      const totalPeople = data.people.length;
+    function toggleMasaco(personKey, masacoIndex, currentDelivered) {
+      const masacoRef = ref(db, `people/${personKey}/masacos/${masacoIndex}/delivered`);
+      update(ref(db, `people/${personKey}/masacos/${masacoIndex}`), {
+        delivered: !currentDelivered
+      });
+    }
+    window.toggleMasaco = toggleMasaco;
+
+    function deletePerson(personKey) {
+      if (confirm('Eliminar esta persona y todos sus masacos?')) {
+        remove(ref(db, `people/${personKey}`));
+        showToast('Persona eliminada');
+      }
+    }
+    window.deletePerson = deletePerson;
+
+    function updateStats(data) {
+      const people = Object.values(data || {});
+      const totalPeople = people.length;
       let delivered = 0;
-      data.people.forEach(p => {
-        p.masacos.forEach(m => {
-          if (m.delivered) delivered++;
-        });
+      people.forEach(p => {
+        if (p.masacos) {
+          p.masacos.forEach(m => {
+            if (m.delivered) delivered++;
+          });
+        }
       });
       const pending = (totalPeople * 3) - delivered;
 
@@ -433,18 +470,24 @@
       document.getElementById('totalPending').textContent = pending;
     }
 
-    function renderBoard() {
-      const data = getData();
+    function renderBoard(data) {
       const container = document.getElementById('boardContainer');
+      const people = data ? Object.entries(data) : [];
 
-      if (data.people.length === 0) {
+      if (people.length === 0) {
         container.innerHTML = '<div class="empty-state">No hay personas registradas todavia</div>';
+        updateStats({});
         return;
       }
 
+      const peopleObj = {};
+      people.forEach(([key, person]) => { peopleObj[key] = person; });
+      updateStats(peopleObj);
+
       let html = '';
-      data.people.forEach((person, personIndex) => {
-        const deliveredCount = person.masacos.filter(m => m.delivered).length;
+      people.forEach(([personKey, person]) => {
+        const masacos = person.masacos || [];
+        const deliveredCount = masacos.filter(m => m.delivered).length;
         const progressClass = `progress-${deliveredCount}`;
         const isComplete = deliveredCount === 3;
         const barWidth = (deliveredCount / 3) * 100;
@@ -461,9 +504,9 @@
             <div class="masaco-list">
         `;
 
-        person.masacos.forEach((masaco, masacoIndex) => {
+        masacos.forEach((masaco, masacoIndex) => {
           html += `
-            <div class="masaco-item ${masaco.delivered ? 'delivered' : ''}" onclick="toggleMasaco(${personIndex}, ${masacoIndex})">
+            <div class="masaco-item ${masaco.delivered ? 'delivered' : ''}" onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})">
               <span class="masaco-item-number">${masacoIndex + 1}</span>
               <div class="masaco-checkbox"></div>
               <span class="masaco-item-name">${escapeHtml(masaco.name)}</span>
@@ -474,7 +517,7 @@
         html += `
             </div>
             <div class="person-actions">
-              <button class="delete-btn" onclick="deletePerson(${personIndex})">Eliminar persona</button>
+              <button class="delete-btn" onclick="deletePerson('${personKey}')">Eliminar persona</button>
             </div>
           </div>
         `;
@@ -483,41 +526,10 @@
       container.innerHTML = html;
     }
 
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    function showToast(message, isUndo = false) {
-      const toast = document.getElementById('toast');
-      toast.textContent = message;
-      toast.className = isUndo ? 'toast undo show' : 'toast show';
-      setTimeout(() => toast.classList.remove('show'), 2500);
-    }
-
-    function toggleMasaco(personIndex, masacoIndex) {
-      const data = getData();
-      data.people[personIndex].masacos[masacoIndex].delivered = !data.people[personIndex].masacos[masacoIndex].delivered;
-      saveData(data);
-      renderBoard();
-      updateStats();
-
-      const masaco = data.people[personIndex].masacos[masacoIndex];
-      const status = masaco.delivered ? 'entregado' : 'pendiente';
-      showToast(`Masaco "${masaco.name}" marcado como ${status}`);
-    }
-
-    function deletePerson(index) {
-      if (confirm('Eliminar esta persona y todos sus masacos?')) {
-        const data = getData();
-        data.people.splice(index, 1);
-        saveData(data);
-        renderBoard();
-        updateStats();
-        showToast('Persona eliminada');
-      }
-    }
+    const peopleRef = ref(db, 'people');
+    onValue(peopleRef, (snapshot) => {
+      renderBoard(snapshot.val());
+    });
 
     document.getElementById('personForm').addEventListener('submit', function(e) {
       e.preventDefault();
@@ -532,8 +544,7 @@
         return;
       }
 
-      const data = getData();
-      data.people.push({
+      push(ref(db, 'people'), {
         name: name,
         masacos: [
           { name: m1, delivered: false },
@@ -541,17 +552,11 @@
           { name: m3, delivered: false }
         ]
       });
-      saveData(data);
 
       this.reset();
       document.getElementById('name').focus();
-      renderBoard();
-      updateStats();
       showToast(`${name} registrado con 3 masacos`);
     });
-
-    renderBoard();
-    updateStats();
   </script>
 </body>
 </html>
