@@ -1765,7 +1765,7 @@
               <button type="button" class="preset-btn" data-preset="empanadas">🥟 Empanadas</button>
               <button type="button" class="preset-btn" data-preset="rifas">🎟️ Rifas / Boletos</button>
               <button type="button" class="preset-btn" data-preset="platos">🍽️ Platos / Cenas</button>
-              <button type="button" class="preset-btn" data-preset="pedidos">📦 Pedidos Varios</button>
+              <button type="button" data-preset="pedidos" class="preset-btn">📦 Pedidos Varios</button>
             </div>
           </div>
 
@@ -2021,19 +2021,22 @@
   <div class="modal-backdrop" id="transferModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">🔄 Transferir Producto</h3>
+        <h3 class="modal-title">🔄 Transferir Pedido a Otra Persona</h3>
         <button class="modal-close" id="btnCloseTransferModal">&times;</button>
       </div>
       <form id="transferForm">
         <div class="modal-body">
           <div class="transfer-info-card">
-            <div>Ítem a mover: <strong id="transferItemName"></strong></div>
-            <div>Actualmente en: <strong id="transferSourcePersonName"></strong></div>
+            <div>Pedido a transferir: <strong id="transferItemName"></strong></div>
+            <div>Origen: <strong id="transferSourcePersonName"></strong></div>
           </div>
 
           <div class="form-group">
-            <label for="transferTargetSelect">Seleccionar nuevo destinatario:</label>
+            <label for="transferTargetSelect">Seleccionar persona destinataria:</label>
             <select id="transferTargetSelect" required></select>
+          </div>
+          <div style="font-size: 0.8125rem; color: #94a3b8; line-height: 1.4; margin-top: -0.5rem;">
+            💡 <em>Si al destinatario le faltan ventas para su cuota, este pedido ocupará su casilla libre completando sus 5 pedidos asignados (no le creará un 6to).</em>
           </div>
         </div>
         <div class="modal-footer">
@@ -2540,7 +2543,7 @@
       });
     });
 
-    // Custom In-App Modal: Transferir Ítem Adicional
+    // Custom In-App Modal: Transferir Pedido a Otra Persona (Completando cuota de 5 o añadiendo adicional)
     let transferSourcePersonKey = null;
     let transferItemIndex = null;
     const transferModal = document.getElementById('transferModal');
@@ -2573,9 +2576,15 @@
         return;
       }
 
+      const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+
       transferTargetSelect.innerHTML = otherEntries.map(([key, p]) => {
-        const count = (p.masacos || p.items || []).length;
-        return `<option value="${key}">${escapeHtml(p.name)} (${count} asignados)</option>`;
+        const pItems = p.masacos || p.items || [];
+        const pOrdered = pItems.filter(m => m.ordered || m.delivered).length;
+        const pTotal = pItems.length;
+        const pFree = pTotal - pOrdered;
+        const note = pFree > 0 ? `(Le faltan ${pFree} para su cuota)` : `(Cuota completa: ${pOrdered}/${pTotal})`;
+        return `<option value="${key}">${escapeHtml(p.name)} — ${note}</option>`;
       }).join('');
 
       transferItemName.textContent = item.name;
@@ -2614,6 +2623,10 @@
         return;
       }
 
+      const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const singular = appConfig.productSingular || 'Producto';
+
       const sourceItems = [...(sourcePerson.masacos || sourcePerson.items || [])];
       const [transferredItem] = sourceItems.splice(transferItemIndex, 1);
 
@@ -2622,27 +2635,65 @@
         return;
       }
 
-      // Add item to target with transfer tracking metadata
-      const updatedTransferredItem = {
-        ...transferredItem,
-        isAdditional: true,
-        transferredFrom: sourcePerson.name
-      };
+      // If source had only base items (<= defaultCount), leave a blank unassigned slot so they maintain their base quota of 5
+      if (transferItemIndex < defaultCount && sourceItems.length < defaultCount) {
+        sourceItems.splice(transferItemIndex, 0, {
+          name: `${singular} ${transferItemIndex + 1}`,
+          ordered: false,
+          delivered: false,
+          isAdditional: false,
+          paid: false,
+          paymentMethod: 'pending',
+          price: defaultPrice
+        });
+      }
 
-      const targetItems = [...(targetPerson.masacos || targetPerson.items || []), updatedTransferredItem];
+      const targetItems = [...(targetPerson.masacos || targetPerson.items || [])];
+
+      // Check if targetPerson has an empty / unassigned slot (ordered == false and delivered == false)
+      const freeSlotIndex = targetItems.findIndex(m => !m.ordered && !m.delivered);
+
+      let wasQuotaFilled = false;
+      if (freeSlotIndex !== -1) {
+        // FILL the existing free slot so the person completes their quota of 5 without growing to 6!
+        wasQuotaFilled = true;
+        targetItems[freeSlotIndex] = {
+          ...targetItems[freeSlotIndex],
+          name: transferredItem.name || targetItems[freeSlotIndex].name,
+          ordered: true,
+          delivered: Boolean(transferredItem.delivered),
+          paid: Boolean(transferredItem.paid),
+          paymentMethod: transferredItem.paymentMethod || 'pending',
+          price: transferredItem.price !== undefined ? transferredItem.price : defaultPrice,
+          transferredFrom: sourcePerson.name,
+          isAdditional: false
+        };
+      } else {
+        // All target's slots were already sold/ordered -> append as a new additional 6th+ item
+        targetItems.push({
+          ...transferredItem,
+          ordered: true,
+          isAdditional: true,
+          transferredFrom: sourcePerson.name
+        });
+      }
 
       try {
         await update(ref(db, `people/${transferSourcePersonKey}`), { masacos: sourceItems });
         await update(ref(db, `people/${targetPersonKey}`), { masacos: targetItems });
 
         closeTransferModal();
-        showToast(`🔄 "${transferredItem.name}" transferido de ${sourcePerson.name} a ${targetPerson.name}`);
+        if (wasQuotaFilled) {
+          showToast(`🔄 "${transferredItem.name}" transferido a ${targetPerson.name} completando su cuota`);
+        } else {
+          showToast(`🔄 "${transferredItem.name}" transferido como adicional a ${targetPerson.name}`);
+        }
       } catch (err) {
         showToast('Error al transferir ítem: ' + err.message, 'error');
       }
     });
 
-    // Delete Single Additional Item
+    // Delete or Release Item (Single Item)
     function deleteSingleItem(personKey, itemIndex, event) {
       if (event) event.stopPropagation();
       if (!isAdmin) {
@@ -2656,17 +2707,34 @@
       const item = items[itemIndex];
       if (!item) return;
 
+      const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const singular = appConfig.productSingular || 'Producto';
+
       openConfirmModal({
-        title: '🗑️ Eliminar Ítem Adicional',
-        message: `¿Deseas eliminar el pedido adicional <strong>"${escapeHtml(item.name)}"</strong> de <strong>${escapeHtml(person.name)}</strong>?`,
-        subtext: 'Este ítem será eliminado únicamente de este participante.',
-        acceptText: '🗑️ Eliminar Ítem',
+        title: '🗑️ Eliminar / Liberar Pedido',
+        message: `¿Deseas eliminar o liberar el pedido <strong>"${escapeHtml(item.name)}"</strong> de <strong>${escapeHtml(person.name)}</strong>?`,
+        subtext: item.transferredFrom ? 'Se liberará el pedido transferido dejándolo disponible.' : 'Este ítem será eliminado.',
+        acceptText: '🗑️ Eliminar / Liberar',
         onConfirm: async () => {
           const updated = [...items];
-          updated.splice(itemIndex, 1);
+          if (itemIndex < defaultCount && !item.isAdditional) {
+            // Reset base slot back to clean unassigned state
+            updated[itemIndex] = {
+              name: `${singular} ${itemIndex + 1}`,
+              ordered: false,
+              delivered: false,
+              isAdditional: false,
+              paid: false,
+              paymentMethod: 'pending',
+              price: defaultPrice
+            };
+          } else {
+            updated.splice(itemIndex, 1);
+          }
           try {
             await update(ref(db, `people/${personKey}`), { masacos: updated });
-            showToast(`"${item.name}" eliminado de ${person.name}`);
+            showToast(`"${item.name}" actualizado en ${person.name}`);
           } catch (err) {
             showToast('Error al eliminar: ' + err.message, 'error');
           }
@@ -3541,13 +3609,14 @@
           const deliveredActive = isItemDelivered ? 'delivered-active' : '';
 
           // Item tag (Adicional / Transferido)
-          const isAdditional = Boolean(item.isAdditional || itemIndex >= defaultCount || item.transferredFrom);
+          const isAdditional = Boolean(item.isAdditional || itemIndex >= defaultCount);
           let tagHtml = '';
 
           if (item.transferredFrom) {
-            tagHtml = `<span class="item-tag tag-transferred" title="Transferido de ${escapeHtml(item.transferredFrom)}">🔄 De: ${escapeHtml(item.transferredFrom)}</span>`;
-          } else if (isAdditional) {
-            tagHtml = `<span class="item-tag tag-additional">Adicional</span>`;
+            tagHtml += `<span class="item-tag tag-transferred" title="Transferido de ${escapeHtml(item.transferredFrom)}">🔄 De: ${escapeHtml(item.transferredFrom)}</span>`;
+          }
+          if (isAdditional) {
+            tagHtml += `<span class="item-tag tag-additional">Adicional</span>`;
           }
 
           // Payment badge
@@ -3575,11 +3644,14 @@
             : `title="Estado de pago: ${paymentBadgeLabel}"`;
 
           let miniActionsHtml = '';
-          if (isAdmin && isAdditional) {
+          const canTransfer = isAdmin && (isAdditional || item.transferredFrom || isItemOrdered);
+          const canDelete = isAdmin && (isAdditional || Boolean(item.transferredFrom));
+
+          if (canTransfer || canDelete) {
             miniActionsHtml = `
               <div class="item-mini-actions" onclick="event.stopPropagation()">
-                <button type="button" class="btn-mini-action transfer" onclick="openTransferModal('${personKey}', ${itemIndex}, event)" title="Transferir a otra persona">🔄</button>
-                <button type="button" class="btn-mini-action delete" onclick="deleteSingleItem('${personKey}', ${itemIndex}, event)" title="Eliminar este ítem adicional">✕</button>
+                ${canTransfer ? `<button type="button" class="btn-mini-action transfer" onclick="openTransferModal('${personKey}', ${itemIndex}, event)" title="Transferir este pedido a otra persona">🔄</button>` : ''}
+                ${canDelete ? `<button type="button" class="btn-mini-action delete" onclick="deleteSingleItem('${personKey}', ${itemIndex}, event)" title="Eliminar / Liberar este ítem">✕</button>` : ''}
               </div>
             `;
           }
