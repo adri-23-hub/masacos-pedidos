@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,7 +17,7 @@
       background: #0f172a;
       color: #e2e8f0;
       min-height: 100vh;
-      padding: 2rem 1rem;
+      padding: 1.5rem 1rem 3rem 1rem;
     }
 
     .container {
@@ -24,10 +25,100 @@
       margin: 0 auto;
     }
 
+    /* Top Auth / Role Bar */
+    .role-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      padding: 0.75rem 1.25rem;
+      border-radius: 12px;
+      border: 1px solid #334155;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .role-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+    }
+
+    .role-badge.viewer {
+      background: rgba(59, 130, 246, 0.15);
+      color: #60a5fa;
+      border: 1px solid rgba(59, 130, 246, 0.3);
+    }
+
+    .role-badge.admin {
+      background: rgba(249, 115, 22, 0.2);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.4);
+    }
+
+    .role-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-role-action {
+      background: #334155;
+      color: #f1f5f9;
+      border: 1px solid #475569;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s;
+    }
+
+    .btn-role-action:hover {
+      background: #475569;
+      border-color: #64748b;
+    }
+
+    .btn-role-action.primary {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      color: white;
+      border: none;
+    }
+
+    .btn-role-action.primary:hover {
+      opacity: 0.9;
+    }
+
+    .btn-role-action.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+    }
+
+    .btn-role-action.danger:hover {
+      background: rgba(239, 68, 68, 0.25);
+    }
+
     h1 {
       text-align: center;
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
+      font-size: 2.1rem;
+      margin-bottom: 0.35rem;
       background: linear-gradient(135deg, #f97316, #f59e0b);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
@@ -36,14 +127,15 @@
     .subtitle {
       text-align: center;
       color: #94a3b8;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
+      font-size: 0.95rem;
     }
 
     .card {
       background: #1e293b;
       border-radius: 12px;
       padding: 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
       border: 1px solid #334155;
     }
 
@@ -51,8 +143,51 @@
       font-size: 1.25rem;
       margin-bottom: 1rem;
       color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
+    /* Overall Progress Bar */
+    .global-progress-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid #334155;
+    }
+
+    .global-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+      font-size: 0.875rem;
+      color: #94a3b8;
+    }
+
+    .global-progress-percent {
+      font-weight: 700;
+      color: #f97316;
+      font-size: 1rem;
+    }
+
+    .global-progress-track {
+      height: 8px;
+      background: #334155;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .global-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #22c55e);
+      border-radius: 9999px;
+      transition: width 0.4s ease;
+      width: 0%;
+    }
+
+    /* Form Styles */
     .form-group {
       margin-bottom: 1rem;
     }
@@ -64,7 +199,8 @@
       margin-bottom: 0.375rem;
     }
 
-    input[type="text"] {
+    input[type="text"],
+    input[type="password"] {
       width: 100%;
       padding: 0.75rem 1rem;
       background: #0f172a;
@@ -75,7 +211,8 @@
       transition: border-color 0.2s;
     }
 
-    input[type="text"]:focus {
+    input[type="text"]:focus,
+    input[type="password"]:focus {
       outline: none;
       border-color: #f97316;
     }
@@ -127,6 +264,55 @@
       transform: scale(0.98);
     }
 
+    /* Locked card for non-admin */
+    .locked-card {
+      background: #1e293b;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border: 1px dashed #475569;
+      text-align: center;
+    }
+
+    .locked-card-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .locked-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 0.35rem;
+    }
+
+    .locked-card-desc {
+      font-size: 0.875rem;
+      color: #94a3b8;
+      max-width: 450px;
+      margin: 0 auto 1.25rem auto;
+      line-height: 1.4;
+    }
+
+    .locked-card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.65rem 1.25rem;
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .locked-card-btn:hover {
+      opacity: 0.9;
+    }
+
     .stats {
       display: flex;
       gap: 1rem;
@@ -159,6 +345,11 @@
       padding: 1rem;
       margin-bottom: 0.75rem;
       border: 1px solid #334155;
+      transition: border-color 0.2s;
+    }
+
+    .person-card:hover {
+      border-color: #475569;
     }
 
     .person-header {
@@ -229,16 +420,26 @@
       padding: 0.5rem 0.75rem;
       background: #1e293b;
       border-radius: 6px;
-      cursor: pointer;
       transition: background 0.2s;
     }
 
-    .masaco-item:hover {
+    /* Admin clickable masaco */
+    .masaco-item.clickable {
+      cursor: pointer;
+    }
+
+    .masaco-item.clickable:hover {
       background: #334155;
     }
 
+    /* Readonly masaco */
+    .masaco-item.readonly {
+      cursor: default;
+      user-select: none;
+    }
+
     .masaco-item.delivered {
-      opacity: 0.6;
+      opacity: 0.65;
     }
 
     .masaco-item.delivered .masaco-item-name {
@@ -256,6 +457,9 @@
       justify-content: center;
       flex-shrink: 0;
       transition: all 0.2s;
+    }
+
+    .masaco-item.clickable .masaco-checkbox {
       cursor: pointer;
     }
 
@@ -294,7 +498,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
+      padding-top: 0.5rem;
+      border-top: 1px solid #1e293b;
     }
 
     .add-masaco-btn {
@@ -371,6 +577,171 @@
       color: #f97316;
     }
 
+    /* Modal Styles */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-backdrop.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: #1e293b;
+      border: 1px solid #334155;
+      border-radius: 12px;
+      width: 100%;
+      max-width: 420px;
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+      transform: translateY(15px) scale(0.97);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-backdrop.active .modal-content {
+      transform: translateY(0) scale(1);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.25rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      line-height: 1;
+    }
+
+    .modal-close:hover {
+      color: #f1f5f9;
+    }
+
+    .modal-body {
+      margin-bottom: 1.25rem;
+    }
+
+    .modal-body p {
+      font-size: 0.875rem;
+      color: #94a3b8;
+      margin-bottom: 1rem;
+    }
+
+    .modal-error {
+      color: #ef4444;
+      font-size: 0.8125rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+
+    .modal-error.show {
+      display: block;
+    }
+
+    .modal-footer {
+      display: flex;
+      gap: 0.75rem;
+      justify-content: flex-end;
+    }
+
+    .btn-secondary {
+      background: #334155;
+      color: #e2e8f0;
+      border: 1px solid #475569;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      color: white;
+      border: none;
+      padding: 0.65rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-primary:hover {
+      opacity: 0.9;
+    }
+
+    .password-input-wrapper {
+      position: relative;
+    }
+
+    .toggle-pass-btn {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #94a3b8;
+      cursor: pointer;
+      font-size: 0.875rem;
+      padding: 0.25rem;
+    }
+
+    .toggle-pass-btn:hover {
+      color: #f1f5f9;
+    }
+
+    .remember-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: #94a3b8;
+      cursor: pointer;
+    }
+
+    .remember-wrapper input[type="checkbox"] {
+      accent-color: #f97316;
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Toast */
     .toast {
       position: fixed;
       bottom: 2rem;
@@ -383,7 +754,10 @@
       font-weight: 500;
       opacity: 0;
       transition: transform 0.3s ease, opacity 0.3s ease;
-      z-index: 999;
+      z-index: 9999;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      max-width: 90%;
+      text-align: center;
     }
 
     .toast.show {
@@ -391,22 +765,61 @@
       opacity: 1;
     }
 
-    .toast.undo {
+    .toast.warning {
       background: #f97316;
+    }
+
+    .toast.error {
+      background: #ef4444;
     }
 
     @media (max-width: 640px) {
       .stats {
         flex-direction: column;
       }
+
+      .role-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .role-actions {
+        justify-content: flex-end;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <h1>Registro de Masacos</h1>
-    <p class="subtitle">Cada persona debe entregar 3 masacos</p>
+    <!-- Top Role / Authentication Bar -->
+    <header class="role-bar" id="roleBar">
+      <div class="role-status">
+        <span>Tu rol actual:</span>
+        <span class="role-badge viewer" id="roleBadge">👁️ Espectador (Solo Lectura)</span>
+      </div>
+      <div class="role-actions" id="roleActions">
+        <button class="btn-role-action primary" id="btnOpenLogin">
+          🔑 Acceso Admin
+        </button>
+      </div>
+    </header>
 
+    <h1>Registro de Masacos</h1>
+    <p class="subtitle">Control de entregas y estadísticas en tiempo real</p>
+
+    <!-- Global Progress Bar -->
+    <div class="global-progress-card">
+      <div class="global-progress-header">
+        <span>Avance Total de Entregas</span>
+        <span class="global-progress-percent" id="globalPercent">0%</span>
+      </div>
+      <div class="global-progress-track">
+        <div class="global-progress-fill" id="globalProgressFill"></div>
+      </div>
+    </div>
+
+    <!-- Statistics Cards -->
     <div class="stats">
       <div class="stat">
         <div class="stat-value" id="totalPeople">0</div>
@@ -422,47 +835,57 @@
       </div>
     </div>
 
-    <div class="card">
-      <h2>Registrar Persona</h2>
-      <form id="personForm">
-        <div class="form-group">
-          <label for="name">Nombre</label>
-          <input type="text" id="name" placeholder="Nombre de la persona" required autocomplete="off">
-        </div>
-        <div class="form-group">
-          <label>Masacos a entregar</label>
-          <div class="masacos-grid" id="formMasacos">
-            <div class="masaco-input">
-              <span class="badge">1</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
-            </div>
-            <div class="masaco-input">
-              <span class="badge">2</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
-            </div>
-            <div class="masaco-input">
-              <span class="badge">3</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
-            </div>
-          </div>
-          <button type="button" class="add-masaco-form-btn" id="addFormMasaco">+ Agregar masaco</button>
-        </div>
-        <button type="submit" class="btn">Registrar</button>
-      </form>
+    <!-- Register Person Section (Dynamic: Form if Admin, Info Card if Viewer) -->
+    <div id="registerSection">
+      <!-- Injected via JavaScript based on role -->
     </div>
 
+    <!-- Deliveries Board Section -->
     <div class="card">
-      <h2>Pizarra de Entregas</h2>
+      <h2>📋 Pizarra de Entregas</h2>
       <div class="search-wrapper">
         <span class="search-icon">&#128269;</span>
-        <input type="text" id="searchInput" placeholder="Buscar persona..." autocomplete="off">
+        <input type="text" id="searchInput" placeholder="Buscar persona por nombre..." autocomplete="off">
       </div>
       <div id="boardContainer">
-        <div class="empty-state">No hay personas registradas todavia</div>
+        <div class="empty-state">Cargando datos...</div>
       </div>
     </div>
   </div>
 
+  <!-- Admin Login Modal -->
+  <div class="modal-backdrop" id="loginModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔐 Iniciar Sesión como Admin</h3>
+        <button class="modal-close" id="btnCloseLoginModal">&times;</button>
+      </div>
+      <form id="adminLoginForm">
+        <div class="modal-body">
+          <p>Ingresa la contraseña de administrador para poder registrar personas y marcar entregas.</p>
+          <div class="form-group">
+            <label for="adminPasswordInput">Contraseña de Administrador</label>
+            <div class="password-input-wrapper">
+              <input type="password" id="adminPasswordInput" placeholder="Ingresa la contraseña (ej. admin123)" required
+                autocomplete="current-password">
+              <button type="button" class="toggle-pass-btn" id="btnTogglePass">👁️</button>
+            </div>
+            <div class="modal-error" id="loginErrorMsg">Contraseña incorrecta. Inténtalo de nuevo.</div>
+          </div>
+          <label class="remember-wrapper">
+            <input type="checkbox" id="rememberAdmin">
+            <span>Mantener sesión iniciada en este navegador</span>
+          </label>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-secondary" id="btnCancelLogin">Cancelar</button>
+          <button type="submit" class="btn-primary">Entrar como Admin</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
   <div class="toast" id="toast"></div>
 
   <script type="module">
@@ -483,23 +906,265 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // Master / Default admin passwords
+    const DEFAULT_ADMIN_PASS = "admin123";
+
+    // Application state
     let allPeople = {};
     let searchQuery = '';
+    let isAdmin = false;
+    let formMasacoCount = 3;
+
+    // Check stored session
+    function checkInitialAuth() {
+      const isLoggedLocal = localStorage.getItem('masaco_is_admin') === 'true';
+      const isLoggedSession = sessionStorage.getItem('masaco_is_admin') === 'true';
+      isAdmin = isLoggedLocal || isLoggedSession;
+      updateRoleUI();
+    }
 
     function escapeHtml(text) {
+      if (!text) return '';
       const div = document.createElement('div');
       div.textContent = text;
       return div.innerHTML;
     }
 
-    function showToast(message) {
+    function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.className = 'toast show';
-      setTimeout(() => toast.classList.remove('show'), 2500);
+      if (type === 'warning') toast.classList.add('warning');
+      if (type === 'error') toast.classList.add('error');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2800);
     }
 
+    // Role UI Update
+    function updateRoleUI() {
+      const roleBadge = document.getElementById('roleBadge');
+      const roleActions = document.getElementById('roleActions');
+      const registerSection = document.getElementById('registerSection');
+
+      if (isAdmin) {
+        // Admin UI
+        roleBadge.className = 'role-badge admin';
+        roleBadge.innerHTML = '🛡️ Administrador (Acceso Total)';
+
+        roleActions.innerHTML = `
+          <button class="btn-role-action danger" id="btnLogout">
+            🚪 Cerrar Sesión
+          </button>
+        `;
+        document.getElementById('btnLogout').addEventListener('click', handleLogout);
+
+        // Render Admin Form
+        registerSection.innerHTML = `
+          <div class="card">
+            <h2>➕ Registrar Persona</h2>
+            <form id="personForm">
+              <div class="form-group">
+                <label for="name">Nombre de la persona</label>
+                <input type="text" id="name" placeholder="Ej. Juan Pérez" required autocomplete="off">
+              </div>
+              <div class="form-group">
+                <label>Masacos a entregar</label>
+                <div class="masacos-grid" id="formMasacos">
+                  <div class="masaco-input">
+                    <span class="badge">1</span>
+                    <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
+                  </div>
+                  <div class="masaco-input">
+                    <span class="badge">2</span>
+                    <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
+                  </div>
+                  <div class="masaco-input">
+                    <span class="badge">3</span>
+                    <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
+                  </div>
+                </div>
+                <button type="button" class="add-masaco-form-btn" id="addFormMasaco">+ Agregar otro masaco</button>
+              </div>
+              <button type="submit" class="btn">Registrar Persona y Masacos</button>
+            </form>
+          </div>
+        `;
+        attachFormListeners();
+      } else {
+        // Viewer UI
+        roleBadge.className = 'role-badge viewer';
+        roleBadge.innerHTML = '👁️ Espectador (Solo Lectura)';
+
+        roleActions.innerHTML = `
+          <button class="btn-role-action primary" id="btnOpenLogin">
+            🔑 Acceso Admin
+          </button>
+        `;
+        document.getElementById('btnOpenLogin').addEventListener('click', openLoginModal);
+
+        // Render Locked info card
+        registerSection.innerHTML = `
+          <div class="locked-card">
+            <div class="locked-card-icon">🔒</div>
+            <div class="locked-card-title">Registro Exclusivo para Administradores</div>
+            <p class="locked-card-desc">
+              Estás en modo solo lectura. Puedes consultar todas las estadísticas y entregas en tiempo real. Para registrar personas o modificar entregas, inicia sesión como administrador.
+            </p>
+            <button class="locked-card-btn" id="btnCardLogin">
+              🔑 Iniciar Sesión como Admin
+            </button>
+          </div>
+        `;
+        document.getElementById('btnCardLogin').addEventListener('click', openLoginModal);
+      }
+
+      renderBoard();
+    }
+
+    function attachFormListeners() {
+      formMasacoCount = 3;
+      const addBtn = document.getElementById('addFormMasaco');
+      if (addBtn) {
+        addBtn.addEventListener('click', function () {
+          formMasacoCount++;
+          const container = document.getElementById('formMasacos');
+          const div = document.createElement('div');
+          div.className = 'masaco-input';
+          div.innerHTML = `
+            <span class="badge">${formMasacoCount}</span>
+            <input type="text" class="form-masaco-input" placeholder="Masaco ${formMasacoCount}" required autocomplete="off">
+          `;
+          container.appendChild(div);
+        });
+      }
+
+      const form = document.getElementById('personForm');
+      if (form) {
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+
+          if (!isAdmin) {
+            showToast('Acceso denegado: solo administradores', 'error');
+            return;
+          }
+
+          const nameInput = document.getElementById('name');
+          const name = nameInput.value.trim();
+          const masacoInputs = document.querySelectorAll('.form-masaco-input');
+          const masacos = [];
+          let valid = true;
+
+          masacoInputs.forEach(input => {
+            const val = input.value.trim();
+            if (!val) valid = false;
+            masacos.push({ name: val, delivered: false });
+          });
+
+          if (!name || !valid || masacos.length < 1) {
+            showToast('Completa todos los campos correctamente', 'warning');
+            return;
+          }
+
+          push(ref(db, 'people'), { name, masacos });
+
+          this.reset();
+          document.getElementById('formMasacos').innerHTML = `
+            <div class="masaco-input">
+              <span class="badge">1</span>
+              <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
+            </div>
+            <div class="masaco-input">
+              <span class="badge">2</span>
+              <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
+            </div>
+            <div class="masaco-input">
+              <span class="badge">3</span>
+              <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
+            </div>
+          `;
+          formMasacoCount = 3;
+          nameInput.focus();
+          showToast(`¡${name} registrado con ${masacos.length} masacos!`);
+        });
+      }
+    }
+
+    // Modal Control
+    const loginModal = document.getElementById('loginModal');
+    const loginErrorMsg = document.getElementById('loginErrorMsg');
+    const adminPasswordInput = document.getElementById('adminPasswordInput');
+    const rememberAdmin = document.getElementById('rememberAdmin');
+    const btnTogglePass = document.getElementById('btnTogglePass');
+
+    function openLoginModal() {
+      loginErrorMsg.classList.remove('show');
+      adminPasswordInput.value = '';
+      loginModal.classList.add('active');
+      setTimeout(() => adminPasswordInput.focus(), 150);
+    }
+
+    function closeLoginModal() {
+      loginModal.classList.remove('active');
+      loginErrorMsg.classList.remove('show');
+      adminPasswordInput.value = '';
+    }
+
+    document.getElementById('btnCloseLoginModal').addEventListener('click', closeLoginModal);
+    document.getElementById('btnCancelLogin').addEventListener('click', closeLoginModal);
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === loginModal) closeLoginModal();
+    });
+
+    btnTogglePass.addEventListener('click', () => {
+      if (adminPasswordInput.type === 'password') {
+        adminPasswordInput.type = 'text';
+        btnTogglePass.textContent = '🔒';
+      } else {
+        adminPasswordInput.type = 'password';
+        btnTogglePass.textContent = '👁️';
+      }
+    });
+
+    // Login Form Submit
+    document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const enteredPass = adminPasswordInput.value.trim();
+
+      // Check against default password or stored custom password
+      const storedPass = localStorage.getItem('masaco_custom_pass') || DEFAULT_ADMIN_PASS;
+
+      if (enteredPass === storedPass || enteredPass === DEFAULT_ADMIN_PASS) {
+        isAdmin = true;
+        if (rememberAdmin.checked) {
+          localStorage.setItem('masaco_is_admin', 'true');
+        } else {
+          sessionStorage.setItem('masaco_is_admin', 'true');
+        }
+        closeLoginModal();
+        updateRoleUI();
+        showToast('🔓 Sesión de Administrador iniciada correctamente');
+      } else {
+        loginErrorMsg.classList.add('show');
+        adminPasswordInput.classList.add('error');
+        adminPasswordInput.select();
+      }
+    });
+
+    function handleLogout() {
+      isAdmin = false;
+      localStorage.removeItem('masaco_is_admin');
+      sessionStorage.removeItem('masaco_is_admin');
+      updateRoleUI();
+      showToast('🔒 Sesión cerrada. Ahora estás en Modo Espectador', 'warning');
+    }
+
+    // Database Actions with Role Verification
     function toggleMasaco(personKey, masacoIndex, currentDelivered) {
+      if (!isAdmin) {
+        showToast('⚠️ Inicia sesión como Admin para modificar las entregas', 'warning');
+        return;
+      }
       update(ref(db, `people/${personKey}/masacos/${masacoIndex}`), {
         delivered: !currentDelivered
       });
@@ -507,56 +1172,75 @@
     window.toggleMasaco = toggleMasaco;
 
     function deletePerson(personKey) {
-      if (confirm('Eliminar esta persona y todos sus masacos?')) {
+      if (!isAdmin) {
+        showToast('⚠️ Solo administradores pueden eliminar personas', 'error');
+        return;
+      }
+      const person = allPeople[personKey];
+      const name = person ? person.name : 'esta persona';
+      if (confirm(`¿Estás seguro de eliminar a "${name}" y todos sus masacos?`)) {
         remove(ref(db, `people/${personKey}`));
-        showToast('Persona eliminada');
+        showToast(`Persona "${name}" eliminada`);
       }
     }
     window.deletePerson = deletePerson;
 
     function addMasacoToPerson(personKey) {
-      const name = prompt('Nombre del masaco a agregar:');
+      if (!isAdmin) {
+        showToast('⚠️ Solo administradores pueden agregar masacos', 'warning');
+        return;
+      }
+      const person = allPeople[personKey];
+      const name = prompt(`Agregar nuevo masaco para ${person ? person.name : 'la persona'}:`);
       if (name && name.trim()) {
-        const person = allPeople[personKey];
         const masacos = person.masacos || [];
         const updated = [...masacos, { name: name.trim(), delivered: false }];
         update(ref(db, `people/${personKey}`), { masacos: updated });
-        showToast(`Masaco "${name.trim}" agregado a ${person.name}`);
+        showToast(`Masaco "${name.trim()}" agregado`);
       }
     }
     window.addMasacoToPerson = addMasacoToPerson;
 
+    // Statistics Calculation
     function updateStats() {
       const people = Object.values(allPeople);
       const totalPeople = people.length;
       let totalMasacos = 0;
       let delivered = 0;
+
       people.forEach(p => {
-        if (p.masacos) {
+        if (p.masacos && Array.isArray(p.masacos)) {
           totalMasacos += p.masacos.length;
           p.masacos.forEach(m => {
             if (m.delivered) delivered++;
           });
         }
       });
+
       const pending = totalMasacos - delivered;
+      const percent = totalMasacos > 0 ? Math.round((delivered / totalMasacos) * 100) : 0;
 
       document.getElementById('totalPeople').textContent = totalPeople;
       document.getElementById('totalDelivered').textContent = delivered;
       document.getElementById('totalPending').textContent = pending;
+      document.getElementById('globalPercent').textContent = `${percent}% (${delivered}/${totalMasacos})`;
+      document.getElementById('globalProgressFill').style.width = `${percent}%`;
     }
 
+    // Board Rendering
     function renderBoard() {
       const container = document.getElementById('boardContainer');
       const entries = Object.entries(allPeople);
 
       const filtered = entries.filter(([key, person]) => {
         if (!searchQuery) return true;
-        return person.name.toLowerCase().includes(searchQuery.toLowerCase());
+        return (person.name || '').toLowerCase().includes(searchQuery.toLowerCase());
       });
 
       if (filtered.length === 0) {
-        const msg = searchQuery ? 'No se encontro esa persona' : 'No hay personas registradas todavia';
+        const msg = searchQuery
+          ? `No se encontró a nadie que coincida con "${escapeHtml(searchQuery)}"`
+          : 'No hay personas registradas todavía.';
         container.innerHTML = `<div class="empty-state">${msg}</div>`;
         updateStats();
         return;
@@ -569,7 +1253,7 @@
         const masacos = person.masacos || [];
         const totalMasacos = masacos.length;
         const deliveredCount = masacos.filter(m => m.delivered).length;
-        const isComplete = deliveredCount === totalMasacos;
+        const isComplete = totalMasacos > 0 && deliveredCount === totalMasacos;
         const progressClass = deliveredCount === 0 ? 'progress-0' : (isComplete ? 'progress-complete' : 'progress-partial');
         const barWidth = totalMasacos > 0 ? (deliveredCount / totalMasacos) * 100 : 0;
 
@@ -586,8 +1270,14 @@
         `;
 
         masacos.forEach((masaco, masacoIndex) => {
+          const itemDeliveredClass = masaco.delivered ? 'delivered' : '';
+          const itemInteractiveClass = isAdmin ? 'clickable' : 'readonly';
+          const onClickAttr = isAdmin
+            ? `onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})"`
+            : `onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})" title="Modo solo lectura"`;
+
           html += `
-            <div class="masaco-item ${masaco.delivered ? 'delivered' : ''}" onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})">
+            <div class="masaco-item ${itemDeliveredClass} ${itemInteractiveClass}" ${onClickAttr}>
               <span class="masaco-item-number">${masacoIndex + 1}</span>
               <div class="masaco-checkbox"></div>
               <span class="masaco-item-name">${escapeHtml(masaco.name)}</span>
@@ -595,83 +1285,40 @@
           `;
         });
 
-        html += `
-            </div>
+        html += `</div>`;
+
+        // Render Action buttons ONLY for Admin
+        if (isAdmin) {
+          html += `
             <div class="person-actions">
               <button class="add-masaco-btn" onclick="addMasacoToPerson('${personKey}')">+ Agregar masaco</button>
               <button class="delete-btn" onclick="deletePerson('${personKey}')">Eliminar</button>
             </div>
-          </div>
-        `;
+          `;
+        }
+
+        html += `</div>`;
       });
 
       container.innerHTML = html;
     }
 
+    // Realtime Database Listener
     const peopleRef = ref(db, 'people');
     onValue(peopleRef, (snapshot) => {
       allPeople = snapshot.val() || {};
       renderBoard();
     });
 
-    document.getElementById('searchInput').addEventListener('input', function(e) {
+    // Search filter
+    document.getElementById('searchInput').addEventListener('input', function (e) {
       searchQuery = e.target.value.trim();
       renderBoard();
     });
 
-    let formMasacoCount = 3;
-    document.getElementById('addFormMasaco').addEventListener('click', function() {
-      formMasacoCount++;
-      const container = document.getElementById('formMasacos');
-      const div = document.createElement('div');
-      div.className = 'masaco-input';
-      div.innerHTML = `
-        <span class="badge">${formMasacoCount}</span>
-        <input type="text" class="form-masaco-input" placeholder="Masaco ${formMasacoCount}" required autocomplete="off">
-      `;
-      container.appendChild(div);
-    });
-
-    document.getElementById('personForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
-      const masacoInputs = document.querySelectorAll('.form-masaco-input');
-      const masacos = [];
-      let valid = true;
-
-      masacoInputs.forEach(input => {
-        const val = input.value.trim();
-        if (!val) valid = false;
-        masacos.push({ name: val, delivered: false });
-      });
-
-      if (!name || !valid || masacos.length < 1) {
-        showToast('Completa todos los campos');
-        return;
-      }
-
-      push(ref(db, 'people'), { name, masacos });
-
-      this.reset();
-      document.getElementById('formMasacos').innerHTML = `
-        <div class="masaco-input">
-          <span class="badge">1</span>
-          <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
-        </div>
-        <div class="masaco-input">
-          <span class="badge">2</span>
-          <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
-        </div>
-        <div class="masaco-input">
-          <span class="badge">3</span>
-          <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
-        </div>
-      `;
-      formMasacoCount = 3;
-      document.getElementById('name').focus();
-      showToast(`${name} registrado con ${masacos.length} masacos`);
-    });
+    // Initialize Auth state
+    checkInitialAuth();
   </script>
 </body>
+
 </html>
