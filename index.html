@@ -27,6 +27,7 @@
       --accent-amber: #f59e0b;
       --accent-emerald: #10b981;
       --accent-blue: #3b82f6;
+      --accent-cyan: #06b6d4;
       --accent-purple: #a855f7;
       --accent-rose: #f43f5e;
       
@@ -64,7 +65,7 @@
     }
 
     .container {
-      max-width: 880px;
+      max-width: 920px;
       margin: 0 auto;
     }
 
@@ -257,16 +258,43 @@
       line-height: 1.5;
     }
 
-    /* KPI Dashboard Section (Operational & Financial) */
-    .kpi-grid {
+    /* Section Headers for Dashboard Metrics */
+    .section-kpi-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+      padding: 0 0.25rem;
+    }
+
+    .section-kpi-title {
+      font-size: 0.8125rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    /* KPI Dashboard Grids */
+    .kpi-grid-6 {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .kpi-grid-4 {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 0.85rem;
-      margin-bottom: 1.5rem;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
     }
 
     .kpi-card {
-      padding: 1.15rem 0.85rem;
+      padding: 0.85rem 0.6rem;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -291,34 +319,42 @@
     }
 
     .kpi-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .kpi-card.cyan::before { background: linear-gradient(90deg, #06b6d4, #38bdf8); }
+    .kpi-card.amber::before { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+    .kpi-card.slate::before { background: linear-gradient(90deg, #64748b, #94a3b8); }
     .kpi-card.emerald::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .kpi-card.orange::before { background: linear-gradient(90deg, #f97316, #fb923c); }
     .kpi-card.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
     .kpi-card.rose::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
 
     .kpi-icon {
-      font-size: 1.25rem;
-      margin-bottom: 0.25rem;
+      font-size: 1.15rem;
+      margin-bottom: 0.15rem;
     }
 
     .kpi-value {
-      font-size: 1.65rem;
+      font-size: 1.35rem;
       font-weight: 800;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.02em;
       line-height: 1.15;
-      margin-bottom: 0.25rem;
+      margin-bottom: 0.15rem;
     }
 
     .kpi-card.blue .kpi-value { color: #93c5fd; }
+    .kpi-card.cyan .kpi-value { color: #67e8f9; }
+    .kpi-card.amber .kpi-value { color: #fde047; }
+    .kpi-card.slate .kpi-value { color: #cbd5e1; }
     .kpi-card.emerald .kpi-value { color: #6ee7b7; }
+    .kpi-card.orange .kpi-value { color: #fdba74; }
     .kpi-card.purple .kpi-value { color: #d8b4fe; }
     .kpi-card.rose .kpi-value { color: #fda4af; }
 
     .kpi-label {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 700;
       color: var(--text-muted);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.04em;
     }
 
     /* Overall Progress Bar */
@@ -331,7 +367,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
+      margin-bottom: 0.5rem;
     }
 
     .progress-title {
@@ -344,17 +380,17 @@
     }
 
     .progress-badge {
-      font-size: 0.875rem;
+      font-size: 0.8125rem;
       font-weight: 700;
       color: #fed7aa;
       background: rgba(249, 115, 22, 0.15);
-      padding: 0.25rem 0.75rem;
+      padding: 0.2rem 0.65rem;
       border-radius: 9999px;
       border: 1px solid rgba(249, 115, 22, 0.25);
     }
 
     .progress-track {
-      height: 10px;
+      height: 9px;
       background: rgba(15, 23, 42, 0.8);
       border-radius: 9999px;
       overflow: hidden;
@@ -369,6 +405,16 @@
       transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       width: 0%;
       box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+    }
+
+    .progress-fill.ordered-bar {
+      background: linear-gradient(90deg, #f59e0b 0%, #38bdf8 100%);
+      box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+    }
+
+    .progress-fill.cash-bar {
+      background: linear-gradient(90deg, #3b82f6 0%, #a855f7 50%, #10b981 100%);
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.5);
     }
 
     /* Cards */
@@ -682,12 +728,18 @@
 
     .person-progress {
       font-size: 0.78rem;
-      padding: 0.25rem 0.75rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 9999px;
       font-weight: 700;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.3rem;
+    }
+
+    .person-progress.ordered-badge {
+      background: rgba(245, 158, 11, 0.15);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.3);
     }
 
     .progress-0 {
@@ -711,11 +763,11 @@
     .person-payment-summary {
       font-size: 0.78rem;
       font-weight: 700;
-      padding: 0.25rem 0.75rem;
+      padding: 0.25rem 0.65rem;
       border-radius: 9999px;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
+      gap: 0.3rem;
     }
 
     .person-payment-summary.all-paid {
@@ -759,7 +811,7 @@
     .delivery-item {
       display: flex;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.65rem;
       padding: 0.6rem 0.85rem;
       background: rgba(15, 23, 42, 0.65);
       border-radius: var(--radius-sm);
@@ -768,23 +820,14 @@
       position: relative;
     }
 
-    .delivery-item.clickable {
-      cursor: pointer;
-    }
-
-    .delivery-item.clickable:hover {
+    .delivery-item:hover {
       background: rgba(30, 41, 59, 0.7);
       border-color: rgba(255, 255, 255, 0.08);
     }
 
-    .delivery-item.readonly {
-      cursor: default;
-      user-select: none;
-    }
-
     .delivery-item.delivered {
-      opacity: 0.7;
-      background: rgba(15, 23, 42, 0.4);
+      opacity: 0.75;
+      background: rgba(15, 23, 42, 0.45);
     }
 
     .delivery-item.delivered .item-name {
@@ -792,33 +835,61 @@
       color: var(--text-dim);
     }
 
-    .item-checkbox {
-      width: 22px;
-      height: 22px;
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      border-radius: 6px;
+    /* Option 1: Dual Interactive Checkboxes (Encargado & Entregado) */
+    .item-check-group {
       display: flex;
       align-items: center;
-      justify-content: center;
+      gap: 0.35rem;
       flex-shrink: 0;
+    }
+
+    .check-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.25rem 0.55rem;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text-muted);
       transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      user-select: none;
     }
 
-    .delivery-item.clickable:hover .item-checkbox {
-      border-color: var(--primary);
+    .check-pill:hover {
+      border-color: rgba(255, 255, 255, 0.25);
+      background: rgba(30, 41, 59, 0.9);
+      transform: translateY(-1px);
     }
 
-    .delivery-item.delivered .item-checkbox {
-      background: var(--accent-emerald);
-      border-color: var(--accent-emerald);
-      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
+    .check-pill:active {
+      transform: translateY(0);
     }
 
-    .delivery-item.delivered .item-checkbox::after {
-      content: '✓';
-      color: white;
-      font-size: 0.85rem;
-      font-weight: 800;
+    .check-pill.ordered-active {
+      background: rgba(245, 158, 11, 0.2);
+      border-color: rgba(245, 158, 11, 0.45);
+      color: #fde047;
+      box-shadow: 0 0 10px rgba(245, 158, 11, 0.25);
+    }
+
+    .check-pill.delivered-active {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: rgba(16, 185, 129, 0.45);
+      color: #6ee7b7;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.25);
+    }
+
+    .delivery-item.readonly .check-pill {
+      cursor: default;
+    }
+
+    .delivery-item.readonly .check-pill:hover {
+      background: rgba(15, 23, 42, 0.7);
+      transform: none;
     }
 
     .item-info {
@@ -1084,7 +1155,7 @@
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 520px;
+      max-width: 560px;
       max-height: 90vh;
       overflow-y: auto;
       padding: 1.75rem;
@@ -1350,8 +1421,8 @@
     /* Cash Reconciliation Report UI */
     .report-kpi-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 0.75rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.65rem;
       margin-bottom: 1.25rem;
     }
 
@@ -1359,18 +1430,18 @@
       background: rgba(15, 23, 42, 0.8);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: var(--radius-sm);
-      padding: 0.85rem;
+      padding: 0.75rem 0.5rem;
       text-align: center;
     }
 
     .report-kpi-val {
-      font-size: 1.35rem;
+      font-size: 1.25rem;
       font-weight: 800;
       margin-bottom: 0.2rem;
     }
 
     .report-kpi-lbl {
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       color: var(--text-muted);
       text-transform: uppercase;
       font-weight: 700;
@@ -1437,8 +1508,14 @@
       box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(244, 63, 94, 0.4);
     }
 
-    @media (max-width: 640px) {
-      .kpi-grid {
+    @media (max-width: 768px) {
+      .kpi-grid-6 {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .kpi-grid-4 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .report-kpi-grid {
         grid-template-columns: 1fr 1fr;
       }
       .form-row {
@@ -1494,20 +1571,64 @@
     <!-- Hero Title and Subtitle -->
     <div class="hero-section">
       <h1 id="mainTitle">Registro de Entregas</h1>
-      <p class="subtitle" id="mainSubtitle">Control de entregas y estadísticas en tiempo real</p>
+      <p class="subtitle" id="mainSubtitle">Control de encargos, entregas y estadísticas en tiempo real</p>
     </div>
 
-    <!-- KPI Dashboard Cards (Operational & Financial) -->
-    <div class="kpi-grid">
+    <!-- 📦 SECCIÓN 1: ESTADÍSTICAS OPERATIVAS DE PEDIDOS -->
+    <div class="section-kpi-header">
+      <div class="section-kpi-title">
+        <span>📦 Estadísticas de Pedidos</span>
+      </div>
+    </div>
+    <div class="kpi-grid-6">
       <div class="kpi-card glass-panel blue">
         <div class="kpi-icon">👥</div>
         <div class="kpi-value" id="totalPeople">0</div>
         <div class="kpi-label">Personas</div>
       </div>
+      <div class="kpi-card glass-panel cyan">
+        <div class="kpi-icon">📦</div>
+        <div class="kpi-value" id="totalItemsCount">0</div>
+        <div class="kpi-label" id="labelTotalItems">Total Pedidos</div>
+      </div>
+      <div class="kpi-card glass-panel amber">
+        <div class="kpi-icon">📝</div>
+        <div class="kpi-value" id="totalOrderedCount">0</div>
+        <div class="kpi-label">Encargados</div>
+      </div>
+      <div class="kpi-card glass-panel slate">
+        <div class="kpi-icon">⚪</div>
+        <div class="kpi-value" id="totalAvailableCount">0</div>
+        <div class="kpi-label">Por Vender</div>
+      </div>
       <div class="kpi-card glass-panel emerald">
+        <div class="kpi-icon">✅</div>
+        <div class="kpi-value" id="totalDeliveredCount">0</div>
+        <div class="kpi-label">Entregados</div>
+      </div>
+      <div class="kpi-card glass-panel orange">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-value" id="totalPendingDeliveryCount">0</div>
+        <div class="kpi-label">Por Entregar</div>
+      </div>
+    </div>
+
+    <!-- 💵 SECCIÓN 2: ESTADÍSTICAS FINANCIERAS / CUADRE DE CAJA -->
+    <div class="section-kpi-header" style="margin-top: 0.5rem;">
+      <div class="section-kpi-title">
+        <span>💵 Estadísticas de Caja</span>
+      </div>
+    </div>
+    <div class="kpi-grid-4">
+      <div class="kpi-card glass-panel emerald">
+        <div class="kpi-icon">💰</div>
+        <div class="kpi-value" id="kpiTotalRevenue">0 Bs</div>
+        <div class="kpi-label">Total Recaudado</div>
+      </div>
+      <div class="kpi-card glass-panel cyan">
         <div class="kpi-icon">💵</div>
         <div class="kpi-value" id="kpiCashTotal">0 Bs</div>
-        <div class="kpi-label">Efectivo en Caja</div>
+        <div class="kpi-label">Efectivo en Mano</div>
       </div>
       <div class="kpi-card glass-panel purple">
         <div class="kpi-icon">📱</div>
@@ -1515,20 +1636,39 @@
         <div class="kpi-label">QR / Banco</div>
       </div>
       <div class="kpi-card glass-panel rose">
-        <div class="kpi-icon">⏳</div>
+        <div class="kpi-icon">🔴</div>
         <div class="kpi-value" id="kpiPendingTotal">0 Bs</div>
         <div class="kpi-label">Por Cobrar</div>
       </div>
     </div>
 
-    <!-- Global Progress Bar -->
+    <!-- Global Progress Bars Card (Dual: Encargos + Entregas + Cobros) -->
     <div class="progress-card glass-panel">
+      <!-- Progress 1: Orders (Encargos) -->
       <div class="progress-header">
-        <span class="progress-title" id="progressLabel">📊 Avance Total de Entregas</span>
-        <span class="progress-badge" id="globalPercent">0%</span>
+        <span class="progress-title">📝 Avance de Encargos (Ventas)</span>
+        <span class="progress-badge" id="orderedPercent" style="color: #fde047; background: rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3);">0% (0/0)</span>
+      </div>
+      <div class="progress-track" style="margin-bottom: 0.85rem;">
+        <div class="progress-fill ordered-bar" id="orderedProgressFill"></div>
+      </div>
+
+      <!-- Progress 2: Deliveries (Entregas físicas) -->
+      <div class="progress-header">
+        <span class="progress-title" id="progressLabel">✅ Avance de Entregas</span>
+        <span class="progress-badge" id="globalPercent">0% (0/0)</span>
+      </div>
+      <div class="progress-track" style="margin-bottom: 0.85rem;">
+        <div class="progress-fill" id="globalProgressFill"></div>
+      </div>
+
+      <!-- Progress 3: Cash Collection (Cobranza) -->
+      <div class="progress-header">
+        <span class="progress-title">💳 Avance de Recaudación</span>
+        <span class="progress-badge" id="cashPercent" style="color: #6ee7b7; background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.25);">0% (0/0 Bs)</span>
       </div>
       <div class="progress-track">
-        <div class="progress-fill" id="globalProgressFill"></div>
+        <div class="progress-fill cash-bar" id="cashProgressFill"></div>
       </div>
     </div>
 
@@ -1538,7 +1678,7 @@
     <!-- Deliveries Board Section -->
     <div class="card glass-panel">
       <div class="board-header">
-        <div class="card-title" id="boardTitle">📋 Pizarra de Entregas</div>
+        <div class="card-title" id="boardTitle">📋 Pizarra de Pedidos y Entregas</div>
         <div id="boardAdminControls"></div>
       </div>
 
@@ -1546,10 +1686,12 @@
       <div class="filter-bar">
         <div class="filter-chips" id="filterChips">
           <button type="button" class="filter-chip active" data-filter="all">Todos</button>
+          <button type="button" class="filter-chip" data-filter="ordered">📝 Encargados</button>
+          <button type="button" class="filter-chip" data-filter="available">⚪ Por Vender</button>
+          <button type="button" class="filter-chip" data-filter="pending_delivery">⏳ Por Entregar</button>
+          <button type="button" class="filter-chip" data-filter="completed_delivery">✅ Entregados</button>
           <button type="button" class="filter-chip" data-filter="unpaid">🔴 Por Cobrar</button>
           <button type="button" class="filter-chip" data-filter="paid">💰 Pagados</button>
-          <button type="button" class="filter-chip" data-filter="pending_delivery">⏳ Pendientes Entrega</button>
-          <button type="button" class="filter-chip" data-filter="completed_delivery">✅ Entregados</button>
         </div>
 
         <div class="search-wrapper">
@@ -1583,7 +1725,7 @@
       </div>
       <form id="adminLoginForm">
         <div class="modal-body">
-          <p>Ingresa la contraseña de administrador para poder registrar personas, modificar entregas, configurar métodos de pago y evento.</p>
+          <p>Ingresa la contraseña de administrador para poder registrar personas, modificar encargos, entregas, cobros y evento.</p>
           <div class="form-group">
             <label for="adminPasswordInput">Contraseña de Administrador</label>
             <div class="password-input-wrapper">
@@ -1673,7 +1815,7 @@
           <!-- Danger Zone: Reset Activity -->
           <div class="danger-zone">
             <div class="danger-zone-title">⚠️ Reiniciar Actividad</div>
-            <p class="danger-zone-desc">Borra todos los participantes, entregas y cobros actuales para empezar un evento desde cero.</p>
+            <p class="danger-zone-desc">Borra todos los participantes, encargos, entregas y cobros actuales para empezar un evento desde cero.</p>
             <button type="button" class="btn-action danger" id="btnClearAllModal" style="width: 100%; justify-content: center;">
               🗑️ Borrar Todos los Registros de Participantes
             </button>
@@ -1782,26 +1924,53 @@
   <div class="modal-backdrop" id="cashReportModal">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 class="modal-title">📊 Cuadre y Balance de Caja</h3>
+        <h3 class="modal-title">📊 Estadísticas y Cuadre de Caja</h3>
         <button class="modal-close" id="btnCloseCashReportModal">&times;</button>
       </div>
       <div class="modal-body">
+        <!-- Operational Breakdown -->
+        <div style="font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
+          📦 Balance de Encargos y Pedidos
+        </div>
         <div class="report-kpi-grid">
           <div class="report-kpi-box">
-            <div class="report-kpi-val" id="repTotalRevenue" style="color: #93c5fd;">0 Bs</div>
+            <div class="report-kpi-val" id="repTotalItems" style="color: #67e8f9;">0</div>
+            <div class="report-kpi-lbl">Total Pedidos</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repOrderedItems" style="color: #fde047;">0</div>
+            <div class="report-kpi-lbl">Encargados</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repAvailableItems" style="color: #cbd5e1;">0</div>
+            <div class="report-kpi-lbl">Por Vender</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repDeliveredItems" style="color: #6ee7b7;">0</div>
+            <div class="report-kpi-lbl">Entregados</div>
+          </div>
+        </div>
+
+        <!-- Financial Breakdown -->
+        <div style="font-size: 0.8125rem; font-weight: 800; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem;">
+          💵 Balance Financiero
+        </div>
+        <div class="report-kpi-grid">
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repTotalRevenue" style="color: #6ee7b7;">0 Bs</div>
             <div class="report-kpi-lbl">Total Recaudado</div>
           </div>
           <div class="report-kpi-box">
-            <div class="report-kpi-val" id="repTotalPending" style="color: #fda4af;">0 Bs</div>
-            <div class="report-kpi-lbl">Total Por Cobrar</div>
-          </div>
-          <div class="report-kpi-box">
-            <div class="report-kpi-val" id="repCashAmount" style="color: #6ee7b7;">0 Bs</div>
+            <div class="report-kpi-val" id="repCashAmount" style="color: #67e8f9;">0 Bs</div>
             <div class="report-kpi-lbl">💵 Efectivo en Mano</div>
           </div>
           <div class="report-kpi-box">
             <div class="report-kpi-val" id="repQrAmount" style="color: #d8b4fe;">0 Bs</div>
             <div class="report-kpi-lbl">📱 QR / Banco</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repTotalPending" style="color: #fda4af;">0 Bs</div>
+            <div class="report-kpi-lbl">🔴 Por Cobrar</div>
           </div>
         </div>
 
@@ -1941,7 +2110,7 @@
     // Application state
     let allPeople = {};
     let searchQuery = '';
-    let statusFilter = 'all'; // 'all', 'unpaid', 'paid', 'pending_delivery', 'completed_delivery'
+    let statusFilter = 'all'; // 'all', 'ordered', 'available', 'pending_delivery', 'completed_delivery', 'unpaid', 'paid'
     let isAdmin = false;
     let currentFormItemCount = 3;
 
@@ -2034,11 +2203,14 @@
     // Apply configuration changes to the entire UI
     function applyConfig() {
       const curr = appConfig.currency || 'Bs';
+      const plural = appConfig.productPlural || 'Pedidos';
       document.getElementById('pageTitle').textContent = appConfig.title || 'Control de Entregas';
       document.getElementById('mainTitle').textContent = appConfig.title || 'Control de Entregas';
-      document.getElementById('mainSubtitle').textContent = appConfig.subtitle || 'Control de entregas y estadísticas en tiempo real';
-      document.getElementById('progressLabel').textContent = `📊 Avance Total (${appConfig.productPlural || 'Entregas'})`;
+      document.getElementById('mainSubtitle').textContent = appConfig.subtitle || 'Control de encargos, entregas y estadísticas en tiempo real';
+      document.getElementById('progressLabel').textContent = `✅ Avance de Entregas (${plural})`;
       
+      document.getElementById('labelTotalItems').textContent = `Total ${plural}`;
+
       document.querySelectorAll('.currency-label').forEach(el => el.textContent = curr);
 
       if (isAdmin) {
@@ -2146,9 +2318,10 @@
       const finalName = addItemInput.value.trim() || defaultName;
       const unitPrice = parseFloat(appConfig.unitPrice) || 10;
 
-      // Mark as additional item
+      // Mark as additional item (starts un-ordered and un-delivered)
       const newItem = {
         name: finalName,
+        ordered: false,
         delivered: false,
         isAdditional: true,
         paid: false,
@@ -2520,7 +2693,7 @@
       openConfirmModal({
         title: '🧹 Iniciar Nueva Actividad',
         message: `¿Estás seguro de eliminar los <strong>${count} participantes</strong> de la pizarra?`,
-        subtext: 'Esta acción borrará todas las personas, pedidos, entregas y cobros para comenzar un nuevo evento desde cero.',
+        subtext: 'Esta acción borrará todas las personas, pedidos, encargos, entregas y cobros para comenzar un nuevo evento desde cero.',
         acceptText: '🧹 Sí, Vaciar Pizarra',
         onConfirm: async () => {
           try {
@@ -2571,7 +2744,7 @@
     }
     window.deletePerson = deletePerson;
 
-    // Modal Control: Cuadre de Caja
+    // Modal Control: Cuadre de Caja y Estadísticas
     const cashReportModal = document.getElementById('cashReportModal');
     const btnOpenCashReport = document.getElementById('btnOpenCashReport');
     const btnCloseCashReportModal = document.getElementById('btnCloseCashReportModal');
@@ -2583,6 +2756,9 @@
       const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
       const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
 
+      let totalItems = 0;
+      let totalOrdered = 0;
+      let totalDelivered = 0;
       let totalCash = 0;
       let totalQr = 0;
       let totalCard = 0;
@@ -2593,7 +2769,12 @@
         const items = person.masacos || person.items || [];
         let personPending = 0;
 
-        items.forEach(m => {
+        items.forEach((m) => {
+          totalItems++;
+          const isItemOrdered = m.ordered || m.delivered || false;
+          if (isItemOrdered) totalOrdered++;
+          if (m.delivered) totalDelivered++;
+
           const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
           if (m.paid && m.paymentMethod === 'cash') {
             totalCash += price;
@@ -2613,7 +2794,15 @@
       });
 
       const totalRevenue = totalCash + totalQr + totalCard;
+      const totalAvailable = totalItems - totalOrdered;
 
+      // Fill operational
+      document.getElementById('repTotalItems').textContent = totalItems;
+      document.getElementById('repOrderedItems').textContent = `${totalOrdered} (${totalItems > 0 ? Math.round((totalOrdered/totalItems)*100) : 0}%)`;
+      document.getElementById('repAvailableItems').textContent = totalAvailable;
+      document.getElementById('repDeliveredItems').textContent = `${totalDelivered} (${totalItems > 0 ? Math.round((totalDelivered/totalItems)*100) : 0}%)`;
+
+      // Fill financial
       document.getElementById('repTotalRevenue').textContent = `${totalRevenue} ${curr}`;
       document.getElementById('repTotalPending').textContent = `${totalPending} ${curr}`;
       document.getElementById('repCashAmount').textContent = `${totalCash} ${curr}`;
@@ -2652,6 +2841,7 @@
       let totalCard = 0;
       let totalPending = 0;
       let totalDelivered = 0;
+      let totalOrdered = 0;
       let totalItems = 0;
       const debtors = [];
 
@@ -2661,7 +2851,10 @@
 
         items.forEach(m => {
           totalItems++;
+          const isItemOrdered = m.ordered || m.delivered || false;
+          if (isItemOrdered) totalOrdered++;
           if (m.delivered) totalDelivered++;
+
           const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
           if (m.paid && m.paymentMethod === 'cash') totalCash += price;
           else if (m.paid && m.paymentMethod === 'qr') totalQr += price;
@@ -2675,22 +2868,87 @@
         if (personPending > 0) debtors.push(`• ${person.name}: ${personPending} ${curr}`);
       });
 
-      const text = `📊 *CUADRE DE CAJA - ${appConfig.title.toUpperCase()}*\n` +
+      const text = `📊 *ESTADÍSTICAS Y CUADRE DE CAJA - ${appConfig.title.toUpperCase()}*\n` +
         `------------------------------------\n` +
-        `📦 Total Pedidos: ${totalItems} (${totalDelivered} entregados)\n` +
-        `👥 Participantes: ${validPeople.length}\n\n` +
-        `💰 *TOTAL RECAUDADO: ${totalCash + totalQr + totalCard} ${curr}*\n` +
+        `📦 *PEDIDOS:*\n` +
+        `• Total Pedidos: ${totalItems}\n` +
+        `• 📝 Encargados/Vendidos: ${totalOrdered} (${totalItems > 0 ? Math.round((totalOrdered/totalItems)*100) : 0}%)\n` +
+        `• ⚪ Por Vender (Libres): ${totalItems - totalOrdered}\n` +
+        `• ✅ Entregados: ${totalDelivered} (${totalItems > 0 ? Math.round((totalDelivered/totalItems)*100) : 0}%)\n` +
+        `• ⏳ Por Entregar: ${totalItems - totalDelivered}\n` +
+        `• 👥 Personas: ${validPeople.length}\n\n` +
+        `💵 *FINANZAS:*\n` +
+        `💰 Total Recaudado: ${totalCash + totalQr + totalCard} ${curr}\n` +
         `💵 Efectivo en Caja: ${totalCash} ${curr}\n` +
-        `📱 QR / Transferencia: ${totalQr + totalCard} ${curr}\n\n` +
-        `⏳ *PENDIENTE POR COBRAR: ${totalPending} ${curr}*\n` +
-        (debtors.length > 0 ? `\n📋 *Lista de Deudores:*\n${debtors.join('\n')}` : `\n✅ ¡Sin deudas pendientes!`);
+        `📱 QR / Banco: ${totalQr + totalCard} ${curr}\n` +
+        `🔴 Por Cobrar: ${totalPending} ${curr}\n\n` +
+        (debtors.length > 0 ? `📋 *Lista de Deudores:*\n${debtors.join('\n')}` : `✅ ¡Sin pagos pendientes!`);
 
       navigator.clipboard.writeText(text).then(() => {
-        showToast('📋 ¡Reporte copiado al portapapeles para WhatsApp!');
+        showToast('📋 ¡Reporte completo copiado al portapapeles!');
       }).catch(() => {
         showToast('No se pudo copiar automáticamente', 'warning');
       });
     });
+
+    // Option 1: Toggle Ordered (Encargado) and Delivery (Entregado)
+    function toggleOrderedItem(personKey, itemIndex, currentOrdered, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) {
+        showToast('⚠️ Inicia sesión como Admin para modificar encargos', 'warning');
+        return;
+      }
+
+      const person = allPeople[personKey];
+      if (!person) return;
+      const items = [...(person.masacos || person.items || [])];
+      const item = items[itemIndex];
+      if (!item) return;
+
+      const newOrdered = !currentOrdered;
+      // If unmarking ordered, also unmark delivered
+      const newDelivered = newOrdered ? item.delivered : false;
+
+      items[itemIndex] = {
+        ...item,
+        ordered: newOrdered,
+        delivered: newDelivered
+      };
+
+      update(ref(db, `people/${personKey}`), { masacos: items }).catch(err => {
+        showToast('Error al actualizar encargo: ' + err.message, 'error');
+      });
+    }
+    window.toggleOrderedItem = toggleOrderedItem;
+
+    function toggleDeliveryItem(personKey, itemIndex, currentDelivered, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) {
+        showToast('⚠️ Inicia sesión como Admin para modificar las entregas', 'warning');
+        return;
+      }
+
+      const person = allPeople[personKey];
+      if (!person) return;
+      const items = [...(person.masacos || person.items || [])];
+      const item = items[itemIndex];
+      if (!item) return;
+
+      const newDelivered = !currentDelivered;
+      // If marking as delivered, automatically ensure it's marked as ordered
+      const newOrdered = newDelivered ? true : (item.ordered || false);
+
+      items[itemIndex] = {
+        ...item,
+        delivered: newDelivered,
+        ordered: newOrdered
+      };
+
+      update(ref(db, `people/${personKey}`), { masacos: items }).catch(err => {
+        showToast('Error al actualizar entrega: ' + err.message, 'error');
+      });
+    }
+    window.toggleDeliveryItem = toggleDeliveryItem;
 
     // Role UI Update
     function updateRoleUI() {
@@ -2837,6 +3095,7 @@
             const isAdd = index >= defaultCount;
             items.push({
               name: itemName,
+              ordered: false,
               delivered: false,
               isAdditional: isAdd,
               paid: false,
@@ -2846,7 +3105,7 @@
           });
 
           if (items.length < 1) {
-            items.push({ name: `${singular} 1`, delivered: false, isAdditional: false, paid: false, paymentMethod: 'pending', price: unitPrice });
+            items.push({ name: `${singular} 1`, ordered: false, delivered: false, isAdditional: false, paid: false, paymentMethod: 'pending', price: unitPrice });
           }
 
           // Save to Firebase
@@ -3040,20 +3299,6 @@
       }
     });
 
-    // Database Actions with Role Verification
-    function toggleDeliveryItem(personKey, itemIndex, currentDelivered) {
-      if (!isAdmin) {
-        showToast('⚠️ Inicia sesión como Admin para modificar las entregas', 'warning');
-        return;
-      }
-      update(ref(db, `people/${personKey}/masacos/${itemIndex}`), {
-        delivered: !currentDelivered
-      }).catch(err => {
-        showToast('Error al actualizar: ' + err.message, 'error');
-      });
-    }
-    window.toggleDeliveryItem = toggleDeliveryItem;
-
     // Statistics Calculation (Operational + Financial KPI)
     function updateStats() {
       const validPeople = Object.entries(allPeople)
@@ -3065,19 +3310,26 @@
 
       const totalPeople = validPeople.length;
       let totalItems = 0;
+      let orderedCount = 0;
       let delivered = 0;
       let cashTotal = 0;
       let qrTotal = 0;
       let cardTotal = 0;
       let pendingTotal = 0;
+      let totalExpectedRevenue = 0;
 
       validPeople.forEach(p => {
         const items = p.masacos || p.items;
         if (items && Array.isArray(items)) {
           totalItems += items.length;
           items.forEach(m => {
+            const isItemOrdered = m.ordered || m.delivered || false;
+            if (isItemOrdered) orderedCount++;
             if (m.delivered) delivered++;
+
             const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+            totalExpectedRevenue += price;
+
             if (m.paid && m.paymentMethod === 'cash') cashTotal += price;
             else if (m.paid && m.paymentMethod === 'qr') qrTotal += price;
             else if (m.paid && m.paymentMethod === 'card') cardTotal += price;
@@ -3086,15 +3338,37 @@
         }
       });
 
-      const percent = totalItems > 0 ? Math.round((delivered / totalItems) * 100) : 0;
+      const totalCollected = cashTotal + qrTotal + cardTotal;
+      const availableCount = totalItems - orderedCount;
+      const pendingDelivery = totalItems - delivered;
 
+      const orderedPercent = totalItems > 0 ? Math.round((orderedCount / totalItems) * 100) : 0;
+      const deliveryPercent = totalItems > 0 ? Math.round((delivered / totalItems) * 100) : 0;
+      const cashPercent = totalExpectedRevenue > 0 ? Math.round((totalCollected / totalExpectedRevenue) * 100) : 0;
+
+      // 📦 Operational KPIs
       document.getElementById('totalPeople').textContent = totalPeople;
+      document.getElementById('totalItemsCount').textContent = totalItems;
+      document.getElementById('totalOrderedCount').textContent = `${orderedCount} (${orderedPercent}%)`;
+      document.getElementById('totalAvailableCount').textContent = availableCount;
+      document.getElementById('totalDeliveredCount').textContent = `${delivered} (${deliveryPercent}%)`;
+      document.getElementById('totalPendingDeliveryCount').textContent = pendingDelivery;
+
+      // 💵 Financial KPIs
+      document.getElementById('kpiTotalRevenue').textContent = `${totalCollected} ${curr}`;
       document.getElementById('kpiCashTotal').textContent = `${cashTotal} ${curr}`;
       document.getElementById('kpiQrTotal').textContent = `${qrTotal + cardTotal} ${curr}`;
       document.getElementById('kpiPendingTotal').textContent = `${pendingTotal} ${curr}`;
 
-      document.getElementById('globalPercent').textContent = `${percent}% (${delivered}/${totalItems})`;
-      document.getElementById('globalProgressFill').style.width = `${percent}%`;
+      // Progress bars
+      document.getElementById('orderedPercent').textContent = `${orderedPercent}% (${orderedCount}/${totalItems})`;
+      document.getElementById('orderedProgressFill').style.width = `${orderedPercent}%`;
+
+      document.getElementById('globalPercent').textContent = `${deliveryPercent}% (${delivered}/${totalItems})`;
+      document.getElementById('globalProgressFill').style.width = `${deliveryPercent}%`;
+
+      document.getElementById('cashPercent').textContent = `${cashPercent}% (${totalCollected}/${totalExpectedRevenue} ${curr})`;
+      document.getElementById('cashProgressFill').style.width = `${cashPercent}%`;
     }
 
     // Filter Chips Event Listener
@@ -3107,7 +3381,7 @@
       });
     });
 
-    // Board Rendering with Modern UX, Payment Badges & Filters
+    // Board Rendering with Modern UX, Dual Checkboxes (Encargado & Entregado)
     function renderBoard() {
       const container = document.getElementById('boardContainer');
       const entries = Object.entries(allPeople).filter(([key]) => !key.startsWith('_'));
@@ -3127,15 +3401,17 @@
         // Status filter
         const items = person.masacos || person.items || [];
         const totalItems = items.length;
-        const deliveredCount = items.filter(m => m.delivered).length;
-        const isDeliveryComplete = totalItems > 0 && deliveredCount === totalItems;
+        const orderedItems = items.filter(m => m.ordered || m.delivered).length;
+        const deliveredItems = items.filter(m => m.delivered).length;
         const unpaidCount = items.filter(m => !m.paid || m.paymentMethod === 'pending').length;
         const isAllPaid = totalItems > 0 && unpaidCount === 0;
 
+        if (statusFilter === 'ordered') return orderedItems > 0;
+        if (statusFilter === 'available') return (totalItems - orderedItems) > 0;
+        if (statusFilter === 'pending_delivery') return (totalItems - deliveredItems) > 0;
+        if (statusFilter === 'completed_delivery') return totalItems > 0 && deliveredItems === totalItems;
         if (statusFilter === 'unpaid') return unpaidCount > 0;
         if (statusFilter === 'paid') return isAllPaid;
-        if (statusFilter === 'pending_delivery') return !isDeliveryComplete;
-        if (statusFilter === 'completed_delivery') return isDeliveryComplete;
         return true;
       });
 
@@ -3159,6 +3435,12 @@
         if (searchQuery) {
           msg = `No se encontró a nadie que coincida con "${escapeHtml(searchQuery)}"`;
           icon = '🔍';
+        } else if (statusFilter === 'ordered') {
+          msg = 'Aún no hay pedidos marcados como encargados.';
+          icon = '📝';
+        } else if (statusFilter === 'available') {
+          msg = '¡Genial! No hay pedidos disponibles, todos están encargados.';
+          icon = '🎉';
         } else if (statusFilter === 'unpaid') {
           msg = '¡Genial! No hay pagos pendientes en este momento.';
           icon = '🎉';
@@ -3186,6 +3468,7 @@
       filtered.forEach(([personKey, person]) => {
         const items = person.masacos || person.items || [];
         const totalItems = items.length;
+        const orderedCount = items.filter(m => m.ordered || m.delivered).length;
         const deliveredCount = items.filter(m => m.delivered).length;
         const isDeliveryComplete = totalItems > 0 && deliveredCount === totalItems;
         const deliveryProgressClass = deliveredCount === 0 ? 'progress-0' : (isDeliveryComplete ? 'progress-complete' : 'progress-partial');
@@ -3221,11 +3504,14 @@
                 <span class="person-name">${escapeHtml(person.name)}</span>
               </div>
               <div class="person-badges">
+                <span class="person-progress ordered-badge" title="Pedidos encargados / vendidos">
+                  📝 ${orderedCount}/${totalItems} enc.
+                </span>
+                <span class="person-progress ${deliveryProgressClass}" title="Pedidos entregados">
+                  ${isDeliveryComplete ? '✓ ' : ''}${deliveredCount}/${totalItems} ent.
+                </span>
                 <span class="person-payment-summary ${paymentSummaryClass}">
                   ${paymentSummaryText}
-                </span>
-                <span class="person-progress ${deliveryProgressClass}">
-                  ${isDeliveryComplete ? '✓ ' : ''}${deliveredCount}/${totalItems} ent.
                 </span>
               </div>
             </div>
@@ -3236,11 +3522,23 @@
         `;
 
         items.forEach((item, itemIndex) => {
-          const itemDeliveredClass = item.delivered ? 'delivered' : '';
-          const itemInteractiveClass = isAdmin ? 'clickable' : 'readonly';
-          const onClickDelivery = isAdmin
-            ? `onclick="toggleDeliveryItem('${personKey}', ${itemIndex}, ${item.delivered})"`
-            : `onclick="toggleDeliveryItem('${personKey}', ${itemIndex}, ${item.delivered})" title="Modo solo lectura"`;
+          const isItemOrdered = Boolean(item.ordered || item.delivered);
+          const isItemDelivered = Boolean(item.delivered);
+
+          const itemDeliveredClass = isItemDelivered ? 'delivered' : '';
+          const itemReadonlyClass = isAdmin ? '' : 'readonly';
+
+          // Option 1: Dual Checkboxes Handlers
+          const onToggleOrdered = isAdmin
+            ? `onclick="toggleOrderedItem('${personKey}', ${itemIndex}, ${isItemOrdered}, event)"`
+            : `title="Modo solo lectura"`;
+
+          const onToggleDelivered = isAdmin
+            ? `onclick="toggleDeliveryItem('${personKey}', ${itemIndex}, ${isItemDelivered}, event)"`
+            : `title="Modo solo lectura"`;
+
+          const orderedActive = isItemOrdered ? 'ordered-active' : '';
+          const deliveredActive = isItemDelivered ? 'delivered-active' : '';
 
           // Item tag (Adicional / Transferido)
           const isAdditional = Boolean(item.isAdditional || itemIndex >= defaultCount || item.transferredFrom);
@@ -3287,9 +3585,19 @@
           }
 
           html += `
-            <div class="delivery-item ${itemDeliveredClass} ${itemInteractiveClass}" ${onClickDelivery}>
+            <div class="delivery-item ${itemDeliveredClass} ${itemReadonlyClass}">
               <span class="item-number">${itemIndex + 1}</span>
-              <div class="item-checkbox"></div>
+              
+              <!-- Option 1: Dual Checkboxes (Encargado & Entregado) -->
+              <div class="item-check-group" onclick="event.stopPropagation()">
+                <button type="button" class="check-pill ${orderedActive}" ${onToggleOrdered} title="${isItemOrdered ? 'Encargado / Vendido (Clic para desmarcar)' : 'Marcar como Encargado / Vendido'}">
+                  <span>${isItemOrdered ? '📝 Encargado' : '⚪ Libre'}</span>
+                </button>
+                <button type="button" class="check-pill ${deliveredActive}" ${onToggleDelivered} title="${isItemDelivered ? 'Entregado (Clic para desmarcar)' : 'Marcar como Entregado'}">
+                  <span>${isItemDelivered ? '✅ Entregado' : '⏳ Entrega'}</span>
+                </button>
+              </div>
+
               <div class="item-info">
                 <span class="item-name">${escapeHtml(item.name)}</span>
                 ${tagHtml}
