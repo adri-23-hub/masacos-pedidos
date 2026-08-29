@@ -4,8 +4,45 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Registro de Masacos</title>
+  <title id="pageTitle">Control de Entregas</title>
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
   <style>
+    :root {
+      --bg-dark: #090d16;
+      --bg-card: rgba(22, 30, 46, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-input: #0d1527;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --border-focus: #f97316;
+      
+      --primary: #f97316;
+      --primary-hover: #ea580c;
+      --primary-glow: rgba(249, 115, 22, 0.25);
+      
+      --accent-amber: #f59e0b;
+      --accent-emerald: #10b981;
+      --accent-blue: #3b82f6;
+      --accent-purple: #a855f7;
+      --accent-rose: #f43f5e;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+      
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      
+      --shadow-card: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+      --shadow-glow: 0 0 25px rgba(249, 115, 22, 0.2);
+    }
+
     * {
       margin: 0;
       padding: 0;
@@ -13,576 +50,1020 @@
     }
 
     body {
-      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      background: var(--bg-dark);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.08) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(59, 130, 246, 0.06) 0px, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.05) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: var(--text-main);
       min-height: 100vh;
-      padding: 1.5rem 1rem 3rem 1rem;
+      padding: 1.5rem 1rem 4rem 1rem;
+      -webkit-font-smoothing: antialiased;
     }
 
     .container {
-      max-width: 800px;
+      max-width: 880px;
       margin: 0 auto;
     }
 
-    /* Top Auth / Role Bar */
-    .role-bar {
+    /* Glassmorphism utility */
+    .glass-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+    }
+
+    /* Top Brand & Role Bar */
+    .top-navbar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      background: #1e293b;
-      padding: 0.75rem 1.25rem;
-      border-radius: 12px;
-      border: 1px solid #334155;
+      padding: 0.85rem 1.25rem;
       margin-bottom: 1.5rem;
       flex-wrap: wrap;
       gap: 0.75rem;
+      position: relative;
     }
 
-    .role-status {
+    .brand-group {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+    }
+
+    .brand-icon {
+      width: 36px;
+      height: 36px;
+      background: linear-gradient(135deg, #f97316, #f59e0b);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.15rem;
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.35);
+    }
+
+    .live-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--accent-emerald);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--accent-emerald);
+      animation: pulseAnimation 2s infinite;
+    }
+
+    @keyframes pulseAnimation {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.3); opacity: 1; box-shadow: 0 0 12px var(--accent-emerald); }
+      100% { transform: scale(0.95); opacity: 0.8; }
     }
 
     .role-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      padding: 0.3rem 0.75rem;
+      gap: 0.4rem;
+      padding: 0.35rem 0.85rem;
       border-radius: 9999px;
       font-size: 0.8125rem;
       font-weight: 600;
+      transition: all 0.2s;
     }
 
     .role-badge.viewer {
-      background: rgba(59, 130, 246, 0.15);
-      color: #60a5fa;
-      border: 1px solid rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.12);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.25);
     }
 
     .role-badge.admin {
-      background: rgba(249, 115, 22, 0.2);
-      color: #fb923c;
-      border: 1px solid rgba(249, 115, 22, 0.4);
+      background: rgba(249, 115, 22, 0.15);
+      color: #fdba74;
+      border: 1px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.15);
     }
 
     .role-actions {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.6rem;
+      flex-wrap: wrap;
     }
 
-    .btn-role-action {
-      background: #334155;
-      color: #f1f5f9;
-      border: 1px solid #475569;
-      padding: 0.4rem 0.85rem;
-      border-radius: 6px;
+    .btn-action {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-main);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.45rem 0.95rem;
+      border-radius: var(--radius-sm);
       font-size: 0.8125rem;
       font-weight: 600;
+      font-family: inherit;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 0.35rem;
-      transition: all 0.2s;
+      gap: 0.4rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .btn-role-action:hover {
-      background: #475569;
-      border-color: #64748b;
+    .btn-action:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-1px);
     }
 
-    .btn-role-action.primary {
+    .btn-action:active {
+      transform: translateY(0);
+    }
+
+    .btn-action.primary {
       background: linear-gradient(135deg, #f97316, #f59e0b);
       color: white;
       border: none;
+      box-shadow: 0 4px 15px rgba(249, 115, 22, 0.3);
     }
 
-    .btn-role-action.primary:hover {
-      opacity: 0.9;
+    .btn-action.primary:hover {
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
+      opacity: 0.95;
     }
 
-    .btn-role-action.danger {
-      background: rgba(239, 68, 68, 0.15);
-      color: #f87171;
-      border: 1px solid rgba(239, 68, 68, 0.3);
+    .btn-action.cash {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
     }
 
-    .btn-role-action.danger:hover {
-      background: rgba(239, 68, 68, 0.25);
+    .btn-action.cash:hover {
+      background: rgba(16, 185, 129, 0.25);
+      border-color: #10b981;
+      color: #fff;
+    }
+
+    .btn-action.danger {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    .btn-action.danger:hover {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: #f43f5e;
+      color: #fff;
+    }
+
+    /* Hero Title Section */
+    .hero-section {
+      text-align: center;
+      margin-bottom: 1.75rem;
+      padding: 0.5rem 0;
     }
 
     h1 {
-      text-align: center;
-      font-size: 2.1rem;
-      margin-bottom: 0.35rem;
-      background: linear-gradient(135deg, #f97316, #f59e0b);
+      font-size: 2.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.4rem;
+      background: linear-gradient(135deg, #ffffff 30%, #fdba74 70%, #f97316 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      transition: all 0.3s ease;
     }
 
     .subtitle {
-      text-align: center;
-      color: #94a3b8;
-      margin-bottom: 1.5rem;
-      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-size: 1rem;
+      font-weight: 400;
+      max-width: 550px;
+      margin: 0 auto;
+      line-height: 1.5;
     }
 
-    .card {
-      background: #1e293b;
-      border-radius: 12px;
-      padding: 1.5rem;
+    /* KPI Dashboard Section (Operational & Financial) */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.85rem;
       margin-bottom: 1.5rem;
-      border: 1px solid #334155;
     }
 
-    .card h2 {
-      font-size: 1.25rem;
-      margin-bottom: 1rem;
-      color: #f1f5f9;
+    .kpi-card {
+      padding: 1.15rem 0.85rem;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.5rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .kpi-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .kpi-card.blue::before { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+    .kpi-card.emerald::before { background: linear-gradient(90deg, #10b981, #34d399); }
+    .kpi-card.purple::before { background: linear-gradient(90deg, #a855f7, #c084fc); }
+    .kpi-card.rose::before { background: linear-gradient(90deg, #f43f5e, #fb7185); }
+
+    .kpi-icon {
+      font-size: 1.25rem;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-value {
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+      margin-bottom: 0.25rem;
+    }
+
+    .kpi-card.blue .kpi-value { color: #93c5fd; }
+    .kpi-card.emerald .kpi-value { color: #6ee7b7; }
+    .kpi-card.purple .kpi-value { color: #d8b4fe; }
+    .kpi-card.rose .kpi-value { color: #fda4af; }
+
+    .kpi-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     /* Overall Progress Bar */
-    .global-progress-card {
-      background: #1e293b;
-      border-radius: 12px;
-      padding: 1rem 1.25rem;
+    .progress-card {
+      padding: 1.25rem 1.5rem;
       margin-bottom: 1.5rem;
-      border: 1px solid #334155;
     }
 
-    .global-progress-header {
+    .progress-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .progress-title {
       font-size: 0.875rem;
-      color: #94a3b8;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
 
-    .global-progress-percent {
+    .progress-badge {
+      font-size: 0.875rem;
       font-weight: 700;
-      color: #f97316;
-      font-size: 1rem;
+      color: #fed7aa;
+      background: rgba(249, 115, 22, 0.15);
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      border: 1px solid rgba(249, 115, 22, 0.25);
     }
 
-    .global-progress-track {
-      height: 8px;
-      background: #334155;
+    .progress-track {
+      height: 10px;
+      background: rgba(15, 23, 42, 0.8);
       border-radius: 9999px;
       overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      position: relative;
     }
 
-    .global-progress-fill {
+    .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #f97316, #22c55e);
+      background: linear-gradient(90deg, #f97316 0%, #f59e0b 50%, #10b981 100%);
       border-radius: 9999px;
-      transition: width 0.4s ease;
+      transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
       width: 0%;
+      box-shadow: 0 0 15px rgba(249, 115, 22, 0.5);
+    }
+
+    /* Cards */
+    .card {
+      padding: 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .card-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     /* Form Styles */
     .form-group {
-      margin-bottom: 1rem;
+      margin-bottom: 1.15rem;
     }
 
     label {
       display: block;
-      font-size: 0.875rem;
-      color: #94a3b8;
-      margin-bottom: 0.375rem;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.45rem;
     }
 
     input[type="text"],
-    input[type="password"] {
+    input[type="number"],
+    input[type="password"],
+    select {
       width: 100%;
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.15rem;
+      background: var(--bg-input);
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: var(--radius-sm);
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-family: inherit;
+      transition: all 0.2s ease;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select option {
       background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 8px;
-      color: #e2e8f0;
-      font-size: 1rem;
-      transition: border-color 0.2s;
+      color: #f8fafc;
     }
 
     input[type="text"]:focus,
-    input[type="password"]:focus {
+    input[type="number"]:focus,
+    input[type="password"]:focus,
+    select:focus {
       outline: none;
-      border-color: #f97316;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-glow);
+      background: rgba(13, 21, 39, 0.95);
     }
 
-    .masacos-grid {
+    input::placeholder {
+      color: var(--text-dim);
+    }
+
+    .items-grid {
       display: grid;
       gap: 0.75rem;
+      margin-bottom: 0.75rem;
     }
 
-    .masaco-input {
+    .item-input {
       display: flex;
       align-items: center;
       gap: 0.75rem;
     }
 
-    .masaco-input .badge {
-      background: #f97316;
-      color: white;
+    .item-input .badge {
+      background: rgba(249, 115, 22, 0.2);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.35);
       font-size: 0.75rem;
-      font-weight: 600;
-      width: 24px;
-      height: 24px;
+      font-weight: 700;
+      width: 28px;
+      height: 28px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      border-radius: 8px;
       flex-shrink: 0;
     }
 
-    .btn {
+    .btn-submit {
       width: 100%;
-      padding: 0.875rem;
+      padding: 0.95rem;
       background: linear-gradient(135deg, #f97316, #f59e0b);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: var(--radius-sm);
       font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s, transform 0.1s;
-      margin-top: 0.5rem;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
-    }
-
-    .btn:active {
-      transform: scale(0.98);
-    }
-
-    /* Locked card for non-admin */
-    .locked-card {
-      background: #1e293b;
-      border-radius: 12px;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      border: 1px dashed #475569;
-      text-align: center;
-    }
-
-    .locked-card-icon {
-      font-size: 2rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .locked-card-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      margin-bottom: 0.35rem;
-    }
-
-    .locked-card-desc {
-      font-size: 0.875rem;
-      color: #94a3b8;
-      max-width: 450px;
-      margin: 0 auto 1.25rem auto;
-      line-height: 1.4;
-    }
-
-    .locked-card-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.65rem 1.25rem;
-      background: linear-gradient(135deg, #f97316, #f59e0b);
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 0.9rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .locked-card-btn:hover {
-      opacity: 0.9;
-    }
-
-    .stats {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-    }
-
-    .stat {
-      background: #334155;
-      padding: 0.75rem 1.25rem;
-      border-radius: 8px;
-      flex: 1;
-      text-align: center;
-    }
-
-    .stat-value {
-      font-size: 1.5rem;
       font-weight: 700;
-      color: #f97316;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(249, 115, 22, 0.35);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      margin-top: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
     }
 
-    .stat-label {
-      font-size: 0.75rem;
-      color: #94a3b8;
-      text-transform: uppercase;
+    .btn-submit:hover {
+      box-shadow: 0 8px 25px rgba(249, 115, 22, 0.5);
+      transform: translateY(-1px);
     }
 
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    .add-item-form-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 0.7rem 1rem;
+      border-radius: var(--radius-sm);
+      width: 100%;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+    }
+
+    .add-item-form-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(249, 115, 22, 0.05);
+    }
+
+    /* Board Section & Filter Controls */
+    .board-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-chips {
+      display: flex;
+      gap: 0.35rem;
+      background: rgba(15, 23, 42, 0.6);
+      padding: 0.25rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-chip.active {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-main);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .filter-chip:hover:not(.active) {
+      color: var(--text-main);
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 220px;
+    }
+
+    .search-wrapper input {
+      padding-left: 2.6rem;
+      padding-right: 2.2rem;
+      height: 40px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+
+    .search-clear {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem;
+      display: none;
+    }
+
+    .search-clear.show {
+      display: block;
+    }
+
+    .search-clear:hover {
+      color: var(--text-main);
+    }
+
+    .results-count {
+      font-size: 0.8125rem;
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    /* Person Cards in Board */
     .person-card {
-      background: #0f172a;
-      border-radius: 8px;
-      padding: 1rem;
-      margin-bottom: 0.75rem;
-      border: 1px solid #334155;
-      transition: border-color 0.2s;
+      background: rgba(13, 21, 39, 0.6);
+      border-radius: var(--radius-md);
+      padding: 1.15rem;
+      margin-bottom: 0.85rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .person-card:hover {
-      border-color: #475569;
+      border-color: rgba(255, 255, 255, 0.12);
+      background: rgba(18, 27, 49, 0.8);
+      transform: translateY(-1px);
     }
 
     .person-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .person-name {
-      font-weight: 600;
-      font-size: 1.0625rem;
-      color: #f1f5f9;
-    }
-
-    .person-progress {
-      font-size: 0.875rem;
-      padding: 0.25rem 0.75rem;
-      border-radius: 9999px;
-      font-weight: 600;
-    }
-
-    .progress-0 {
-      background: rgba(239, 68, 68, 0.2);
-      color: #ef4444;
-    }
-
-    .progress-partial {
-      background: rgba(250, 204, 21, 0.2);
-      color: #facc15;
-    }
-
-    .progress-complete {
-      background: rgba(34, 197, 94, 0.2);
-      color: #22c55e;
-    }
-
-    .progress-bar {
-      width: 100%;
-      height: 6px;
-      background: #334155;
-      border-radius: 9999px;
-      margin-bottom: 0.75rem;
-      overflow: hidden;
-    }
-
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, #f97316, #f59e0b);
-      border-radius: 9999px;
-      transition: width 0.3s ease;
-    }
-
-    .progress-bar-fill.complete {
-      background: #22c55e;
-    }
-
-    .masaco-list {
-      display: flex;
-      flex-direction: column;
+      margin-bottom: 0.85rem;
+      flex-wrap: wrap;
       gap: 0.5rem;
     }
 
-    .masaco-item {
+    .person-identity {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .avatar-circle {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #475569, #334155);
+      color: #f8fafc;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+
+    .person-name {
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: -0.01em;
+      color: var(--text-main);
+    }
+
+    .person-badges {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      flex-wrap: wrap;
+    }
+
+    .person-progress {
+      font-size: 0.78rem;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .progress-0 {
+      background: rgba(244, 63, 94, 0.12);
+      color: #fb7185;
+      border: 1px solid rgba(244, 63, 94, 0.25);
+    }
+
+    .progress-partial {
+      background: rgba(245, 158, 11, 0.12);
+      color: #fcd34d;
+      border: 1px solid rgba(245, 158, 11, 0.25);
+    }
+
+    .progress-complete {
+      background: rgba(16, 185, 129, 0.12);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    .person-payment-summary {
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.25rem 0.75rem;
+      border-radius: 9999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .person-payment-summary.all-paid {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .person-payment-summary.has-pending {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+
+    .person-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 9999px;
+      margin-bottom: 0.85rem;
+      overflow: hidden;
+    }
+
+    .person-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #f97316, #f59e0b);
+      border-radius: 9999px;
+      transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .person-bar-fill.complete {
+      background: #10b981;
+    }
+
+    .items-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+    }
+
+    .delivery-item {
       display: flex;
       align-items: center;
       gap: 0.75rem;
-      padding: 0.5rem 0.75rem;
-      background: #1e293b;
-      border-radius: 6px;
-      transition: background 0.2s;
+      padding: 0.6rem 0.85rem;
+      background: rgba(15, 23, 42, 0.65);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      transition: all 0.2s ease;
+      position: relative;
     }
 
-    /* Admin clickable masaco */
-    .masaco-item.clickable {
+    .delivery-item.clickable {
       cursor: pointer;
     }
 
-    .masaco-item.clickable:hover {
-      background: #334155;
+    .delivery-item.clickable:hover {
+      background: rgba(30, 41, 59, 0.7);
+      border-color: rgba(255, 255, 255, 0.08);
     }
 
-    /* Readonly masaco */
-    .masaco-item.readonly {
+    .delivery-item.readonly {
       cursor: default;
       user-select: none;
     }
 
-    .masaco-item.delivered {
-      opacity: 0.65;
+    .delivery-item.delivered {
+      opacity: 0.7;
+      background: rgba(15, 23, 42, 0.4);
     }
 
-    .masaco-item.delivered .masaco-item-name {
+    .delivery-item.delivered .item-name {
       text-decoration: line-through;
-      color: #94a3b8;
+      color: var(--text-dim);
     }
 
-    .masaco-checkbox {
-      width: 20px;
-      height: 20px;
-      border: 2px solid #64748b;
-      border-radius: 4px;
+    .item-checkbox {
+      width: 22px;
+      height: 22px;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: all 0.2s;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .masaco-item.clickable .masaco-checkbox {
-      cursor: pointer;
+    .delivery-item.clickable:hover .item-checkbox {
+      border-color: var(--primary);
     }
 
-    .masaco-item.delivered .masaco-checkbox {
-      background: #22c55e;
-      border-color: #22c55e;
+    .delivery-item.delivered .item-checkbox {
+      background: var(--accent-emerald);
+      border-color: var(--accent-emerald);
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.4);
     }
 
-    .masaco-item.delivered .masaco-checkbox::after {
+    .delivery-item.delivered .item-checkbox::after {
       content: '✓';
       color: white;
-      font-size: 0.75rem;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .item-info {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
+    .item-name {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-main);
+    }
+
+    /* Badges for Additional & Transferred Items */
+    .item-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.7rem;
       font-weight: 700;
+      padding: 0.15rem 0.55rem;
+      border-radius: 9999px;
+      line-height: 1.2;
     }
 
-    .masaco-item-name {
-      font-size: 0.9375rem;
-      color: #e2e8f0;
+    .tag-additional {
+      background: rgba(249, 115, 22, 0.15);
+      color: #fdba74;
+      border: 1px solid rgba(249, 115, 22, 0.35);
     }
 
-    .masaco-item-number {
-      background: #475569;
-      color: white;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      width: 20px;
-      height: 20px;
+    .tag-transferred {
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.35);
+    }
+
+    /* Payment Badges on Items */
+    .payment-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      font-size: 0.73rem;
+      font-weight: 700;
+      padding: 0.2rem 0.6rem;
+      border-radius: 9999px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+      line-height: 1.2;
+    }
+
+    .payment-badge.cash {
+      background: rgba(16, 185, 129, 0.18);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    .payment-badge.qr {
+      background: rgba(168, 85, 247, 0.18);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .payment-badge.card {
+      background: rgba(59, 130, 246, 0.18);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.4);
+    }
+
+    .payment-badge.pending {
+      background: rgba(244, 63, 94, 0.18);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.4);
+    }
+
+    .payment-badge:hover {
+      transform: scale(1.05);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .delivery-item.readonly .payment-badge {
+      cursor: default;
+    }
+
+    .delivery-item.readonly .payment-badge:hover {
+      transform: none;
+      box-shadow: none;
+    }
+
+    .item-number {
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
+      width: 22px;
+      height: 22px;
       display: flex;
       align-items: center;
       justify-content: center;
-      border-radius: 50%;
+      border-radius: 6px;
       flex-shrink: 0;
+    }
+
+    /* Action buttons on individual items */
+    .item-mini-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: auto;
+    }
+
+    .btn-mini-action {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.78rem;
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .btn-mini-action.transfer:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      color: #93c5fd;
+      transform: scale(1.1);
+    }
+
+    .btn-mini-action.delete:hover {
+      background: rgba(244, 63, 94, 0.2);
+      border-color: #f43f5e;
+      color: #fda4af;
+      transform: scale(1.1);
     }
 
     .person-actions {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-top: 0.75rem;
-      padding-top: 0.5rem;
-      border-top: 1px solid #1e293b;
+      margin-top: 0.85rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+      flex-wrap: wrap;
+      gap: 0.5rem;
     }
 
-    .add-masaco-btn {
+    .person-actions-left {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .add-item-btn {
       background: none;
-      border: 1px dashed #64748b;
-      color: #94a3b8;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      color: var(--text-muted);
       cursor: pointer;
       font-size: 0.8125rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 4px;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
       transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
     }
 
-    .add-masaco-btn:hover {
-      border-color: #f97316;
-      color: #f97316;
+    .add-item-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(249, 115, 22, 0.05);
+    }
+
+    .pay-all-btn {
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      cursor: pointer;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 0.4rem 0.85rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .pay-all-btn:hover {
+      background: rgba(16, 185, 129, 0.25);
+      color: #fff;
     }
 
     .delete-btn {
       background: none;
       border: none;
-      color: #ef4444;
+      color: var(--text-dim);
       cursor: pointer;
       font-size: 0.8125rem;
-      padding: 0.375rem 0.75rem;
-      border-radius: 4px;
-      transition: background 0.2s;
+      font-weight: 600;
+      font-family: inherit;
+      padding: 0.4rem 0.75rem;
+      border-radius: 6px;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
     }
 
     .delete-btn:hover {
-      background: rgba(239, 68, 68, 0.15);
+      background: rgba(244, 63, 94, 0.12);
+      color: #fda4af;
     }
 
     .empty-state {
       text-align: center;
-      padding: 2rem;
-      color: #64748b;
+      padding: 3rem 1.5rem;
+      color: var(--text-dim);
     }
 
-    .search-wrapper {
-      margin-bottom: 1rem;
-      position: relative;
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 0.75rem;
+      opacity: 0.6;
     }
 
-    .search-wrapper input {
-      padding-left: 2.5rem;
-    }
-
-    .search-icon {
-      position: absolute;
-      left: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #64748b;
-      font-size: 0.875rem;
-      pointer-events: none;
-    }
-
-    .add-masaco-form-btn {
-      background: none;
-      border: 1px dashed #64748b;
-      color: #94a3b8;
-      cursor: pointer;
-      font-size: 0.875rem;
-      padding: 0.625rem 1rem;
-      border-radius: 8px;
-      width: 100%;
-      margin-top: 0.5rem;
-      transition: all 0.2s;
-    }
-
-    .add-masaco-form-btn:hover {
-      border-color: #f97316;
-      color: #f97316;
-    }
-
-    /* Modal Styles */
+    /* Modals */
     .modal-backdrop {
       position: fixed;
       inset: 0;
-      background: rgba(15, 23, 42, 0.8);
-      backdrop-filter: blur(4px);
+      background: rgba(9, 13, 22, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -599,15 +1080,17 @@
     }
 
     .modal-content {
-      background: #1e293b;
-      border: 1px solid #334155;
-      border-radius: 12px;
+      background: #131b2e;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
       width: 100%;
-      max-width: 420px;
-      padding: 1.5rem;
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
-      transform: translateY(15px) scale(0.97);
-      transition: transform 0.25s ease;
+      max-width: 520px;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.75rem;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75), 0 0 1px 1px rgba(255, 255, 255, 0.1);
+      transform: translateY(20px) scale(0.96);
+      transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .modal-backdrop.active .modal-content {
@@ -618,13 +1101,15 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .modal-title {
-      font-size: 1.15rem;
+      font-size: 1.2rem;
       font-weight: 700;
-      color: #f1f5f9;
+      color: var(--text-main);
       display: flex;
       align-items: center;
       gap: 0.5rem;
@@ -633,15 +1118,16 @@
     .modal-close {
       background: none;
       border: none;
-      color: #94a3b8;
-      font-size: 1.25rem;
+      color: var(--text-dim);
+      font-size: 1.35rem;
       cursor: pointer;
       padding: 0.25rem;
       line-height: 1;
+      transition: color 0.2s;
     }
 
     .modal-close:hover {
-      color: #f1f5f9;
+      color: var(--text-main);
     }
 
     .modal-body {
@@ -650,13 +1136,15 @@
 
     .modal-body p {
       font-size: 0.875rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       margin-bottom: 1rem;
+      line-height: 1.4;
     }
 
     .modal-error {
-      color: #ef4444;
+      color: #fb7185;
       font-size: 0.8125rem;
+      font-weight: 500;
       margin-top: 0.5rem;
       display: none;
     }
@@ -669,38 +1157,9 @@
       display: flex;
       gap: 0.75rem;
       justify-content: flex-end;
-    }
-
-    .btn-secondary {
-      background: #334155;
-      color: #e2e8f0;
-      border: 1px solid #475569;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-secondary:hover {
-      background: #475569;
-    }
-
-    .btn-primary {
-      background: linear-gradient(135deg, #f97316, #f59e0b);
-      color: white;
-      border: none;
-      padding: 0.65rem 1.25rem;
-      border-radius: 8px;
-      font-size: 0.875rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: opacity 0.2s;
-    }
-
-    .btn-primary:hover {
-      opacity: 0.9;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
     }
 
     .password-input-wrapper {
@@ -709,55 +1168,258 @@
 
     .toggle-pass-btn {
       position: absolute;
-      right: 0.75rem;
+      right: 0.85rem;
       top: 50%;
       transform: translateY(-50%);
       background: none;
       border: none;
-      color: #94a3b8;
+      color: var(--text-dim);
       cursor: pointer;
-      font-size: 0.875rem;
+      font-size: 0.95rem;
       padding: 0.25rem;
     }
 
     .toggle-pass-btn:hover {
-      color: #f1f5f9;
+      color: var(--text-main);
     }
 
     .remember-wrapper {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      margin-top: 0.75rem;
+      margin-top: 0.85rem;
       font-size: 0.8125rem;
-      color: #94a3b8;
+      color: var(--text-muted);
       cursor: pointer;
     }
 
     .remember-wrapper input[type="checkbox"] {
-      accent-color: #f97316;
+      accent-color: var(--primary);
       width: 16px;
       height: 16px;
       cursor: pointer;
     }
 
-    /* Toast */
+    /* Preset Buttons in Settings Modal */
+    .presets-container {
+      margin-bottom: 1.25rem;
+      background: rgba(15, 23, 42, 0.5);
+      padding: 0.85rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .presets-label {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .presets-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+    }
+
+    .preset-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: rgba(249, 115, 22, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .danger-zone {
+      margin-top: 1.25rem;
+      padding: 1rem;
+      background: rgba(244, 63, 94, 0.06);
+      border: 1px dashed rgba(244, 63, 94, 0.3);
+      border-radius: var(--radius-sm);
+    }
+
+    .danger-zone-title {
+      font-size: 0.8125rem;
+      color: #fda4af;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .danger-zone-desc {
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      line-height: 1.4;
+    }
+
+    .transfer-info-card {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem 1rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+      font-size: 0.875rem;
+    }
+
+    .transfer-info-card strong {
+      color: var(--text-main);
+    }
+
+    /* Payment Option Selectors in Modal */
+    .payment-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.65rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .payment-option-btn {
+      background: rgba(15, 23, 42, 0.8);
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-main);
+      padding: 0.85rem 0.75rem;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 0.875rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.35rem;
+      transition: all 0.2s ease;
+    }
+
+    .payment-option-btn span.opt-icon {
+      font-size: 1.35rem;
+    }
+
+    .payment-option-btn.selected-cash {
+      border-color: #10b981;
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      box-shadow: 0 0 15px rgba(16, 185, 129, 0.25);
+    }
+
+    .payment-option-btn.selected-qr {
+      border-color: #a855f7;
+      background: rgba(168, 85, 247, 0.15);
+      color: #d8b4fe;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.25);
+    }
+
+    .payment-option-btn.selected-card {
+      border-color: #3b82f6;
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.25);
+    }
+
+    .payment-option-btn.selected-pending {
+      border-color: #f43f5e;
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      box-shadow: 0 0 15px rgba(244, 63, 94, 0.25);
+    }
+
+    /* Cash Reconciliation Report UI */
+    .report-kpi-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .report-kpi-box {
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: var(--radius-sm);
+      padding: 0.85rem;
+      text-align: center;
+    }
+
+    .report-kpi-val {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 0.2rem;
+    }
+
+    .report-kpi-lbl {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .debtors-list {
+      max-height: 180px;
+      overflow-y: auto;
+      background: rgba(15, 23, 42, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: var(--radius-sm);
+      padding: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .debtor-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0.5rem;
+      font-size: 0.8125rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .debtor-row:last-child {
+      border-bottom: none;
+    }
+
+    /* Toast Notifications */
     .toast {
       position: fixed;
       bottom: 2rem;
       left: 50%;
       transform: translateX(-50%) translateY(100px);
-      background: #22c55e;
+      background: rgba(16, 185, 129, 0.95);
+      backdrop-filter: blur(10px);
       color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 8px;
-      font-weight: 500;
+      padding: 0.85rem 1.75rem;
+      border-radius: 9999px;
+      font-size: 0.9rem;
+      font-weight: 600;
       opacity: 0;
-      transition: transform 0.3s ease, opacity 0.3s ease;
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
       z-index: 9999;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(16, 185, 129, 0.4);
       max-width: 90%;
       text-align: center;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
     }
 
     .toast.show {
@@ -766,25 +1428,42 @@
     }
 
     .toast.warning {
-      background: #f97316;
+      background: rgba(249, 115, 22, 0.95);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(249, 115, 22, 0.4);
     }
 
     .toast.error {
-      background: #ef4444;
+      background: rgba(244, 63, 94, 0.95);
+      box-shadow: 0 15px 30px -5px rgba(0, 0, 0, 0.5), 0 0 20px rgba(244, 63, 94, 0.4);
     }
 
     @media (max-width: 640px) {
-      .stats {
-        flex-direction: column;
+      .kpi-grid {
+        grid-template-columns: 1fr 1fr;
       }
-
-      .role-bar {
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+      .top-navbar {
         flex-direction: column;
         align-items: stretch;
       }
-
       .role-actions {
         justify-content: flex-end;
+      }
+      .board-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      .search-wrapper {
+        width: 100%;
+      }
+      .payment-options-grid {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -792,63 +1471,105 @@
 
 <body>
   <div class="container">
-    <!-- Top Role / Authentication Bar -->
-    <header class="role-bar" id="roleBar">
-      <div class="role-status">
-        <span>Tu rol actual:</span>
+    <!-- Top Brand & Authentication Bar -->
+    <header class="top-navbar glass-panel" id="roleBar">
+      <div class="brand-group">
+        <div class="brand-icon">📦</div>
+        <div class="live-status">
+          <span class="pulse-dot"></span>
+          <span>En tiempo real</span>
+        </div>
         <span class="role-badge viewer" id="roleBadge">👁️ Espectador (Solo Lectura)</span>
       </div>
       <div class="role-actions" id="roleActions">
-        <button class="btn-role-action primary" id="btnOpenLogin">
+        <button class="btn-action cash" id="btnOpenCashReport">
+          📊 Cuadre de Caja
+        </button>
+        <button class="btn-action primary" id="btnOpenLogin">
           🔑 Acceso Admin
         </button>
       </div>
     </header>
 
-    <h1>Registro de Masacos</h1>
-    <p class="subtitle">Control de entregas y estadísticas en tiempo real</p>
+    <!-- Hero Title and Subtitle -->
+    <div class="hero-section">
+      <h1 id="mainTitle">Registro de Entregas</h1>
+      <p class="subtitle" id="mainSubtitle">Control de entregas y estadísticas en tiempo real</p>
+    </div>
+
+    <!-- KPI Dashboard Cards (Operational & Financial) -->
+    <div class="kpi-grid">
+      <div class="kpi-card glass-panel blue">
+        <div class="kpi-icon">👥</div>
+        <div class="kpi-value" id="totalPeople">0</div>
+        <div class="kpi-label">Personas</div>
+      </div>
+      <div class="kpi-card glass-panel emerald">
+        <div class="kpi-icon">💵</div>
+        <div class="kpi-value" id="kpiCashTotal">0 Bs</div>
+        <div class="kpi-label">Efectivo en Caja</div>
+      </div>
+      <div class="kpi-card glass-panel purple">
+        <div class="kpi-icon">📱</div>
+        <div class="kpi-value" id="kpiQrTotal">0 Bs</div>
+        <div class="kpi-label">QR / Banco</div>
+      </div>
+      <div class="kpi-card glass-panel rose">
+        <div class="kpi-icon">⏳</div>
+        <div class="kpi-value" id="kpiPendingTotal">0 Bs</div>
+        <div class="kpi-label">Por Cobrar</div>
+      </div>
+    </div>
 
     <!-- Global Progress Bar -->
-    <div class="global-progress-card">
-      <div class="global-progress-header">
-        <span>Avance Total de Entregas</span>
-        <span class="global-progress-percent" id="globalPercent">0%</span>
+    <div class="progress-card glass-panel">
+      <div class="progress-header">
+        <span class="progress-title" id="progressLabel">📊 Avance Total de Entregas</span>
+        <span class="progress-badge" id="globalPercent">0%</span>
       </div>
-      <div class="global-progress-track">
-        <div class="global-progress-fill" id="globalProgressFill"></div>
-      </div>
-    </div>
-
-    <!-- Statistics Cards -->
-    <div class="stats">
-      <div class="stat">
-        <div class="stat-value" id="totalPeople">0</div>
-        <div class="stat-label">Personas</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value" id="totalDelivered">0</div>
-        <div class="stat-label">Entregados</div>
-      </div>
-      <div class="stat">
-        <div class="stat-value" id="totalPending">0</div>
-        <div class="stat-label">Pendientes</div>
+      <div class="progress-track">
+        <div class="progress-fill" id="globalProgressFill"></div>
       </div>
     </div>
 
-    <!-- Register Person Section (Dynamic: Form if Admin, Info Card if Viewer) -->
-    <div id="registerSection">
-      <!-- Injected via JavaScript based on role -->
-    </div>
+    <!-- Register Person Section (Injected dynamically when Admin logs in) -->
+    <div id="registerSection"></div>
 
     <!-- Deliveries Board Section -->
-    <div class="card">
-      <h2>📋 Pizarra de Entregas</h2>
-      <div class="search-wrapper">
-        <span class="search-icon">&#128269;</span>
-        <input type="text" id="searchInput" placeholder="Buscar persona por nombre..." autocomplete="off">
+    <div class="card glass-panel">
+      <div class="board-header">
+        <div class="card-title" id="boardTitle">📋 Pizarra de Entregas</div>
+        <div id="boardAdminControls"></div>
       </div>
+
+      <!-- Filters and Search Bar -->
+      <div class="filter-bar">
+        <div class="filter-chips" id="filterChips">
+          <button type="button" class="filter-chip active" data-filter="all">Todos</button>
+          <button type="button" class="filter-chip" data-filter="unpaid">🔴 Por Cobrar</button>
+          <button type="button" class="filter-chip" data-filter="paid">💰 Pagados</button>
+          <button type="button" class="filter-chip" data-filter="pending_delivery">⏳ Pendientes Entrega</button>
+          <button type="button" class="filter-chip" data-filter="completed_delivery">✅ Entregados</button>
+        </div>
+
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input type="text" id="searchInput" placeholder="Buscar por nombre..." autocomplete="off">
+          <button type="button" class="search-clear" id="searchClear">✕</button>
+        </div>
+      </div>
+
+      <!-- Results Count -->
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 0.75rem;">
+        <span class="results-count" id="resultsCount">Cargando...</span>
+      </div>
+
+      <!-- Board List Container -->
       <div id="boardContainer">
-        <div class="empty-state">Cargando datos...</div>
+        <div class="empty-state">
+          <div class="empty-icon">⏳</div>
+          <div>Cargando datos...</div>
+        </div>
       </div>
     </div>
   </div>
@@ -862,7 +1583,7 @@
       </div>
       <form id="adminLoginForm">
         <div class="modal-body">
-          <p>Ingresa la contraseña de administrador para poder registrar personas y marcar entregas.</p>
+          <p>Ingresa la contraseña de administrador para poder registrar personas, modificar entregas, configurar métodos de pago y evento.</p>
           <div class="form-group">
             <label for="adminPasswordInput">Contraseña de Administrador</label>
             <div class="password-input-wrapper">
@@ -878,10 +1599,299 @@
           </label>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn-secondary" id="btnCancelLogin">Cancelar</button>
-          <button type="submit" class="btn-primary">Entrar como Admin</button>
+          <button type="button" class="btn-action" id="btnCancelLogin">Cancelar</button>
+          <button type="submit" class="btn-action primary">Entrar como Admin</button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- Admin Settings Modal (Configuración de Campaña / Producto / Precios) -->
+  <div class="modal-backdrop" id="settingsModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">⚙️ Configuración del Evento y Precios</h3>
+        <button class="modal-close" id="btnCloseSettingsModal">&times;</button>
+      </div>
+      <form id="settingsForm">
+        <div class="modal-body">
+          <!-- Quick Presets -->
+          <div class="presets-container">
+            <div class="presets-label">Plantillas rápidas con 1 clic:</div>
+            <div class="presets-grid">
+              <button type="button" class="preset-btn" data-preset="masacos">🥟 Masacos</button>
+              <button type="button" class="preset-btn" data-preset="empanadas">🥟 Empanadas</button>
+              <button type="button" class="preset-btn" data-preset="rifas">🎟️ Rifas / Boletos</button>
+              <button type="button" class="preset-btn" data-preset="platos">🍽️ Platos / Cenas</button>
+              <button type="button" class="preset-btn" data-preset="pedidos">📦 Pedidos Varios</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cfgTitle">Título de la Campaña o Evento</label>
+            <input type="text" id="cfgTitle" placeholder="Ej. Registro de Masacos" required autocomplete="off">
+          </div>
+
+          <div class="form-group">
+            <label for="cfgSubtitle">Subtítulo / Instrucción para participantes</label>
+            <input type="text" id="cfgSubtitle" placeholder="Ej. Cada persona debe entregar 3 unidades" required autocomplete="off">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cfgProductSingular">Producto (Singular)</label>
+              <input type="text" id="cfgProductSingular" placeholder="Ej. Masaco, Boleto, Plato" required autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label for="cfgProductPlural">Producto (Plural)</label>
+              <input type="text" id="cfgProductPlural" placeholder="Ej. Masacos, Boletos, Platos" required autocomplete="off">
+            </div>
+          </div>
+
+          <!-- Price & Currency Configuration -->
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cfgUnitPrice">Precio Unitario por Pedido</label>
+              <input type="number" id="cfgUnitPrice" min="0" step="0.5" value="10" required>
+            </div>
+            <div class="form-group">
+              <label for="cfgCurrency">Moneda / Símbolo</label>
+              <input type="text" id="cfgCurrency" placeholder="Ej. Bs, $, USD" value="Bs" required autocomplete="off">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="cfgDefaultCount">Cantidad base obligatoria por persona</label>
+            <input type="number" id="cfgDefaultCount" min="1" max="50" value="3" required>
+          </div>
+
+          <div class="form-group">
+            <label for="cfgAdminPass">Contraseña de Administrador (opcional cambiarla)</label>
+            <input type="text" id="cfgAdminPass" placeholder="Nueva contraseña de admin" autocomplete="off">
+          </div>
+
+          <!-- Danger Zone: Reset Activity -->
+          <div class="danger-zone">
+            <div class="danger-zone-title">⚠️ Reiniciar Actividad</div>
+            <p class="danger-zone-desc">Borra todos los participantes, entregas y cobros actuales para empezar un evento desde cero.</p>
+            <button type="button" class="btn-action danger" id="btnClearAllModal" style="width: 100%; justify-content: center;">
+              🗑️ Borrar Todos los Registros de Participantes
+            </button>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="btnCancelSettings">Cancelar</button>
+          <button type="submit" class="btn-action primary">💾 Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal: Configurar Pago de un Pedido -->
+  <div class="modal-backdrop" id="itemPaymentModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">💳 Configurar Pago del Pedido</h3>
+        <button class="modal-close" id="btnCloseItemPaymentModal">&times;</button>
+      </div>
+      <form id="itemPaymentForm">
+        <div class="modal-body">
+          <div class="transfer-info-card">
+            <div>Pedido: <strong id="paymentItemName"></strong></div>
+            <div>Persona: <strong id="paymentPersonName"></strong></div>
+          </div>
+
+          <label style="margin-bottom: 0.5rem;">Selecciona el Método de Pago:</label>
+          <div class="payment-options-grid" id="paymentOptionsGrid">
+            <button type="button" class="payment-option-btn" data-method="cash">
+              <span class="opt-icon">💵</span>
+              <span>Efectivo (Caja)</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="qr">
+              <span class="opt-icon">📱</span>
+              <span>QR / Transferencia</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="card">
+              <span class="opt-icon">💳</span>
+              <span>Tarjeta / Otro</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="pending">
+              <span class="opt-icon">🔴</span>
+              <span>Por Cobrar (Pendiente)</span>
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label for="paymentItemPrice">Precio de este pedido (<span class="currency-label">Bs</span>):</label>
+            <input type="number" id="paymentItemPrice" min="0" step="0.5" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="btnCancelItemPayment">Cancelar</button>
+          <button type="submit" class="btn-action primary">💾 Guardar Pago</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal: Cobrar Todos los Pedidos de una Persona -->
+  <div class="modal-backdrop" id="payAllModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">💰 Cobrar Todos los Pedidos</h3>
+        <button class="modal-close" id="btnClosePayAllModal">&times;</button>
+      </div>
+      <form id="payAllForm">
+        <div class="modal-body">
+          <div class="transfer-info-card">
+            <div>Persona: <strong id="payAllPersonName"></strong></div>
+            <div>Total a cobrar: <strong id="payAllTotalAmount" style="color: #6ee7b7; font-size: 1.1rem;"></strong></div>
+            <div>Pedidos pendientes: <strong id="payAllItemsCount"></strong></div>
+          </div>
+
+          <label style="margin-bottom: 0.5rem;">Método con el que cancela la totalidad:</label>
+          <div class="payment-options-grid" id="payAllOptionsGrid">
+            <button type="button" class="payment-option-btn selected-cash" data-method="cash">
+              <span class="opt-icon">💵</span>
+              <span>Efectivo (Caja)</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="qr">
+              <span class="opt-icon">📱</span>
+              <span>QR / Transferencia</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="card">
+              <span class="opt-icon">💳</span>
+              <span>Tarjeta / Otro</span>
+            </button>
+            <button type="button" class="payment-option-btn" data-method="pending">
+              <span class="opt-icon">🔴</span>
+              <span>Marcar Pendientes</span>
+            </button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="btnCancelPayAll">Cancelar</button>
+          <button type="submit" class="btn-action primary">Confirmar Cobro Total</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal: Cuadre de Caja Detallado -->
+  <div class="modal-backdrop" id="cashReportModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📊 Cuadre y Balance de Caja</h3>
+        <button class="modal-close" id="btnCloseCashReportModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="report-kpi-grid">
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repTotalRevenue" style="color: #93c5fd;">0 Bs</div>
+            <div class="report-kpi-lbl">Total Recaudado</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repTotalPending" style="color: #fda4af;">0 Bs</div>
+            <div class="report-kpi-lbl">Total Por Cobrar</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repCashAmount" style="color: #6ee7b7;">0 Bs</div>
+            <div class="report-kpi-lbl">💵 Efectivo en Mano</div>
+          </div>
+          <div class="report-kpi-box">
+            <div class="report-kpi-val" id="repQrAmount" style="color: #d8b4fe;">0 Bs</div>
+            <div class="report-kpi-lbl">📱 QR / Banco</div>
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.35rem;">
+          ⚠️ Participantes con Saldo Pendiente (<span id="repDebtorsCount">0</span>):
+        </div>
+        <div class="debtors-list" id="repDebtorsList">
+          <div style="text-align: center; color: var(--text-dim); padding: 0.5rem;">Cargando...</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" id="btnCopyReport">
+          📋 Copiar Reporte para WhatsApp
+        </button>
+        <button type="button" class="btn-action primary" id="btnCloseCashReportBtn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal: Agregar Producto Adicional a Persona -->
+  <div class="modal-backdrop" id="addItemModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="addItemModalTitle">➕ Agregar Producto Adicional</h3>
+        <button class="modal-close" id="btnCloseAddItemModal">&times;</button>
+      </div>
+      <form id="addItemForm">
+        <div class="modal-body">
+          <p id="addItemModalSubtitle" style="margin-bottom: 1.25rem;">
+            Asignar a: <strong id="addItemPersonName" style="color: var(--text-main); font-size: 1rem;"></strong>
+          </p>
+          <div class="form-group">
+            <label for="addItemInput" id="addItemInputLabel">Nombre o detalle del producto (opcional)</label>
+            <input type="text" id="addItemInput" placeholder="Ej. Choripán 6" autocomplete="off">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="btnCancelAddItem">Cancelar</button>
+          <button type="submit" class="btn-action primary" id="btnSubmitAddItem">
+            <span>➕ Agregar Adicional</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom In-App Modal: Transferir Ítem Adicional a Otra Persona -->
+  <div class="modal-backdrop" id="transferModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">🔄 Transferir Producto</h3>
+        <button class="modal-close" id="btnCloseTransferModal">&times;</button>
+      </div>
+      <form id="transferForm">
+        <div class="modal-body">
+          <div class="transfer-info-card">
+            <div>Ítem a mover: <strong id="transferItemName"></strong></div>
+            <div>Actualmente en: <strong id="transferSourcePersonName"></strong></div>
+          </div>
+
+          <div class="form-group">
+            <label for="transferTargetSelect">Seleccionar nuevo destinatario:</label>
+            <select id="transferTargetSelect" required></select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn-action" id="btnCancelTransfer">Cancelar</button>
+          <button type="submit" class="btn-action primary" id="btnSubmitTransfer">
+            <span>🔄 Confirmar Transferencia</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Custom In-App Confirmation Modal (Eliminar Persona / Reiniciar) -->
+  <div class="modal-backdrop" id="confirmModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" id="confirmModalTitle">⚠️ Confirmar Acción</h3>
+        <button class="modal-close" id="btnCloseConfirmModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmModalMessage" style="line-height: 1.5; color: var(--text-main); font-size: 0.95rem;"></p>
+        <div id="confirmModalSubtext" style="font-size: 0.8125rem; color: var(--text-muted); margin-top: 0.65rem; line-height: 1.4;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" id="btnCancelConfirm">Cancelar</button>
+        <button type="button" class="btn-action danger" id="btnAcceptConfirm">Confirmar</button>
+      </div>
     </div>
   </div>
 
@@ -890,7 +1900,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, update, remove } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push, update, remove, set } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCnFfhIVckJsTY1GQJfNT-xYhQTIiuhfUY",
@@ -906,20 +1916,90 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Master / Default admin passwords
-    const DEFAULT_ADMIN_PASS = "admin123";
+    // Default configuration (fallback)
+    const DEFAULT_CONFIG = {
+      title: "Registro de Masacos",
+      subtitle: "Cada persona debe entregar 3 masacos",
+      productSingular: "Masaco",
+      productPlural: "Masacos",
+      defaultCount: 3,
+      unitPrice: 10,
+      currency: "Bs",
+      adminPass: "admin123"
+    };
+
+    // Load from local storage if available
+    let storedLocalConfig = {};
+    try {
+      const parsed = JSON.parse(localStorage.getItem('masaco_app_config') || '{}');
+      if (parsed && typeof parsed === 'object') storedLocalConfig = parsed;
+    } catch (e) {}
+
+    // Current app configuration in memory
+    let appConfig = { ...DEFAULT_CONFIG, ...storedLocalConfig };
 
     // Application state
     let allPeople = {};
     let searchQuery = '';
+    let statusFilter = 'all'; // 'all', 'unpaid', 'paid', 'pending_delivery', 'completed_delivery'
     let isAdmin = false;
-    let formMasacoCount = 3;
+    let currentFormItemCount = 3;
+
+    // Presets definitions
+    const PRESETS = {
+      masacos: {
+        title: "Registro de Masacos",
+        subtitle: "Cada persona debe entregar 3 masacos",
+        productSingular: "Masaco",
+        productPlural: "Masacos",
+        defaultCount: 3,
+        unitPrice: 10,
+        currency: "Bs"
+      },
+      empanadas: {
+        title: "Venta de Empanadas",
+        subtitle: "Control de pedidos y entregas de empanadas",
+        productSingular: "Empanada",
+        productPlural: "Empanadas",
+        defaultCount: 3,
+        unitPrice: 7,
+        currency: "Bs"
+      },
+      rifas: {
+        title: "Control de Rifas",
+        subtitle: "Registro de boletos asignados y entregados",
+        productSingular: "Boleto",
+        productPlural: "Boletos",
+        defaultCount: 5,
+        unitPrice: 20,
+        currency: "Bs"
+      },
+      platos: {
+        title: "Venta de Platos",
+        subtitle: "Control de porciones y entregas en tiempo real",
+        productSingular: "Plato",
+        productPlural: "Platos",
+        defaultCount: 2,
+        unitPrice: 25,
+        currency: "Bs"
+      },
+      pedidos: {
+        title: "Control de Pedidos y Entregas",
+        subtitle: "Seguimiento general de artículos y entregas",
+        productSingular: "Ítem",
+        productPlural: "Ítems",
+        defaultCount: 1,
+        unitPrice: 10,
+        currency: "Bs"
+      }
+    };
 
     // Check stored session
     function checkInitialAuth() {
       const isLoggedLocal = localStorage.getItem('masaco_is_admin') === 'true';
       const isLoggedSession = sessionStorage.getItem('masaco_is_admin') === 'true';
       isAdmin = isLoggedLocal || isLoggedSession;
+      applyConfig();
       updateRoleUI();
     }
 
@@ -930,9 +2010,19 @@
       return div.innerHTML;
     }
 
+    function getInitials(name) {
+      if (!name) return '👤';
+      const parts = name.trim().split(/\s+/);
+      if (parts.length >= 2) {
+        return (parts[0][0] + parts[1][0]).toUpperCase();
+      }
+      return name.slice(0, 2).toUpperCase();
+    }
+
     function showToast(message, type = 'success') {
       const toast = document.getElementById('toast');
-      toast.textContent = message;
+      const icon = type === 'error' ? '❌' : (type === 'warning' ? '⚠️' : '✨');
+      toast.innerHTML = `<span>${icon}</span> <span>${escapeHtml(message)}</span>`;
       toast.className = 'toast show';
       if (type === 'warning') toast.classList.add('warning');
       if (type === 'error') toast.classList.add('error');
@@ -941,99 +2031,781 @@
       }, 2800);
     }
 
+    // Apply configuration changes to the entire UI
+    function applyConfig() {
+      const curr = appConfig.currency || 'Bs';
+      document.getElementById('pageTitle').textContent = appConfig.title || 'Control de Entregas';
+      document.getElementById('mainTitle').textContent = appConfig.title || 'Control de Entregas';
+      document.getElementById('mainSubtitle').textContent = appConfig.subtitle || 'Control de entregas y estadísticas en tiempo real';
+      document.getElementById('progressLabel').textContent = `📊 Avance Total (${appConfig.productPlural || 'Entregas'})`;
+      
+      document.querySelectorAll('.currency-label').forEach(el => el.textContent = curr);
+
+      if (isAdmin) {
+        updateRoleUI();
+      } else {
+        renderBoard();
+      }
+    }
+
+    // Modal Control: Custom In-App Confirmation Modal
+    let currentConfirmCallback = null;
+    const confirmModal = document.getElementById('confirmModal');
+    const confirmModalTitle = document.getElementById('confirmModalTitle');
+    const confirmModalMessage = document.getElementById('confirmModalMessage');
+    const confirmModalSubtext = document.getElementById('confirmModalSubtext');
+    const btnAcceptConfirm = document.getElementById('btnAcceptConfirm');
+
+    function openConfirmModal(options) {
+      confirmModalTitle.innerHTML = options.title || '⚠️ Confirmar';
+      confirmModalMessage.innerHTML = options.message || '¿Estás seguro de realizar esta acción?';
+      confirmModalSubtext.innerHTML = options.subtext || '';
+      btnAcceptConfirm.innerHTML = options.acceptText || 'Confirmar';
+      currentConfirmCallback = options.onConfirm || null;
+      confirmModal.classList.add('active');
+    }
+
+    function closeConfirmModal() {
+      confirmModal.classList.remove('active');
+      currentConfirmCallback = null;
+    }
+
+    document.getElementById('btnCloseConfirmModal').addEventListener('click', closeConfirmModal);
+    document.getElementById('btnCancelConfirm').addEventListener('click', closeConfirmModal);
+    confirmModal.addEventListener('click', (e) => {
+      if (e.target === confirmModal) closeConfirmModal();
+    });
+
+    btnAcceptConfirm.addEventListener('click', () => {
+      if (typeof currentConfirmCallback === 'function') {
+        currentConfirmCallback();
+      }
+      closeConfirmModal();
+    });
+
+    // Custom In-App Modal: Agregar Producto Adicional
+    let currentAddPersonKey = null;
+    const addItemModal = document.getElementById('addItemModal');
+    const addItemModalTitle = document.getElementById('addItemModalTitle');
+    const addItemPersonName = document.getElementById('addItemPersonName');
+    const addItemInputLabel = document.getElementById('addItemInputLabel');
+    const addItemInput = document.getElementById('addItemInput');
+
+    function addItemToPerson(personKey) {
+      if (!isAdmin) {
+        showToast('⚠️ Solo administradores pueden agregar productos', 'warning');
+        return;
+      }
+      const person = allPeople[personKey];
+      if (!person) return;
+
+      const singular = appConfig.productSingular || 'Producto';
+      const items = person.masacos || person.items || [];
+      const defaultName = `${singular} ${items.length + 1}`;
+
+      currentAddPersonKey = personKey;
+      addItemModalTitle.textContent = `➕ Agregar ${singular} Adicional`;
+      addItemPersonName.textContent = person.name;
+      addItemInputLabel.textContent = `Nombre o detalle del ${singular.toLowerCase()} adicional (opcional)`;
+      addItemInput.value = defaultName;
+      addItemInput.placeholder = `Ej. ${defaultName}`;
+
+      addItemModal.classList.add('active');
+      setTimeout(() => {
+        addItemInput.focus();
+        addItemInput.select();
+      }, 150);
+    }
+    window.addItemToPerson = addItemToPerson;
+
+    function closeAddItemModal() {
+      addItemModal.classList.remove('active');
+      currentAddPersonKey = null;
+    }
+
+    document.getElementById('btnCloseAddItemModal').addEventListener('click', closeAddItemModal);
+    document.getElementById('btnCancelAddItem').addEventListener('click', closeAddItemModal);
+    addItemModal.addEventListener('click', (e) => {
+      if (e.target === addItemModal) closeAddItemModal();
+    });
+
+    document.getElementById('addItemForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!currentAddPersonKey) return;
+
+      const personKey = currentAddPersonKey;
+      const person = allPeople[personKey];
+      if (!person) {
+        closeAddItemModal();
+        return;
+      }
+
+      const singular = appConfig.productSingular || 'Producto';
+      const items = person.masacos || person.items || [];
+      const defaultName = `${singular} ${items.length + 1}`;
+      const finalName = addItemInput.value.trim() || defaultName;
+      const unitPrice = parseFloat(appConfig.unitPrice) || 10;
+
+      // Mark as additional item
+      const newItem = {
+        name: finalName,
+        delivered: false,
+        isAdditional: true,
+        paid: false,
+        paymentMethod: 'pending',
+        price: unitPrice
+      };
+
+      const updated = [...items, newItem];
+      update(ref(db, `people/${personKey}`), { masacos: updated }).then(() => {
+        closeAddItemModal();
+        showToast(`✨ "${finalName}" agregado como adicional a ${person.name}`);
+      }).catch(err => {
+        showToast('Error al agregar: ' + err.message, 'error');
+      });
+    });
+
+    // Custom In-App Modal: Configurar Pago de Ítem Individual
+    let paymentTargetPersonKey = null;
+    let paymentTargetItemIndex = null;
+    let selectedPaymentMethod = 'cash';
+    const itemPaymentModal = document.getElementById('itemPaymentModal');
+    const paymentItemName = document.getElementById('paymentItemName');
+    const paymentPersonName = document.getElementById('paymentPersonName');
+    const paymentItemPrice = document.getElementById('paymentItemPrice');
+
+    function openItemPaymentModal(personKey, itemIndex, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) return;
+
+      const person = allPeople[personKey];
+      if (!person) return;
+      const items = person.masacos || person.items || [];
+      const item = items[itemIndex];
+      if (!item) return;
+
+      paymentTargetPersonKey = personKey;
+      paymentTargetItemIndex = itemIndex;
+
+      paymentItemName.textContent = item.name;
+      paymentPersonName.textContent = person.name;
+
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const currentPrice = item.price !== undefined ? parseFloat(item.price) : defaultPrice;
+      paymentItemPrice.value = currentPrice;
+
+      // Determine initial method
+      if (!item.paid || item.paymentMethod === 'pending') {
+        selectedPaymentMethod = 'pending';
+      } else {
+        selectedPaymentMethod = item.paymentMethod || 'cash';
+      }
+
+      updatePaymentOptionButtons();
+      itemPaymentModal.classList.add('active');
+    }
+    window.openItemPaymentModal = openItemPaymentModal;
+
+    function updatePaymentOptionButtons() {
+      document.querySelectorAll('#paymentOptionsGrid .payment-option-btn').forEach(btn => {
+        const method = btn.getAttribute('data-method');
+        btn.className = 'payment-option-btn';
+        if (method === selectedPaymentMethod) {
+          btn.classList.add(`selected-${method}`);
+        }
+      });
+    }
+
+    document.querySelectorAll('#paymentOptionsGrid .payment-option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedPaymentMethod = btn.getAttribute('data-method');
+        updatePaymentOptionButtons();
+      });
+    });
+
+    function closeItemPaymentModal() {
+      itemPaymentModal.classList.remove('active');
+      paymentTargetPersonKey = null;
+      paymentTargetItemIndex = null;
+    }
+
+    document.getElementById('btnCloseItemPaymentModal').addEventListener('click', closeItemPaymentModal);
+    document.getElementById('btnCancelItemPayment').addEventListener('click', closeItemPaymentModal);
+    itemPaymentModal.addEventListener('click', (e) => {
+      if (e.target === itemPaymentModal) closeItemPaymentModal();
+    });
+
+    document.getElementById('itemPaymentForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!paymentTargetPersonKey || paymentTargetItemIndex === null) return;
+
+      const person = allPeople[paymentTargetPersonKey];
+      if (!person) {
+        closeItemPaymentModal();
+        return;
+      }
+
+      const items = [...(person.masacos || person.items || [])];
+      const item = items[paymentTargetItemIndex];
+      if (!item) {
+        closeItemPaymentModal();
+        return;
+      }
+
+      const priceVal = parseFloat(paymentItemPrice.value) || 0;
+      const isPaid = selectedPaymentMethod !== 'pending';
+
+      items[paymentTargetItemIndex] = {
+        ...item,
+        paid: isPaid,
+        paymentMethod: selectedPaymentMethod,
+        price: priceVal
+      };
+
+      update(ref(db, `people/${paymentTargetPersonKey}`), { masacos: items }).then(() => {
+        closeItemPaymentModal();
+        const curr = appConfig.currency || 'Bs';
+        const methodLabel = selectedPaymentMethod === 'cash' ? 'Efectivo' : (selectedPaymentMethod === 'qr' ? 'QR' : (selectedPaymentMethod === 'card' ? 'Tarjeta' : 'Por Cobrar'));
+        showToast(`💳 Pago de "${item.name}" actualizado a: ${methodLabel} (${priceVal} ${curr})`);
+      }).catch(err => {
+        showToast('Error al actualizar pago: ' + err.message, 'error');
+      });
+    });
+
+    // Custom In-App Modal: Cobrar Todos los Pedidos de una Persona
+    let payAllPersonKey = null;
+    let selectedPayAllMethod = 'cash';
+    const payAllModal = document.getElementById('payAllModal');
+    const payAllPersonName = document.getElementById('payAllPersonName');
+    const payAllTotalAmount = document.getElementById('payAllTotalAmount');
+    const payAllItemsCount = document.getElementById('payAllItemsCount');
+
+    function openPayAllModal(personKey, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) return;
+
+      const person = allPeople[personKey];
+      if (!person) return;
+      const items = person.masacos || person.items || [];
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const curr = appConfig.currency || 'Bs';
+
+      payAllPersonKey = personKey;
+      payAllPersonName.textContent = person.name;
+
+      const unpaidItems = items.filter(m => !m.paid || m.paymentMethod === 'pending');
+      let unpaidSum = 0;
+      items.forEach(m => {
+        const itemPrice = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+        if (!m.paid || m.paymentMethod === 'pending') {
+          unpaidSum += itemPrice;
+        }
+      });
+
+      payAllTotalAmount.textContent = `${unpaidSum} ${curr}`;
+      payAllItemsCount.textContent = `${unpaidItems.length} de ${items.length} pedidos`;
+
+      selectedPayAllMethod = 'cash';
+      updatePayAllButtons();
+      payAllModal.classList.add('active');
+    }
+    window.openPayAllModal = openPayAllModal;
+
+    function updatePayAllButtons() {
+      document.querySelectorAll('#payAllOptionsGrid .payment-option-btn').forEach(btn => {
+        const method = btn.getAttribute('data-method');
+        btn.className = 'payment-option-btn';
+        if (method === selectedPayAllMethod) {
+          btn.classList.add(`selected-${method}`);
+        }
+      });
+    }
+
+    document.querySelectorAll('#payAllOptionsGrid .payment-option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedPayAllMethod = btn.getAttribute('data-method');
+        updatePayAllButtons();
+      });
+    });
+
+    function closePayAllModal() {
+      payAllModal.classList.remove('active');
+      payAllPersonKey = null;
+    }
+
+    document.getElementById('btnClosePayAllModal').addEventListener('click', closePayAllModal);
+    document.getElementById('btnCancelPayAll').addEventListener('click', closePayAllModal);
+    payAllModal.addEventListener('click', (e) => {
+      if (e.target === payAllModal) closePayAllModal();
+    });
+
+    document.getElementById('payAllForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (!payAllPersonKey) return;
+
+      const person = allPeople[payAllPersonKey];
+      if (!person) {
+        closePayAllModal();
+        return;
+      }
+
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const isPaid = selectedPayAllMethod !== 'pending';
+      const items = (person.masacos || person.items || []).map(item => ({
+        ...item,
+        paid: isPaid,
+        paymentMethod: selectedPayAllMethod,
+        price: item.price !== undefined ? parseFloat(item.price) : defaultPrice
+      }));
+
+      update(ref(db, `people/${payAllPersonKey}`), { masacos: items }).then(() => {
+        closePayAllModal();
+        const methodLabel = selectedPayAllMethod === 'cash' ? 'Efectivo' : (selectedPayAllMethod === 'qr' ? 'QR' : (selectedPayAllMethod === 'card' ? 'Tarjeta' : 'Pendiente'));
+        showToast(`💰 Todos los pedidos de ${person.name} marcados como: ${methodLabel}`);
+      }).catch(err => {
+        showToast('Error al procesar cobro: ' + err.message, 'error');
+      });
+    });
+
+    // Custom In-App Modal: Transferir Ítem Adicional
+    let transferSourcePersonKey = null;
+    let transferItemIndex = null;
+    const transferModal = document.getElementById('transferModal');
+    const transferItemName = document.getElementById('transferItemName');
+    const transferSourcePersonName = document.getElementById('transferSourcePersonName');
+    const transferTargetSelect = document.getElementById('transferTargetSelect');
+
+    function openTransferModal(sourcePersonKey, itemIndex, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      const sourcePerson = allPeople[sourcePersonKey];
+      if (!sourcePerson) return;
+      const items = sourcePerson.masacos || sourcePerson.items || [];
+      const item = items[itemIndex];
+      if (!item) return;
+
+      transferSourcePersonKey = sourcePersonKey;
+      transferItemIndex = itemIndex;
+
+      // Filter all other registered people
+      const otherEntries = Object.entries(allPeople)
+        .filter(([key]) => !key.startsWith('_') && key !== sourcePersonKey);
+
+      if (otherEntries.length === 0) {
+        showToast('No hay otros participantes registrados a quienes transferir', 'warning');
+        return;
+      }
+
+      transferTargetSelect.innerHTML = otherEntries.map(([key, p]) => {
+        const count = (p.masacos || p.items || []).length;
+        return `<option value="${key}">${escapeHtml(p.name)} (${count} asignados)</option>`;
+      }).join('');
+
+      transferItemName.textContent = item.name;
+      transferSourcePersonName.textContent = sourcePerson.name;
+
+      transferModal.classList.add('active');
+    }
+    window.openTransferModal = openTransferModal;
+
+    function closeTransferModal() {
+      transferModal.classList.remove('active');
+      transferSourcePersonKey = null;
+      transferItemIndex = null;
+    }
+
+    document.getElementById('btnCloseTransferModal').addEventListener('click', closeTransferModal);
+    document.getElementById('btnCancelTransfer').addEventListener('click', closeTransferModal);
+    transferModal.addEventListener('click', (e) => {
+      if (e.target === transferModal) closeTransferModal();
+    });
+
+    document.getElementById('transferForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!transferSourcePersonKey || transferItemIndex === null) return;
+
+      const targetPersonKey = transferTargetSelect.value;
+      if (!targetPersonKey || targetPersonKey === transferSourcePersonKey) {
+        showToast('Selecciona un destinatario válido', 'warning');
+        return;
+      }
+
+      const sourcePerson = allPeople[transferSourcePersonKey];
+      const targetPerson = allPeople[targetPersonKey];
+      if (!sourcePerson || !targetPerson) {
+        closeTransferModal();
+        return;
+      }
+
+      const sourceItems = [...(sourcePerson.masacos || sourcePerson.items || [])];
+      const [transferredItem] = sourceItems.splice(transferItemIndex, 1);
+
+      if (!transferredItem) {
+        closeTransferModal();
+        return;
+      }
+
+      // Add item to target with transfer tracking metadata
+      const updatedTransferredItem = {
+        ...transferredItem,
+        isAdditional: true,
+        transferredFrom: sourcePerson.name
+      };
+
+      const targetItems = [...(targetPerson.masacos || targetPerson.items || []), updatedTransferredItem];
+
+      try {
+        await update(ref(db, `people/${transferSourcePersonKey}`), { masacos: sourceItems });
+        await update(ref(db, `people/${targetPersonKey}`), { masacos: targetItems });
+
+        closeTransferModal();
+        showToast(`🔄 "${transferredItem.name}" transferido de ${sourcePerson.name} a ${targetPerson.name}`);
+      } catch (err) {
+        showToast('Error al transferir ítem: ' + err.message, 'error');
+      }
+    });
+
+    // Delete Single Additional Item
+    function deleteSingleItem(personKey, itemIndex, event) {
+      if (event) event.stopPropagation();
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      const person = allPeople[personKey];
+      if (!person) return;
+      const items = person.masacos || person.items || [];
+      const item = items[itemIndex];
+      if (!item) return;
+
+      openConfirmModal({
+        title: '🗑️ Eliminar Ítem Adicional',
+        message: `¿Deseas eliminar el pedido adicional <strong>"${escapeHtml(item.name)}"</strong> de <strong>${escapeHtml(person.name)}</strong>?`,
+        subtext: 'Este ítem será eliminado únicamente de este participante.',
+        acceptText: '🗑️ Eliminar Ítem',
+        onConfirm: async () => {
+          const updated = [...items];
+          updated.splice(itemIndex, 1);
+          try {
+            await update(ref(db, `people/${personKey}`), { masacos: updated });
+            showToast(`"${item.name}" eliminado de ${person.name}`);
+          } catch (err) {
+            showToast('Error al eliminar: ' + err.message, 'error');
+          }
+        }
+      });
+    }
+    window.deleteSingleItem = deleteSingleItem;
+
+    // Clear All Records (Nueva Actividad) using in-app modal
+    function clearAllRecords() {
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      const validKeys = Object.keys(allPeople).filter(k => !k.startsWith('_'));
+      const count = validKeys.length;
+
+      if (count === 0) {
+        showToast('No hay registros guardados actualmente', 'warning');
+        return;
+      }
+
+      openConfirmModal({
+        title: '🧹 Iniciar Nueva Actividad',
+        message: `¿Estás seguro de eliminar los <strong>${count} participantes</strong> de la pizarra?`,
+        subtext: 'Esta acción borrará todas las personas, pedidos, entregas y cobros para comenzar un nuevo evento desde cero.',
+        acceptText: '🧹 Sí, Vaciar Pizarra',
+        onConfirm: async () => {
+          try {
+            const configBackup = allPeople._app_config || null;
+            await remove(ref(db, 'people'));
+            if (configBackup) {
+              await set(ref(db, 'people/_app_config'), configBackup);
+            }
+            allPeople = configBackup ? { _app_config: configBackup } : {};
+            renderBoard();
+            if (settingsModal.classList.contains('active')) {
+              closeSettingsModal();
+            }
+            showToast('🧹 ¡Pizarra vaciada con éxito! Lista para una nueva actividad');
+          } catch (err) {
+            showToast('Error al vaciar registros: ' + err.message, 'error');
+          }
+        }
+      });
+    }
+    window.clearAllRecords = clearAllRecords;
+
+    // Delete Single Person using in-app modal
+    function deletePerson(personKey) {
+      if (!isAdmin) {
+        showToast('⚠️ Solo administradores pueden eliminar personas', 'error');
+        return;
+      }
+      const person = allPeople[personKey];
+      if (!person) return;
+
+      const name = person.name || 'esta persona';
+      const plural = appConfig.productPlural || 'ítems';
+
+      openConfirmModal({
+        title: '🗑️ Eliminar Participante',
+        message: `¿Estás seguro de eliminar a <strong>"${escapeHtml(name)}"</strong> y todos sus ${plural.toLowerCase()}?`,
+        subtext: 'Esta acción no se puede deshacer.',
+        acceptText: '🗑️ Eliminar',
+        onConfirm: () => {
+          remove(ref(db, `people/${personKey}`)).then(() => {
+            showToast(`Persona "${name}" eliminada`);
+          }).catch(err => {
+            showToast('Error al eliminar: ' + err.message, 'error');
+          });
+        }
+      });
+    }
+    window.deletePerson = deletePerson;
+
+    // Modal Control: Cuadre de Caja
+    const cashReportModal = document.getElementById('cashReportModal');
+    const btnOpenCashReport = document.getElementById('btnOpenCashReport');
+    const btnCloseCashReportModal = document.getElementById('btnCloseCashReportModal');
+    const btnCloseCashReportBtn = document.getElementById('btnCloseCashReportBtn');
+    const btnCopyReport = document.getElementById('btnCopyReport');
+
+    function openCashReport() {
+      const curr = appConfig.currency || 'Bs';
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
+
+      let totalCash = 0;
+      let totalQr = 0;
+      let totalCard = 0;
+      let totalPending = 0;
+      const debtors = [];
+
+      validPeople.forEach(([k, person]) => {
+        const items = person.masacos || person.items || [];
+        let personPending = 0;
+
+        items.forEach(m => {
+          const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+          if (m.paid && m.paymentMethod === 'cash') {
+            totalCash += price;
+          } else if (m.paid && m.paymentMethod === 'qr') {
+            totalQr += price;
+          } else if (m.paid && m.paymentMethod === 'card') {
+            totalCard += price;
+          } else {
+            totalPending += price;
+            personPending += price;
+          }
+        });
+
+        if (personPending > 0) {
+          debtors.push({ name: person.name, amount: personPending });
+        }
+      });
+
+      const totalRevenue = totalCash + totalQr + totalCard;
+
+      document.getElementById('repTotalRevenue').textContent = `${totalRevenue} ${curr}`;
+      document.getElementById('repTotalPending').textContent = `${totalPending} ${curr}`;
+      document.getElementById('repCashAmount').textContent = `${totalCash} ${curr}`;
+      document.getElementById('repQrAmount').textContent = `${totalQr + totalCard} ${curr}`;
+      document.getElementById('repDebtorsCount').textContent = debtors.length;
+
+      const debtorsListEl = document.getElementById('repDebtorsList');
+      if (debtors.length === 0) {
+        debtorsListEl.innerHTML = '<div style="text-align: center; color: #6ee7b7; padding: 0.65rem; font-size: 0.85rem;">🎉 ¡Excelente! Todos los pedidos están pagados al 100%.</div>';
+      } else {
+        debtorsListEl.innerHTML = debtors.map(d => `
+          <div class="debtor-row">
+            <span>👤 ${escapeHtml(d.name)}</span>
+            <strong style="color: #fda4af;">${d.amount} ${curr}</strong>
+          </div>
+        `).join('');
+      }
+
+      cashReportModal.classList.add('active');
+    }
+
+    btnOpenCashReport.addEventListener('click', openCashReport);
+    btnCloseCashReportModal.addEventListener('click', () => cashReportModal.classList.remove('active'));
+    btnCloseCashReportBtn.addEventListener('click', () => cashReportModal.classList.remove('active'));
+    cashReportModal.addEventListener('click', (e) => {
+      if (e.target === cashReportModal) cashReportModal.classList.remove('active');
+    });
+
+    btnCopyReport.addEventListener('click', () => {
+      const curr = appConfig.currency || 'Bs';
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
+
+      let totalCash = 0;
+      let totalQr = 0;
+      let totalCard = 0;
+      let totalPending = 0;
+      let totalDelivered = 0;
+      let totalItems = 0;
+      const debtors = [];
+
+      validPeople.forEach(([k, person]) => {
+        const items = person.masacos || person.items || [];
+        let personPending = 0;
+
+        items.forEach(m => {
+          totalItems++;
+          if (m.delivered) totalDelivered++;
+          const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+          if (m.paid && m.paymentMethod === 'cash') totalCash += price;
+          else if (m.paid && m.paymentMethod === 'qr') totalQr += price;
+          else if (m.paid && m.paymentMethod === 'card') totalCard += price;
+          else {
+            totalPending += price;
+            personPending += price;
+          }
+        });
+
+        if (personPending > 0) debtors.push(`• ${person.name}: ${personPending} ${curr}`);
+      });
+
+      const text = `📊 *CUADRE DE CAJA - ${appConfig.title.toUpperCase()}*\n` +
+        `------------------------------------\n` +
+        `📦 Total Pedidos: ${totalItems} (${totalDelivered} entregados)\n` +
+        `👥 Participantes: ${validPeople.length}\n\n` +
+        `💰 *TOTAL RECAUDADO: ${totalCash + totalQr + totalCard} ${curr}*\n` +
+        `💵 Efectivo en Caja: ${totalCash} ${curr}\n` +
+        `📱 QR / Transferencia: ${totalQr + totalCard} ${curr}\n\n` +
+        `⏳ *PENDIENTE POR COBRAR: ${totalPending} ${curr}*\n` +
+        (debtors.length > 0 ? `\n📋 *Lista de Deudores:*\n${debtors.join('\n')}` : `\n✅ ¡Sin deudas pendientes!`);
+
+      navigator.clipboard.writeText(text).then(() => {
+        showToast('📋 ¡Reporte copiado al portapapeles para WhatsApp!');
+      }).catch(() => {
+        showToast('No se pudo copiar automáticamente', 'warning');
+      });
+    });
+
     // Role UI Update
     function updateRoleUI() {
       const roleBadge = document.getElementById('roleBadge');
       const roleActions = document.getElementById('roleActions');
       const registerSection = document.getElementById('registerSection');
+      const boardAdminControls = document.getElementById('boardAdminControls');
+
+      const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
 
       if (isAdmin) {
         // Admin UI
         roleBadge.className = 'role-badge admin';
-        roleBadge.innerHTML = '🛡️ Administrador (Acceso Total)';
+        roleBadge.innerHTML = '🛡️ Administrador';
 
         roleActions.innerHTML = `
-          <button class="btn-role-action danger" id="btnLogout">
-            🚪 Cerrar Sesión
+          <button class="btn-action cash" id="btnOpenCashReportNav">
+            📊 Cuadre de Caja
+          </button>
+          <button class="btn-action" id="btnOpenSettings" title="Configurar nombre del producto y evento">
+            ⚙️ Configurar
+          </button>
+          <button class="btn-action danger" id="btnLogout">
+            🚪 Salir
           </button>
         `;
+        document.getElementById('btnOpenCashReportNav').addEventListener('click', openCashReport);
+        document.getElementById('btnOpenSettings').addEventListener('click', openSettingsModal);
         document.getElementById('btnLogout').addEventListener('click', handleLogout);
+
+        // Board header admin button (Nueva Actividad)
+        boardAdminControls.innerHTML = `
+          <button class="btn-action danger" id="btnClearBoard" title="Eliminar todos los participantes actuales para empezar otra actividad">
+            🧹 Iniciar Nueva Actividad
+          </button>
+        `;
+        document.getElementById('btnClearBoard').addEventListener('click', clearAllRecords);
+
+        // Build Initial Form Inputs according to defaultCount (base mandatory items)
+        const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+        currentFormItemCount = defaultCount;
+        let inputsHtml = '';
+        for (let i = 1; i <= defaultCount; i++) {
+          inputsHtml += `
+            <div class="item-input">
+              <span class="badge">${i}</span>
+              <input type="text" class="form-item-input" placeholder="${escapeHtml(singular)} ${i} (opcional)" autocomplete="off">
+            </div>
+          `;
+        }
 
         // Render Admin Form
         registerSection.innerHTML = `
-          <div class="card">
-            <h2>➕ Registrar Persona</h2>
+          <div class="card glass-panel">
+            <div class="card-title" style="margin-bottom: 1.25rem;">➕ Registrar Persona</div>
             <form id="personForm">
               <div class="form-group">
-                <label for="name">Nombre de la persona</label>
+                <label for="name">Nombre completo de la persona</label>
                 <input type="text" id="name" placeholder="Ej. Juan Pérez" required autocomplete="off">
               </div>
               <div class="form-group">
-                <label>Masacos a entregar</label>
-                <div class="masacos-grid" id="formMasacos">
-                  <div class="masaco-input">
-                    <span class="badge">1</span>
-                    <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
-                  </div>
-                  <div class="masaco-input">
-                    <span class="badge">2</span>
-                    <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
-                  </div>
-                  <div class="masaco-input">
-                    <span class="badge">3</span>
-                    <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
-                  </div>
+                <label>${escapeHtml(plural)} base (${defaultCount}) <span style="font-size: 0.78rem; color: var(--text-dim); font-weight: normal;">(descripción opcional)</span></label>
+                <div class="items-grid" id="formItems">
+                  ${inputsHtml}
                 </div>
-                <button type="button" class="add-masaco-form-btn" id="addFormMasaco">+ Agregar otro masaco</button>
+                <button type="button" class="add-item-form-btn" id="addFormItem">+ Agregar otro campo de ${escapeHtml(singular.toLowerCase())}</button>
               </div>
-              <button type="submit" class="btn">Registrar Persona y Masacos</button>
+              <button type="submit" class="btn-submit">
+                <span>Registrar Persona y ${escapeHtml(plural)}</span>
+                <span>➔</span>
+              </button>
             </form>
           </div>
         `;
         attachFormListeners();
       } else {
-        // Viewer UI
+        // Viewer UI (Clean view: no register form or lock banner)
         roleBadge.className = 'role-badge viewer';
         roleBadge.innerHTML = '👁️ Espectador (Solo Lectura)';
 
         roleActions.innerHTML = `
-          <button class="btn-role-action primary" id="btnOpenLogin">
+          <button class="btn-action cash" id="btnOpenCashReportNav">
+            📊 Cuadre de Caja
+          </button>
+          <button class="btn-action primary" id="btnOpenLogin">
             🔑 Acceso Admin
           </button>
         `;
+        document.getElementById('btnOpenCashReportNav').addEventListener('click', openCashReport);
         document.getElementById('btnOpenLogin').addEventListener('click', openLoginModal);
 
-        // Render Locked info card
-        registerSection.innerHTML = `
-          <div class="locked-card">
-            <div class="locked-card-icon">🔒</div>
-            <div class="locked-card-title">Registro Exclusivo para Administradores</div>
-            <p class="locked-card-desc">
-              Estás en modo solo lectura. Puedes consultar todas las estadísticas y entregas en tiempo real. Para registrar personas o modificar entregas, inicia sesión como administrador.
-            </p>
-            <button class="locked-card-btn" id="btnCardLogin">
-              🔑 Iniciar Sesión como Admin
-            </button>
-          </div>
-        `;
-        document.getElementById('btnCardLogin').addEventListener('click', openLoginModal);
+        boardAdminControls.innerHTML = '';
+        registerSection.innerHTML = ''; // Clean view for spectators
       }
 
       renderBoard();
     }
 
     function attachFormListeners() {
-      formMasacoCount = 3;
-      const addBtn = document.getElementById('addFormMasaco');
+      const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
+      const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+      const unitPrice = parseFloat(appConfig.unitPrice) || 10;
+
+      const addBtn = document.getElementById('addFormItem');
       if (addBtn) {
         addBtn.addEventListener('click', function () {
-          formMasacoCount++;
-          const container = document.getElementById('formMasacos');
+          currentFormItemCount++;
+          const container = document.getElementById('formItems');
           const div = document.createElement('div');
-          div.className = 'masaco-input';
+          div.className = 'item-input';
           div.innerHTML = `
-            <span class="badge">${formMasacoCount}</span>
-            <input type="text" class="form-masaco-input" placeholder="Masaco ${formMasacoCount}" required autocomplete="off">
+            <span class="badge">${currentFormItemCount}</span>
+            <input type="text" class="form-item-input" placeholder="${escapeHtml(singular)} ${currentFormItemCount} (opcional)" autocomplete="off">
           `;
           container.appendChild(div);
         });
@@ -1051,46 +2823,59 @@
 
           const nameInput = document.getElementById('name');
           const name = nameInput.value.trim();
-          const masacoInputs = document.querySelectorAll('.form-masaco-input');
-          const masacos = [];
-          let valid = true;
-
-          masacoInputs.forEach(input => {
-            const val = input.value.trim();
-            if (!val) valid = false;
-            masacos.push({ name: val, delivered: false });
-          });
-
-          if (!name || !valid || masacos.length < 1) {
-            showToast('Completa todos los campos correctamente', 'warning');
+          if (!name) {
+            showToast('Por favor escribe el nombre de la persona', 'warning');
             return;
           }
 
-          push(ref(db, 'people'), { name, masacos });
+          const itemInputs = document.querySelectorAll('.form-item-input');
+          const items = [];
+
+          itemInputs.forEach((input, index) => {
+            const val = input.value.trim();
+            const itemName = val || `${singular} ${index + 1}`;
+            const isAdd = index >= defaultCount;
+            items.push({
+              name: itemName,
+              delivered: false,
+              isAdditional: isAdd,
+              paid: false,
+              paymentMethod: 'pending',
+              price: unitPrice
+            });
+          });
+
+          if (items.length < 1) {
+            items.push({ name: `${singular} 1`, delivered: false, isAdditional: false, paid: false, paymentMethod: 'pending', price: unitPrice });
+          }
+
+          // Save to Firebase
+          push(ref(db, 'people'), { name, masacos: items }).then(() => {
+            showToast(`¡${name} registrado con ${items.length} ${plural.toLowerCase()}!`);
+          }).catch(err => {
+            showToast('Error al registrar: ' + err.message, 'error');
+          });
 
           this.reset();
-          document.getElementById('formMasacos').innerHTML = `
-            <div class="masaco-input">
-              <span class="badge">1</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 1" required autocomplete="off">
-            </div>
-            <div class="masaco-input">
-              <span class="badge">2</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 2" required autocomplete="off">
-            </div>
-            <div class="masaco-input">
-              <span class="badge">3</span>
-              <input type="text" class="form-masaco-input" placeholder="Masaco 3" required autocomplete="off">
-            </div>
-          `;
-          formMasacoCount = 3;
+          
+          // Re-render initial inputs
+          let resetInputs = '';
+          for (let i = 1; i <= defaultCount; i++) {
+            resetInputs += `
+              <div class="item-input">
+                <span class="badge">${i}</span>
+                <input type="text" class="form-item-input" placeholder="${escapeHtml(singular)} ${i} (opcional)" autocomplete="off">
+              </div>
+            `;
+          }
+          document.getElementById('formItems').innerHTML = resetInputs;
+          currentFormItemCount = defaultCount;
           nameInput.focus();
-          showToast(`¡${name} registrado con ${masacos.length} masacos!`);
         });
       }
     }
 
-    // Modal Control
+    // Login Modal Control
     const loginModal = document.getElementById('loginModal');
     const loginErrorMsg = document.getElementById('loginErrorMsg');
     const adminPasswordInput = document.getElementById('adminPasswordInput');
@@ -1130,11 +2915,9 @@
     document.getElementById('adminLoginForm').addEventListener('submit', (e) => {
       e.preventDefault();
       const enteredPass = adminPasswordInput.value.trim();
+      const validPass = appConfig.adminPass || DEFAULT_CONFIG.adminPass;
 
-      // Check against default password or stored custom password
-      const storedPass = localStorage.getItem('masaco_custom_pass') || DEFAULT_ADMIN_PASS;
-
-      if (enteredPass === storedPass || enteredPass === DEFAULT_ADMIN_PASS) {
+      if (enteredPass === validPass || enteredPass === DEFAULT_CONFIG.adminPass) {
         isAdmin = true;
         if (rememberAdmin.checked) {
           localStorage.setItem('masaco_is_admin', 'true');
@@ -1146,7 +2929,6 @@
         showToast('🔓 Sesión de Administrador iniciada correctamente');
       } else {
         loginErrorMsg.classList.add('show');
-        adminPasswordInput.classList.add('error');
         adminPasswordInput.select();
       }
     });
@@ -1159,128 +2941,364 @@
       showToast('🔒 Sesión cerrada. Ahora estás en Modo Espectador', 'warning');
     }
 
+    // Settings Modal Control
+    const settingsModal = document.getElementById('settingsModal');
+    const cfgTitle = document.getElementById('cfgTitle');
+    const cfgSubtitle = document.getElementById('cfgSubtitle');
+    const cfgProductSingular = document.getElementById('cfgProductSingular');
+    const cfgProductPlural = document.getElementById('cfgProductPlural');
+    const cfgUnitPrice = document.getElementById('cfgUnitPrice');
+    const cfgCurrency = document.getElementById('cfgCurrency');
+    const cfgDefaultCount = document.getElementById('cfgDefaultCount');
+    const cfgAdminPass = document.getElementById('cfgAdminPass');
+
+    function openSettingsModal() {
+      if (!isAdmin) return;
+      cfgTitle.value = appConfig.title || DEFAULT_CONFIG.title;
+      cfgSubtitle.value = appConfig.subtitle || DEFAULT_CONFIG.subtitle;
+      cfgProductSingular.value = appConfig.productSingular || DEFAULT_CONFIG.productSingular;
+      cfgProductPlural.value = appConfig.productPlural || DEFAULT_CONFIG.productPlural;
+      cfgUnitPrice.value = appConfig.unitPrice !== undefined ? appConfig.unitPrice : DEFAULT_CONFIG.unitPrice;
+      cfgCurrency.value = appConfig.currency || DEFAULT_CONFIG.currency;
+      cfgDefaultCount.value = appConfig.defaultCount || DEFAULT_CONFIG.defaultCount;
+      cfgAdminPass.value = appConfig.adminPass || DEFAULT_CONFIG.adminPass;
+
+      settingsModal.classList.add('active');
+    }
+
+    function closeSettingsModal() {
+      settingsModal.classList.remove('active');
+    }
+
+    document.getElementById('btnCloseSettingsModal').addEventListener('click', closeSettingsModal);
+    document.getElementById('btnCancelSettings').addEventListener('click', closeSettingsModal);
+    document.getElementById('btnClearAllModal').addEventListener('click', clearAllRecords);
+    settingsModal.addEventListener('click', (e) => {
+      if (e.target === settingsModal) closeSettingsModal();
+    });
+
+    // Preset button handlers
+    document.querySelectorAll('.preset-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const key = btn.getAttribute('data-preset');
+        const preset = PRESETS[key];
+        if (preset) {
+          cfgTitle.value = preset.title;
+          cfgSubtitle.value = preset.subtitle;
+          cfgProductSingular.value = preset.productSingular;
+          cfgProductPlural.value = preset.productPlural;
+          cfgDefaultCount.value = preset.defaultCount;
+          cfgUnitPrice.value = preset.unitPrice || 10;
+          cfgCurrency.value = preset.currency || 'Bs';
+        }
+      });
+    });
+
+    // Save Settings with resilient multi-tier fallback (Cloud root -> Cloud node -> LocalStorage)
+    document.getElementById('settingsForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      const updated = {
+        title: cfgTitle.value.trim() || DEFAULT_CONFIG.title,
+        subtitle: cfgSubtitle.value.trim() || DEFAULT_CONFIG.subtitle,
+        productSingular: cfgProductSingular.value.trim() || DEFAULT_CONFIG.productSingular,
+        productPlural: cfgProductPlural.value.trim() || DEFAULT_CONFIG.productPlural,
+        unitPrice: parseFloat(cfgUnitPrice.value) || 10,
+        currency: cfgCurrency.value.trim() || 'Bs',
+        defaultCount: parseInt(cfgDefaultCount.value, 10) || 3,
+        adminPass: cfgAdminPass.value.trim() || appConfig.adminPass || DEFAULT_CONFIG.adminPass
+      };
+
+      // Always save locally
+      localStorage.setItem('masaco_app_config', JSON.stringify(updated));
+      appConfig = updated;
+      applyConfig();
+      closeSettingsModal();
+
+      let savedInCloud = false;
+      try {
+        await set(ref(db, 'config'), updated);
+        savedInCloud = true;
+      } catch (err1) {
+        console.warn('Escritura en /config falló, intentando en /people/_app_config:', err1);
+        try {
+          await set(ref(db, 'people/_app_config'), updated);
+          savedInCloud = true;
+        } catch (err2) {
+          console.warn('Escritura en /people/_app_config falló:', err2);
+        }
+      }
+
+      if (savedInCloud) {
+        showToast('✨ Configuración y precios guardados y sincronizados');
+      } else {
+        showToast('✨ Configuración guardada en este dispositivo', 'warning');
+      }
+    });
+
     // Database Actions with Role Verification
-    function toggleMasaco(personKey, masacoIndex, currentDelivered) {
+    function toggleDeliveryItem(personKey, itemIndex, currentDelivered) {
       if (!isAdmin) {
         showToast('⚠️ Inicia sesión como Admin para modificar las entregas', 'warning');
         return;
       }
-      update(ref(db, `people/${personKey}/masacos/${masacoIndex}`), {
+      update(ref(db, `people/${personKey}/masacos/${itemIndex}`), {
         delivered: !currentDelivered
+      }).catch(err => {
+        showToast('Error al actualizar: ' + err.message, 'error');
       });
     }
-    window.toggleMasaco = toggleMasaco;
+    window.toggleDeliveryItem = toggleDeliveryItem;
 
-    function deletePerson(personKey) {
-      if (!isAdmin) {
-        showToast('⚠️ Solo administradores pueden eliminar personas', 'error');
-        return;
-      }
-      const person = allPeople[personKey];
-      const name = person ? person.name : 'esta persona';
-      if (confirm(`¿Estás seguro de eliminar a "${name}" y todos sus masacos?`)) {
-        remove(ref(db, `people/${personKey}`));
-        showToast(`Persona "${name}" eliminada`);
-      }
-    }
-    window.deletePerson = deletePerson;
-
-    function addMasacoToPerson(personKey) {
-      if (!isAdmin) {
-        showToast('⚠️ Solo administradores pueden agregar masacos', 'warning');
-        return;
-      }
-      const person = allPeople[personKey];
-      const name = prompt(`Agregar nuevo masaco para ${person ? person.name : 'la persona'}:`);
-      if (name && name.trim()) {
-        const masacos = person.masacos || [];
-        const updated = [...masacos, { name: name.trim(), delivered: false }];
-        update(ref(db, `people/${personKey}`), { masacos: updated });
-        showToast(`Masaco "${name.trim()}" agregado`);
-      }
-    }
-    window.addMasacoToPerson = addMasacoToPerson;
-
-    // Statistics Calculation
+    // Statistics Calculation (Operational + Financial KPI)
     function updateStats() {
-      const people = Object.values(allPeople);
-      const totalPeople = people.length;
-      let totalMasacos = 0;
-      let delivered = 0;
+      const validPeople = Object.entries(allPeople)
+        .filter(([key]) => !key.startsWith('_'))
+        .map(([, person]) => person);
 
-      people.forEach(p => {
-        if (p.masacos && Array.isArray(p.masacos)) {
-          totalMasacos += p.masacos.length;
-          p.masacos.forEach(m => {
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const curr = appConfig.currency || 'Bs';
+
+      const totalPeople = validPeople.length;
+      let totalItems = 0;
+      let delivered = 0;
+      let cashTotal = 0;
+      let qrTotal = 0;
+      let cardTotal = 0;
+      let pendingTotal = 0;
+
+      validPeople.forEach(p => {
+        const items = p.masacos || p.items;
+        if (items && Array.isArray(items)) {
+          totalItems += items.length;
+          items.forEach(m => {
             if (m.delivered) delivered++;
+            const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+            if (m.paid && m.paymentMethod === 'cash') cashTotal += price;
+            else if (m.paid && m.paymentMethod === 'qr') qrTotal += price;
+            else if (m.paid && m.paymentMethod === 'card') cardTotal += price;
+            else pendingTotal += price;
           });
         }
       });
 
-      const pending = totalMasacos - delivered;
-      const percent = totalMasacos > 0 ? Math.round((delivered / totalMasacos) * 100) : 0;
+      const percent = totalItems > 0 ? Math.round((delivered / totalItems) * 100) : 0;
 
       document.getElementById('totalPeople').textContent = totalPeople;
-      document.getElementById('totalDelivered').textContent = delivered;
-      document.getElementById('totalPending').textContent = pending;
-      document.getElementById('globalPercent').textContent = `${percent}% (${delivered}/${totalMasacos})`;
+      document.getElementById('kpiCashTotal').textContent = `${cashTotal} ${curr}`;
+      document.getElementById('kpiQrTotal').textContent = `${qrTotal + cardTotal} ${curr}`;
+      document.getElementById('kpiPendingTotal').textContent = `${pendingTotal} ${curr}`;
+
+      document.getElementById('globalPercent').textContent = `${percent}% (${delivered}/${totalItems})`;
       document.getElementById('globalProgressFill').style.width = `${percent}%`;
     }
 
-    // Board Rendering
+    // Filter Chips Event Listener
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      chip.addEventListener('click', () => {
+        document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        statusFilter = chip.getAttribute('data-filter');
+        renderBoard();
+      });
+    });
+
+    // Board Rendering with Modern UX, Payment Badges & Filters
     function renderBoard() {
       const container = document.getElementById('boardContainer');
-      const entries = Object.entries(allPeople);
+      const entries = Object.entries(allPeople).filter(([key]) => !key.startsWith('_'));
+      const singular = appConfig.productSingular || 'Producto';
+      const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const curr = appConfig.currency || 'Bs';
 
+      const totalCount = entries.length;
+
+      // Filter by Search Query and Status Filter
       const filtered = entries.filter(([key, person]) => {
-        if (!searchQuery) return true;
-        return (person.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+        // Text search
+        const matchesQuery = !searchQuery || (person.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+        if (!matchesQuery) return false;
+
+        // Status filter
+        const items = person.masacos || person.items || [];
+        const totalItems = items.length;
+        const deliveredCount = items.filter(m => m.delivered).length;
+        const isDeliveryComplete = totalItems > 0 && deliveredCount === totalItems;
+        const unpaidCount = items.filter(m => !m.paid || m.paymentMethod === 'pending').length;
+        const isAllPaid = totalItems > 0 && unpaidCount === 0;
+
+        if (statusFilter === 'unpaid') return unpaidCount > 0;
+        if (statusFilter === 'paid') return isAllPaid;
+        if (statusFilter === 'pending_delivery') return !isDeliveryComplete;
+        if (statusFilter === 'completed_delivery') return isDeliveryComplete;
+        return true;
       });
 
-      if (filtered.length === 0) {
-        const msg = searchQuery
-          ? `No se encontró a nadie que coincida con "${escapeHtml(searchQuery)}"`
-          : 'No hay personas registradas todavía.';
-        container.innerHTML = `<div class="empty-state">${msg}</div>`;
-        updateStats();
-        return;
+      // Update Results Counter
+      const resultsCountEl = document.getElementById('resultsCount');
+      if (resultsCountEl) {
+        if (totalCount === 0) {
+          resultsCountEl.textContent = 'Sin participantes';
+        } else if (filtered.length === totalCount) {
+          resultsCountEl.textContent = `${totalCount} ${totalCount === 1 ? 'persona' : 'personas'}`;
+        } else {
+          resultsCountEl.textContent = `Mostrando ${filtered.length} de ${totalCount} personas`;
+        }
       }
 
       updateStats();
 
+      if (filtered.length === 0) {
+        let msg = 'No hay personas registradas todavía.';
+        let icon = '👥';
+        if (searchQuery) {
+          msg = `No se encontró a nadie que coincida con "${escapeHtml(searchQuery)}"`;
+          icon = '🔍';
+        } else if (statusFilter === 'unpaid') {
+          msg = '¡Genial! No hay pagos pendientes en este momento.';
+          icon = '🎉';
+        } else if (statusFilter === 'paid') {
+          msg = 'Aún no hay personas con todos sus pedidos pagados.';
+          icon = '⏳';
+        } else if (statusFilter === 'pending_delivery') {
+          msg = '¡Genial! Todas las entregas están completadas.';
+          icon = '🎉';
+        } else if (statusFilter === 'completed_delivery') {
+          msg = 'Aún no hay entregas completadas al 100%.';
+          icon = '⏳';
+        }
+
+        container.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-icon">${icon}</div>
+            <div>${msg}</div>
+          </div>
+        `;
+        return;
+      }
+
       let html = '';
       filtered.forEach(([personKey, person]) => {
-        const masacos = person.masacos || [];
-        const totalMasacos = masacos.length;
-        const deliveredCount = masacos.filter(m => m.delivered).length;
-        const isComplete = totalMasacos > 0 && deliveredCount === totalMasacos;
-        const progressClass = deliveredCount === 0 ? 'progress-0' : (isComplete ? 'progress-complete' : 'progress-partial');
-        const barWidth = totalMasacos > 0 ? (deliveredCount / totalMasacos) * 100 : 0;
+        const items = person.masacos || person.items || [];
+        const totalItems = items.length;
+        const deliveredCount = items.filter(m => m.delivered).length;
+        const isDeliveryComplete = totalItems > 0 && deliveredCount === totalItems;
+        const deliveryProgressClass = deliveredCount === 0 ? 'progress-0' : (isDeliveryComplete ? 'progress-complete' : 'progress-partial');
+        const barWidth = totalItems > 0 ? (deliveredCount / totalItems) * 100 : 0;
+        const initials = getInitials(person.name);
+
+        // Person payment summary
+        let personTotalCost = 0;
+        let personPaidCost = 0;
+        let unpaidCount = 0;
+
+        items.forEach(m => {
+          const itemPrice = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+          personTotalCost += itemPrice;
+          if (m.paid && m.paymentMethod !== 'pending') {
+            personPaidCost += itemPrice;
+          } else {
+            unpaidCount++;
+          }
+        });
+
+        const isAllPaid = totalItems > 0 && unpaidCount === 0;
+        const paymentSummaryClass = isAllPaid ? 'all-paid' : 'has-pending';
+        const paymentSummaryText = isAllPaid
+          ? `✓ Pagado (${personTotalCost} ${curr})`
+          : `Debe ${personTotalCost - personPaidCost} ${curr}`;
 
         html += `
           <div class="person-card">
             <div class="person-header">
-              <span class="person-name">${escapeHtml(person.name)}</span>
-              <span class="person-progress ${progressClass}">${deliveredCount}/${totalMasacos}</span>
+              <div class="person-identity">
+                <div class="avatar-circle">${escapeHtml(initials)}</div>
+                <span class="person-name">${escapeHtml(person.name)}</span>
+              </div>
+              <div class="person-badges">
+                <span class="person-payment-summary ${paymentSummaryClass}">
+                  ${paymentSummaryText}
+                </span>
+                <span class="person-progress ${deliveryProgressClass}">
+                  ${isDeliveryComplete ? '✓ ' : ''}${deliveredCount}/${totalItems} ent.
+                </span>
+              </div>
             </div>
-            <div class="progress-bar">
-              <div class="progress-bar-fill ${isComplete ? 'complete' : ''}" style="width: ${barWidth}%"></div>
+            <div class="person-bar">
+              <div class="person-bar-fill ${isDeliveryComplete ? 'complete' : ''}" style="width: ${barWidth}%"></div>
             </div>
-            <div class="masaco-list">
+            <div class="items-list">
         `;
 
-        masacos.forEach((masaco, masacoIndex) => {
-          const itemDeliveredClass = masaco.delivered ? 'delivered' : '';
+        items.forEach((item, itemIndex) => {
+          const itemDeliveredClass = item.delivered ? 'delivered' : '';
           const itemInteractiveClass = isAdmin ? 'clickable' : 'readonly';
-          const onClickAttr = isAdmin
-            ? `onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})"`
-            : `onclick="toggleMasaco('${personKey}', ${masacoIndex}, ${masaco.delivered})" title="Modo solo lectura"`;
+          const onClickDelivery = isAdmin
+            ? `onclick="toggleDeliveryItem('${personKey}', ${itemIndex}, ${item.delivered})"`
+            : `onclick="toggleDeliveryItem('${personKey}', ${itemIndex}, ${item.delivered})" title="Modo solo lectura"`;
+
+          // Item tag (Adicional / Transferido)
+          const isAdditional = Boolean(item.isAdditional || itemIndex >= defaultCount || item.transferredFrom);
+          let tagHtml = '';
+
+          if (item.transferredFrom) {
+            tagHtml = `<span class="item-tag tag-transferred" title="Transferido de ${escapeHtml(item.transferredFrom)}">🔄 De: ${escapeHtml(item.transferredFrom)}</span>`;
+          } else if (isAdditional) {
+            tagHtml = `<span class="item-tag tag-additional">Adicional</span>`;
+          }
+
+          // Payment badge
+          const itemPrice = item.price !== undefined ? parseFloat(item.price) : defaultPrice;
+          let paymentBadgeClass = 'pending';
+          let paymentBadgeIcon = '🔴';
+          let paymentBadgeLabel = 'Por Pagar';
+
+          if (item.paid && item.paymentMethod === 'cash') {
+            paymentBadgeClass = 'cash';
+            paymentBadgeIcon = '💵';
+            paymentBadgeLabel = 'Efectivo';
+          } else if (item.paid && item.paymentMethod === 'qr') {
+            paymentBadgeClass = 'qr';
+            paymentBadgeIcon = '📱';
+            paymentBadgeLabel = 'QR/Transf.';
+          } else if (item.paid && item.paymentMethod === 'card') {
+            paymentBadgeClass = 'card';
+            paymentBadgeIcon = '💳';
+            paymentBadgeLabel = 'Tarjeta';
+          }
+
+          const onClickPayment = isAdmin
+            ? `onclick="openItemPaymentModal('${personKey}', ${itemIndex}, event)" title="Clic para configurar método de pago o precio"`
+            : `title="Estado de pago: ${paymentBadgeLabel}"`;
+
+          let miniActionsHtml = '';
+          if (isAdmin && isAdditional) {
+            miniActionsHtml = `
+              <div class="item-mini-actions" onclick="event.stopPropagation()">
+                <button type="button" class="btn-mini-action transfer" onclick="openTransferModal('${personKey}', ${itemIndex}, event)" title="Transferir a otra persona">🔄</button>
+                <button type="button" class="btn-mini-action delete" onclick="deleteSingleItem('${personKey}', ${itemIndex}, event)" title="Eliminar este ítem adicional">✕</button>
+              </div>
+            `;
+          }
 
           html += `
-            <div class="masaco-item ${itemDeliveredClass} ${itemInteractiveClass}" ${onClickAttr}>
-              <span class="masaco-item-number">${masacoIndex + 1}</span>
-              <div class="masaco-checkbox"></div>
-              <span class="masaco-item-name">${escapeHtml(masaco.name)}</span>
+            <div class="delivery-item ${itemDeliveredClass} ${itemInteractiveClass}" ${onClickDelivery}>
+              <span class="item-number">${itemIndex + 1}</span>
+              <div class="item-checkbox"></div>
+              <div class="item-info">
+                <span class="item-name">${escapeHtml(item.name)}</span>
+                ${tagHtml}
+                <span class="payment-badge ${paymentBadgeClass}" ${onClickPayment}>
+                  <span>${paymentBadgeIcon}</span>
+                  <span>${itemPrice} ${curr} (${paymentBadgeLabel})</span>
+                </span>
+              </div>
+              ${miniActionsHtml}
             </div>
           `;
         });
@@ -1291,8 +3309,11 @@
         if (isAdmin) {
           html += `
             <div class="person-actions">
-              <button class="add-masaco-btn" onclick="addMasacoToPerson('${personKey}')">+ Agregar masaco</button>
-              <button class="delete-btn" onclick="deletePerson('${personKey}')">Eliminar</button>
+              <div class="person-actions-left">
+                <button class="add-item-btn" onclick="addItemToPerson('${personKey}')">+ Agregar ${escapeHtml(singular.toLowerCase())}</button>
+                <button class="pay-all-btn" onclick="openPayAllModal('${personKey}', event)">💰 Cobrar Todo</button>
+              </div>
+              <button class="delete-btn" onclick="deletePerson('${personKey}')">🗑️ Eliminar Persona</button>
             </div>
           `;
         }
@@ -1303,16 +3324,50 @@
       container.innerHTML = html;
     }
 
-    // Realtime Database Listener
-    const peopleRef = ref(db, 'people');
-    onValue(peopleRef, (snapshot) => {
-      allPeople = snapshot.val() || {};
+    // Search Input Controls
+    const searchInput = document.getElementById('searchInput');
+    const searchClear = document.getElementById('searchClear');
+
+    searchInput.addEventListener('input', function (e) {
+      searchQuery = e.target.value.trim();
+      if (searchQuery) {
+        searchClear.classList.add('show');
+      } else {
+        searchClear.classList.remove('show');
+      }
       renderBoard();
     });
 
-    // Search filter
-    document.getElementById('searchInput').addEventListener('input', function (e) {
-      searchQuery = e.target.value.trim();
+    searchClear.addEventListener('click', function () {
+      searchInput.value = '';
+      searchQuery = '';
+      searchClear.classList.remove('show');
+      searchInput.focus();
+      renderBoard();
+    });
+
+    // Realtime Database Listeners
+    // 1. Config listener (syncs title, product name, prices across all users)
+    const configRef = ref(db, 'config');
+    onValue(configRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        appConfig = { ...DEFAULT_CONFIG, ...data };
+        localStorage.setItem('masaco_app_config', JSON.stringify(appConfig));
+        applyConfig();
+      }
+    });
+
+    // 2. People listener (syncs data across all users)
+    const peopleRef = ref(db, 'people');
+    onValue(peopleRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      if (data._app_config) {
+        appConfig = { ...DEFAULT_CONFIG, ...data._app_config };
+        localStorage.setItem('masaco_app_config', JSON.stringify(appConfig));
+        applyConfig();
+      }
+      allPeople = data;
       renderBoard();
     });
 
