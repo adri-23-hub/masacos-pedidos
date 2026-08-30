@@ -11,6 +11,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
+  <!-- SheetJS (xlsx) for Client-Side Excel Generation -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <!-- html2pdf for Client-Side SaaS PDF Generation -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
   <style>
     :root {
       --bg-dark: #090d16;
@@ -208,15 +214,41 @@
     }
 
     .btn-action.cash {
-      background: rgba(16, 185, 129, 0.15);
-      color: #6ee7b7;
-      border: 1px solid rgba(16, 185, 129, 0.3);
+      background: rgba(59, 130, 246, 0.15);
+      color: #93c5fd;
+      border: 1px solid rgba(59, 130, 246, 0.3);
     }
 
     .btn-action.cash:hover {
-      background: rgba(16, 185, 129, 0.25);
+      background: rgba(59, 130, 246, 0.25);
+      border-color: #3b82f6;
+      color: #fff;
+    }
+
+    .btn-action.excel {
+      background: rgba(16, 185, 129, 0.15);
+      color: #6ee7b7;
+      border: 1px solid rgba(16, 185, 129, 0.35);
+    }
+
+    .btn-action.excel:hover {
+      background: rgba(16, 185, 129, 0.28);
       border-color: #10b981;
       color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-action.pdf {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border: 1px solid rgba(244, 63, 94, 0.35);
+    }
+
+    .btn-action.pdf:hover {
+      background: rgba(244, 63, 94, 0.28);
+      border-color: #f43f5e;
+      color: #fff;
+      transform: translateY(-1px);
     }
 
     .btn-action.danger {
@@ -1559,6 +1591,12 @@
         <span class="role-badge viewer" id="roleBadge">👁️ Espectador (Solo Lectura)</span>
       </div>
       <div class="role-actions" id="roleActions">
+        <button class="btn-action pdf" id="btnExportPdfNav">
+          📕 Reporte PDF
+        </button>
+        <button class="btn-action excel" id="btnExportExcelNav">
+          📗 Reporte Excel
+        </button>
         <button class="btn-action cash" id="btnOpenCashReport">
           📊 Cuadre de Caja
         </button>
@@ -1765,7 +1803,7 @@
               <button type="button" class="preset-btn" data-preset="empanadas">🥟 Empanadas</button>
               <button type="button" class="preset-btn" data-preset="rifas">🎟️ Rifas / Boletos</button>
               <button type="button" class="preset-btn" data-preset="platos">🍽️ Platos / Cenas</button>
-              <button type="button" data-preset="pedidos" class="preset-btn">📦 Pedidos Varios</button>
+              <button type="button" class="preset-btn" data-preset="pedidos">📦 Pedidos Varios</button>
             </div>
           </div>
 
@@ -1982,8 +2020,14 @@
         </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn-action pdf" id="btnExportPdfModal">
+          📕 Descargar PDF (.pdf)
+        </button>
+        <button type="button" class="btn-action excel" id="btnExportExcelModal">
+          📗 Descargar Excel (.xlsx)
+        </button>
         <button type="button" class="btn-action" id="btnCopyReport">
-          📋 Copiar Reporte para WhatsApp
+          📋 Copiar Reporte WhatsApp
         </button>
         <button type="button" class="btn-action primary" id="btnCloseCashReportBtn">Cerrar</button>
       </div>
@@ -2818,10 +2862,13 @@
     const btnCloseCashReportModal = document.getElementById('btnCloseCashReportModal');
     const btnCloseCashReportBtn = document.getElementById('btnCloseCashReportBtn');
     const btnCopyReport = document.getElementById('btnCopyReport');
+    const btnExportExcelModal = document.getElementById('btnExportExcelModal');
+    const btnExportPdfModal = document.getElementById('btnExportPdfModal');
 
     function openCashReport() {
       const curr = appConfig.currency || 'Bs';
       const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const plural = appConfig.productPlural || 'Productos';
       const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
 
       let totalItems = 0;
@@ -2836,6 +2883,7 @@
       validPeople.forEach(([k, person]) => {
         const items = person.masacos || person.items || [];
         let personPending = 0;
+        let personPendingCount = 0;
 
         items.forEach((m) => {
           totalItems++;
@@ -2853,11 +2901,12 @@
           } else {
             totalPending += price;
             personPending += price;
+            personPendingCount++;
           }
         });
 
         if (personPending > 0) {
-          debtors.push({ name: person.name, amount: personPending });
+          debtors.push({ name: person.name, amount: personPending, count: personPendingCount });
         }
       });
 
@@ -2883,7 +2932,7 @@
       } else {
         debtorsListEl.innerHTML = debtors.map(d => `
           <div class="debtor-row">
-            <span>👤 ${escapeHtml(d.name)}</span>
+            <span>👤 ${escapeHtml(d.name)} — <span style="color: #94a3b8; font-size: 0.78rem;">Debe ${d.count} ${escapeHtml(plural.toLowerCase())}</span></span>
             <strong style="color: #fda4af;">${d.amount} ${curr}</strong>
           </div>
         `).join('');
@@ -2902,6 +2951,7 @@
     btnCopyReport.addEventListener('click', () => {
       const curr = appConfig.currency || 'Bs';
       const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const plural = appConfig.productPlural || 'Productos';
       const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
 
       let totalCash = 0;
@@ -2916,6 +2966,7 @@
       validPeople.forEach(([k, person]) => {
         const items = person.masacos || person.items || [];
         let personPending = 0;
+        let personPendingCount = 0;
 
         items.forEach(m => {
           totalItems++;
@@ -2930,10 +2981,11 @@
           else {
             totalPending += price;
             personPending += price;
+            personPendingCount++;
           }
         });
 
-        if (personPending > 0) debtors.push(`• ${person.name}: ${personPending} ${curr}`);
+        if (personPending > 0) debtors.push(`• ${person.name}: Debe ${personPendingCount} ${plural.toLowerCase()} (${personPending} ${curr})`);
       });
 
       const text = `📊 *ESTADÍSTICAS Y CUADRE DE CAJA - ${appConfig.title.toUpperCase()}*\n` +
@@ -2958,6 +3010,436 @@
         showToast('No se pudo copiar automáticamente', 'warning');
       });
     });
+
+    // 📗 EXCEL EXPORT FEATURE (Sin tocar la base de datos)
+    function exportExcelReport() {
+      if (typeof XLSX === 'undefined') {
+        showToast('Cargando librería de Excel, por favor intenta en 3 segundos...', 'warning');
+        return;
+      }
+
+      const curr = appConfig.currency || 'Bs';
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
+      const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
+
+      if (validPeople.length === 0) {
+        showToast('No hay registros de participantes para exportar.', 'warning');
+        return;
+      }
+
+      // Sheet 1: Resumen por Participante
+      const participantsData = [];
+      // Sheet 2: Detalle por Pedido
+      const ordersDetailData = [];
+
+      let totalItems = 0;
+      let totalOrdered = 0;
+      let totalDelivered = 0;
+      let totalCash = 0;
+      let totalQr = 0;
+      let totalCard = 0;
+      let totalPending = 0;
+
+      validPeople.forEach(([personKey, person], index) => {
+        const items = person.masacos || person.items || [];
+        const pTotal = items.length;
+        let pOrdered = 0;
+        let pDelivered = 0;
+        let pCash = 0;
+        let pQr = 0;
+        let pCard = 0;
+        let pPendingAmount = 0;
+        let pPendingCount = 0;
+        let pTotalCost = 0;
+
+        items.forEach((m, itemIndex) => {
+          totalItems++;
+          const isItemOrdered = Boolean(m.ordered || m.delivered);
+          const isItemDelivered = Boolean(m.delivered);
+          if (isItemOrdered) { totalOrdered++; pOrdered++; }
+          if (isItemDelivered) { totalDelivered++; pDelivered++; }
+
+          const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+          pTotalCost += price;
+
+          let paymentMethodStr = 'Por Cobrar';
+          let isPaid = false;
+
+          if (m.paid && m.paymentMethod === 'cash') {
+            totalCash += price;
+            pCash += price;
+            paymentMethodStr = 'Efectivo';
+            isPaid = true;
+          } else if (m.paid && m.paymentMethod === 'qr') {
+            totalQr += price;
+            pQr += price;
+            paymentMethodStr = 'QR / Banco';
+            isPaid = true;
+          } else if (m.paid && m.paymentMethod === 'card') {
+            totalCard += price;
+            pCard += price;
+            paymentMethodStr = 'Tarjeta';
+            isPaid = true;
+          } else {
+            totalPending += price;
+            pPendingAmount += price;
+            pPendingCount++;
+          }
+
+          // Add to detailed orders sheet
+          ordersDetailData.push({
+            "Nro": ordersDetailData.length + 1,
+            "Participante": person.name || 'Sin nombre',
+            "Ítem / Pedido": m.name || `${singular} ${itemIndex + 1}`,
+            "Tipo": m.isAdditional ? 'Adicional' : 'Base',
+            "Transferido De": m.transferredFrom || '—',
+            "Estado Venta": isItemOrdered ? 'Encargado / Vendido' : 'Libre / Disponible',
+            "Estado Entrega": isItemDelivered ? 'Entregado' : 'Por Entregar',
+            "Estado Pago": isPaid ? 'PAGADO' : 'POR COBRAR',
+            "Método de Pago": paymentMethodStr,
+            [`Precio (${curr})`]: price
+          });
+        });
+
+        const pFree = pTotal - pOrdered;
+        const pPaidAmount = pCash + pQr + pCard;
+        const isDebtor = pPendingAmount > 0;
+
+        participantsData.push({
+          "Nro": index + 1,
+          "Nombre del Participante": person.name || 'Sin nombre',
+          [`Total ${plural} Asignados`]: pTotal,
+          "Encargados (Vendidos)": pOrdered,
+          "Por Vender (Libres)": pFree,
+          "Entregados Físicamente": pDelivered,
+          [`Total a Pagar (${curr})`]: pTotalCost,
+          [`Total Cobrado (${curr})`]: pPaidAmount,
+          [`Efectivo (${curr})`]: pCash,
+          [`QR / Banco (${curr})`]: pQr,
+          [`Tarjeta (${curr})`]: pCard,
+          [`Debe (Cant. ${plural})`]: pPendingCount,
+          [`Monto Deuda (${curr})`]: pPendingAmount,
+          "Estado": isDebtor ? `🔴 DEBE ${pPendingCount} (${pPendingAmount} ${curr})` : "✅ AL DÍA"
+        });
+      });
+
+      // Create Workbook
+      const wb = XLSX.utils.book_new();
+
+      // Create Sheet 1: Resumen de Participantes
+      const ws1 = XLSX.utils.json_to_sheet(participantsData);
+      ws1['!cols'] = [
+        { wch: 6 },  // Nro
+        { wch: 26 }, // Nombre
+        { wch: 18 }, // Total Asignados
+        { wch: 18 }, // Encargados
+        { wch: 18 }, // Por Vender
+        { wch: 18 }, // Entregados
+        { wch: 16 }, // Total a Pagar
+        { wch: 16 }, // Total Cobrado
+        { wch: 14 }, // Efectivo
+        { wch: 14 }, // QR
+        { wch: 14 }, // Tarjeta
+        { wch: 18 }, // Debe Cantidad
+        { wch: 16 }, // Monto Deuda
+        { wch: 22 }  // Estado
+      ];
+      XLSX.utils.book_append_sheet(wb, ws1, "Resumen Participantes");
+
+      // Create Sheet 2: Detalle de Pedidos
+      const ws2 = XLSX.utils.json_to_sheet(ordersDetailData);
+      ws2['!cols'] = [
+        { wch: 6 },  // Nro
+        { wch: 24 }, // Participante
+        { wch: 20 }, // Item
+        { wch: 12 }, // Tipo
+        { wch: 20 }, // Transferido De
+        { wch: 20 }, // Estado Venta
+        { wch: 18 }, // Estado Entrega
+        { wch: 16 }, // Estado Pago
+        { wch: 16 }, // Metodo Pago
+        { wch: 14 }  // Precio
+      ];
+      XLSX.utils.book_append_sheet(wb, ws2, "Detalle de Pedidos");
+
+      // File Name Generation
+      const cleanTitle = (appConfig.title || 'Reporte_Ventas').replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const now = new Date();
+      const dateStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      const fileName = `${cleanTitle}_${dateStr}.xlsx`;
+
+      XLSX.writeFile(wb, fileName);
+      showToast(`📗 ¡Reporte Excel "${fileName}" generado y descargado!`);
+    }
+
+    // 📕 PDF EXPORT FEATURE (Diseño de Documento Ejecutivo Limpio, Proporcionado y Claro)
+    function exportPdfReport() {
+      if (typeof html2pdf === 'undefined') {
+        showToast('Cargando motor de PDF, por favor espera 3 segundos...', 'warning');
+        return;
+      }
+
+      const curr = appConfig.currency || 'Bs';
+      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
+      const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
+      const validPeople = Object.entries(allPeople).filter(([k]) => !k.startsWith('_'));
+
+      if (validPeople.length === 0) {
+        showToast('No hay registros de participantes para generar el PDF.', 'warning');
+        return;
+      }
+
+      let totalItems = 0;
+      let totalOrdered = 0;
+      let totalDelivered = 0;
+      let totalCash = 0;
+      let totalQr = 0;
+      let totalCard = 0;
+      let totalPending = 0;
+      let totalExpectedRevenue = 0;
+      const debtors = [];
+
+      const rowsHtml = validPeople.map(([personKey, person], index) => {
+        const items = person.masacos || person.items || [];
+        const pTotal = items.length;
+        let pOrdered = 0;
+        let pDelivered = 0;
+        let pCash = 0;
+        let pQr = 0;
+        let pCard = 0;
+        let pPending = 0;
+        let pPendingCount = 0;
+        let pTotalCost = 0;
+
+        items.forEach((m) => {
+          totalItems++;
+          const isItemOrdered = Boolean(m.ordered || m.delivered);
+          const isItemDelivered = Boolean(m.delivered);
+          if (isItemOrdered) { totalOrdered++; pOrdered++; }
+          if (isItemDelivered) { totalDelivered++; pDelivered++; }
+
+          const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
+          totalExpectedRevenue += price;
+          pTotalCost += price;
+
+          if (m.paid && m.paymentMethod === 'cash') { totalCash += price; pCash += price; }
+          else if (m.paid && m.paymentMethod === 'qr') { totalQr += price; pQr += price; }
+          else if (m.paid && m.paymentMethod === 'card') { totalCard += price; pCard += price; }
+          else { totalPending += price; pPending += price; pPendingCount++; }
+        });
+
+        if (pPending > 0) debtors.push({ name: person.name, amount: pPending, count: pPendingCount });
+
+        const pFree = pTotal - pOrdered;
+        const pPaid = pCash + pQr + pCard;
+        const isDebtor = pPending > 0;
+
+        return `
+          <tr style="border-bottom: 1px solid #e2e8f0; background: ${index % 2 === 0 ? '#ffffff' : '#f8fafc'}; font-size: 9.5px;">
+            <td style="padding: 5px 2px; text-align: center; color: #64748b; font-weight: 600;">${index + 1}</td>
+            <td style="padding: 5px 4px; font-weight: 700; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${escapeHtml(person.name)}</td>
+            <td style="padding: 5px 2px; text-align: center; color: #1e293b;">${pTotal}</td>
+            <td style="padding: 5px 2px; text-align: center; color: #b45309; font-weight: 700;">${pOrdered}</td>
+            <td style="padding: 5px 2px; text-align: center; color: #64748b;">${pFree}</td>
+            <td style="padding: 5px 2px; text-align: center; color: #15803d; font-weight: 700;">${pDelivered}</td>
+            <td style="padding: 5px 3px; text-align: right; color: #334155;">${pTotalCost} ${curr}</td>
+            <td style="padding: 5px 3px; text-align: right; color: #15803d; font-weight: 700;">${pPaid} ${curr}</td>
+            <td style="padding: 5px 2px; text-align: center; color: ${isDebtor ? '#b91c1c' : '#64748b'}; font-weight: ${isDebtor ? '800' : 'normal'};">
+              ${isDebtor ? `${pPendingCount}` : '0'}
+            </td>
+            <td style="padding: 5px 3px; text-align: right; color: ${isDebtor ? '#b91c1c' : '#94a3b8'}; font-weight: ${isDebtor ? '700' : 'normal'};">
+              ${isDebtor ? `${pPending} ${curr}` : '0 ' + curr}
+            </td>
+            <td style="padding: 5px 2px; text-align: center;">
+              <span style="display: inline-block; padding: 2px 4px; border-radius: 9999px; font-size: 8.5px; font-weight: 700; white-space: nowrap; ${isDebtor ? 'background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;' : 'background: #dcfce7; color: #166534; border: 1px solid #86efac;'}">
+                ${isDebtor ? `🔴 Debe ${pPendingCount}` : '✅ Al Día'}
+              </span>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      const totalRevenue = totalCash + totalQr + totalCard;
+      const totalAvailable = totalItems - totalOrdered;
+      const orderedPercent = totalItems > 0 ? Math.round((totalOrdered / totalItems) * 100) : 0;
+      const deliveredPercent = totalItems > 0 ? Math.round((totalDelivered / totalItems) * 100) : 0;
+
+      const now = new Date();
+      const dateStr = now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      // PDF Template Element (Centrado Perfecto en A4 sin desbordes ni desplazamientos)
+      const pdfContainer = document.createElement('div');
+      pdfContainer.style.position = 'fixed';
+      pdfContainer.style.left = '0';
+      pdfContainer.style.top = '0';
+      pdfContainer.style.width = '740px';
+      pdfContainer.style.zIndex = '-9999';
+      pdfContainer.style.background = '#ffffff';
+      pdfContainer.style.color = '#0f172a';
+      pdfContainer.style.fontFamily = "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif";
+      pdfContainer.style.boxSizing = 'border-box';
+      pdfContainer.style.padding = '0';
+
+      pdfContainer.innerHTML = `
+        <div style="background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; padding: 14px; box-sizing: border-box; width: 100%;">
+          <!-- Header -->
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+            <div>
+              <h1 style="font-size: 18px; font-weight: 800; color: #0f172a; margin: 0 0 2px 0; letter-spacing: -0.01em;">
+                ${escapeHtml(appConfig.title)}
+              </h1>
+              <div style="font-size: 11.5px; color: #475569; font-weight: 500;">
+                ${escapeHtml(appConfig.subtitle)}
+              </div>
+            </div>
+            <div style="text-align: right;">
+              <div style="background: #f1f5f9; border: 1px solid #cbd5e1; padding: 3px 8px; border-radius: 4px; font-size: 10px; color: #334155; font-weight: 600;">
+                📅 ${dateStr}
+              </div>
+              <div style="font-size: 9px; color: #64748b; margin-top: 3px; font-weight: 600;">
+                REPORTE OFICIAL DE CONTROL
+              </div>
+            </div>
+          </div>
+
+          <!-- Operational KPIs (Light Mode) -->
+          <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 5px;">
+            📦 Resumen de Pedidos y Ventas
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 12px;">
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid #2563eb; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #1d4ed8;">${validPeople.length}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Personas</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid #0284c7; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #0369a1;">${totalItems}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Total ${plural}</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid #d97706; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #b45309;">${totalOrdered} <span style="font-size: 9.5px; font-weight: 600;">(${orderedPercent}%)</span></div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Encargados</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid #64748b; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #334155;">${totalAvailable}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Por Vender</div>
+            </div>
+            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-top: 3px solid #16a34a; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #15803d;">${totalDelivered} <span style="font-size: 9.5px; font-weight: 600;">(${deliveredPercent}%)</span></div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #64748b; text-transform: uppercase;">Entregados</div>
+            </div>
+          </div>
+
+          <!-- Financial KPIs (Light Mode) -->
+          <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 5px;">
+            💵 Cuadre Financiero y Recaudación
+          </div>
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; margin-bottom: 12px;">
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-top: 3px solid #16a34a; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #15803d;">${totalRevenue} ${curr}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #166534; text-transform: uppercase;">Total Recaudado</div>
+            </div>
+            <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-top: 3px solid #2563eb; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #1d4ed8;">${totalCash} ${curr}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #1e40af; text-transform: uppercase;">💵 Efectivo en Caja</div>
+            </div>
+            <div style="background: #faf5ff; border: 1px solid #e9d5ff; border-top: 3px solid #9333ea; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #7e22ce;">${totalQr + totalCard} ${curr}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #6b21a8; text-transform: uppercase;">📱 QR / Banco</div>
+            </div>
+            <div style="background: #fff1f2; border: 1px solid #fecdd3; border-top: 3px solid #e11d48; border-radius: 5px; padding: 6px 3px; text-align: center;">
+              <div style="font-size: 15px; font-weight: 800; color: #be123c;">${totalPending} ${curr}</div>
+              <div style="font-size: 8.5px; font-weight: 700; color: #9f1239; text-transform: uppercase;">🔴 Saldo por Cobrar</div>
+            </div>
+          </div>
+
+          <!-- Detailed Table (100% Centrada y sin desbordes) -->
+          <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 5px;">
+            👥 Detalle Individual por Participante
+          </div>
+          <table style="width: 100%; table-layout: fixed; border-collapse: collapse; border: 1px solid #cbd5e1; border-radius: 5px; overflow: hidden; margin-bottom: 10px;">
+            <thead>
+              <tr style="background: #f1f5f9; font-size: 9px; color: #334155; text-transform: uppercase; border-bottom: 2px solid #cbd5e1;">
+                <th style="width: 4%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0;">#</th>
+                <th style="width: 23%; padding: 6px 4px; text-align: left; border-right: 1px solid #e2e8f0;">Participante</th>
+                <th style="width: 6%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0;" title="Total Asignados">Asig.</th>
+                <th style="width: 6%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0;" title="Encargados / Vendidos">Vend.</th>
+                <th style="width: 6%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0;" title="Por Vender (Libres)">Libres</th>
+                <th style="width: 6%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0;" title="Entregados Físicamente">Entreg.</th>
+                <th style="width: 9%; padding: 6px 3px; text-align: right; border-right: 1px solid #e2e8f0;">Total</th>
+                <th style="width: 9%; padding: 6px 3px; text-align: right; border-right: 1px solid #e2e8f0;">Cobrado</th>
+                <th style="width: 9%; padding: 6px 1px; text-align: center; border-right: 1px solid #e2e8f0; color: #b91c1c;" title="Cantidad de ${plural} que debe">Debe (Cant)</th>
+                <th style="width: 10%; padding: 6px 3px; text-align: right; border-right: 1px solid #e2e8f0; color: #b91c1c;">Monto Deuda</th>
+                <th style="width: 12%; padding: 6px 2px; text-align: center;">Estado</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rowsHtml}
+            </tbody>
+          </table>
+
+          ${debtors.length > 0 ? `
+            <!-- Debtors Warning Box -->
+            <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 5px; padding: 6px 10px; margin-top: 6px;">
+              <div style="font-size: 9.5px; font-weight: 700; color: #991b1b; margin-bottom: 3px;">
+                ⚠️ Participantes con Deuda Pendiente (${debtors.length}):
+              </div>
+              <div style="display: flex; flex-wrap: wrap; gap: 4px; font-size: 9px;">
+                ${debtors.map(d => `<span style="background: #ffffff; padding: 2px 6px; border-radius: 3px; border: 1px solid #fca5a5; color: #0f172a;"><strong>${escapeHtml(d.name)}</strong>: <span style="color: #b91c1c; font-weight: 700;">Debe ${d.count} ${escapeHtml(plural.toLowerCase())} (${d.amount} ${curr})</span></span>`).join('')}
+              </div>
+            </div>
+          ` : `
+            <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 5px; padding: 6px 10px; font-size: 9.5px; color: #166534; text-align: center; font-weight: 700;">
+              🎉 ¡Excelente! Todos los pedidos están 100% cobrados y al día.
+            </div>
+          `}
+
+          <!-- Footer -->
+          <div style="margin-top: 10px; pt: 6px; border-top: 1px solid #e2e8f0; text-align: center; font-size: 8.5px; color: #94a3b8;">
+            Documento generado automáticamente • Sistema de Control de Pedidos y Entregas
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(pdfContainer);
+
+      showToast('Generando documento PDF centrado...', 'warning');
+
+      const cleanTitle = (appConfig.title || 'Reporte_Ventas').replace(/[^a-zA-Z0-9_\-]/g, '_');
+      const dateFileStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+      const fileName = `${cleanTitle}_${dateFileStr}.pdf`;
+
+      const opt = {
+        margin: [6, 6, 6, 6],
+        filename: fileName,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          backgroundColor: '#ffffff',
+          scrollX: 0,
+          scrollY: 0
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+
+      html2pdf().set(opt).from(pdfContainer).save().then(() => {
+        pdfContainer.remove();
+        showToast(`📕 ¡Reporte PDF "${fileName}" generado y descargado!`);
+      }).catch((err) => {
+        pdfContainer.remove();
+        console.error('Error generando PDF:', err);
+        showToast('Error al generar PDF: ' + err.message, 'error');
+      });
+    }
+
+    document.getElementById('btnExportExcelNav').addEventListener('click', exportExcelReport);
+    btnExportExcelModal.addEventListener('click', exportExcelReport);
+    document.getElementById('btnExportPdfNav').addEventListener('click', exportPdfReport);
+    btnExportPdfModal.addEventListener('click', exportPdfReport);
 
     // Option 1: Toggle Ordered (Encargado) and Delivery (Entregado)
     function toggleOrderedItem(personKey, itemIndex, currentOrdered, event) {
@@ -3034,6 +3516,12 @@
         roleBadge.innerHTML = '🛡️ Administrador';
 
         roleActions.innerHTML = `
+          <button class="btn-action pdf" id="btnExportPdfNav">
+            📕 Reporte PDF
+          </button>
+          <button class="btn-action excel" id="btnExportExcelNav">
+            📗 Reporte Excel
+          </button>
           <button class="btn-action cash" id="btnOpenCashReportNav">
             📊 Cuadre de Caja
           </button>
@@ -3044,6 +3532,8 @@
             🚪 Salir
           </button>
         `;
+        document.getElementById('btnExportPdfNav').addEventListener('click', exportPdfReport);
+        document.getElementById('btnExportExcelNav').addEventListener('click', exportExcelReport);
         document.getElementById('btnOpenCashReportNav').addEventListener('click', openCashReport);
         document.getElementById('btnOpenSettings').addEventListener('click', openSettingsModal);
         document.getElementById('btnLogout').addEventListener('click', handleLogout);
@@ -3099,6 +3589,12 @@
         roleBadge.innerHTML = '👁️ Espectador (Solo Lectura)';
 
         roleActions.innerHTML = `
+          <button class="btn-action pdf" id="btnExportPdfNav">
+            📕 Reporte PDF
+          </button>
+          <button class="btn-action excel" id="btnExportExcelNav">
+            📗 Reporte Excel
+          </button>
           <button class="btn-action cash" id="btnOpenCashReportNav">
             📊 Cuadre de Caja
           </button>
@@ -3106,6 +3602,8 @@
             🔑 Acceso Admin
           </button>
         `;
+        document.getElementById('btnExportPdfNav').addEventListener('click', exportPdfReport);
+        document.getElementById('btnExportExcelNav').addEventListener('click', exportExcelReport);
         document.getElementById('btnOpenCashReportNav').addEventListener('click', openCashReport);
         document.getElementById('btnOpenLogin').addEventListener('click', openLoginModal);
 
@@ -3562,7 +4060,7 @@
         const paymentSummaryClass = isAllPaid ? 'all-paid' : 'has-pending';
         const paymentSummaryText = isAllPaid
           ? `✓ Pagado (${personTotalCost} ${curr})`
-          : `Debe ${personTotalCost - personPaidCost} ${curr}`;
+          : `Debe ${unpaidCount} ${plural.toLowerCase()} (${personTotalCost - personPaidCost} ${curr})`;
 
         html += `
           <div class="person-card">
