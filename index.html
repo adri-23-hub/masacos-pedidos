@@ -3952,6 +3952,7 @@
       const container = document.getElementById('boardContainer');
       const entries = Object.entries(allPeople).filter(([key]) => !key.startsWith('_'));
       const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
       const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
       const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
       const curr = appConfig.currency || 'Bs';
