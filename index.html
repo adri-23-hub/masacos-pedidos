@@ -1575,6 +1575,153 @@
         grid-template-columns: 1fr;
       }
     }
+
+    /* Activities Modal */
+    .activities-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: 55vh;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .activity-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      background: rgba(15, 23, 42, 0.65);
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .activity-row:hover {
+      background: rgba(30, 41, 59, 0.7);
+      border-color: rgba(255, 255, 255, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .activity-row.active {
+      border-color: var(--primary);
+      background: rgba(249, 115, 22, 0.08);
+      box-shadow: 0 0 12px rgba(249, 115, 22, 0.12);
+    }
+
+    .activity-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .activity-name {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 0.2rem;
+    }
+
+    .activity-row.active .activity-name {
+      color: var(--primary);
+    }
+
+    .activity-meta {
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .activity-meta span {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .activity-actions {
+      display: flex;
+      gap: 0.35rem;
+      flex-shrink: 0;
+    }
+
+    .activity-action-btn {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border-radius: 6px;
+      padding: 0.35rem 0.5rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      line-height: 1;
+    }
+
+    .activity-action-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text-main);
+      transform: translateY(-1px);
+    }
+
+    .activity-action-btn.danger:hover {
+      background: rgba(244, 63, 94, 0.15);
+      color: #fda4af;
+      border-color: rgba(244, 63, 94, 0.3);
+    }
+
+    .activity-action-btn.primary:hover {
+      background: rgba(249, 115, 22, 0.15);
+      color: var(--primary);
+      border-color: rgba(249, 115, 22, 0.3);
+    }
+
+    .activity-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--text-dim);
+      font-size: 0.9rem;
+    }
+
+    .activity-empty-icon {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+      opacity: 0.5;
+    }
+
+    .activity-active-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: rgba(249, 115, 22, 0.15);
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      padding: 0.1rem 0.45rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .activity-rename-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-focus);
+      color: var(--text-main);
+      border-radius: 6px;
+      padding: 0.4rem 0.6rem;
+      font-size: 0.9rem;
+      font-family: inherit;
+      width: 100%;
+      outline: none;
+    }
+
+    .board-admin-buttons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
   </style>
 </head>
 
@@ -1882,30 +2029,34 @@
             <div>Persona: <strong id="paymentPersonName"></strong></div>
           </div>
 
-          <label style="margin-bottom: 0.5rem;">Selecciona el Método de Pago:</label>
-          <div class="payment-options-grid" id="paymentOptionsGrid">
-            <button type="button" class="payment-option-btn" data-method="cash">
-              <span class="opt-icon">💵</span>
-              <span>Efectivo (Caja)</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="qr">
-              <span class="opt-icon">📱</span>
-              <span>QR / Transferencia</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="card">
-              <span class="opt-icon">💳</span>
-              <span>Tarjeta / Otro</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="pending">
-              <span class="opt-icon">🔴</span>
-              <span>Por Cobrar (Pendiente)</span>
-            </button>
-          </div>
-
           <div class="form-group">
-            <label for="paymentItemPrice">Precio de este pedido (<span class="currency-label">Bs</span>):</label>
+            <label for="paymentItemPrice">Precio Total del Pedido (<span class="currency-label">Bs</span>):</label>
             <input type="number" id="paymentItemPrice" min="0" step="0.5" required>
           </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; margin-top: 1rem;">
+            <label style="margin: 0;">Desglose de Pagos:</label>
+            <span id="paymentStatusBadge" style="font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.1); color: var(--text-muted);">Calculando...</span>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">💵</span> Efectivo</label>
+              <input type="number" id="payInputCash" min="0" step="0.5" value="0">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">📱</span> QR</label>
+              <input type="number" id="payInputQr" min="0" step="0.5" value="0">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">💳</span> Tarjeta</label>
+              <input type="number" id="payInputCard" min="0" step="0.5" value="0">
+            </div>
+          </div>
+
+          <button type="button" class="btn-action" id="btnMarkPending" style="width: 100%; justify-content: center; margin-bottom: 0.5rem;">
+            🔴 Limpiar y Marcar Pendiente
+          </button>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn-action" id="btnCancelItemPayment">Cancelar</button>
@@ -1930,24 +2081,24 @@
             <div>Pedidos pendientes: <strong id="payAllItemsCount"></strong></div>
           </div>
 
-          <label style="margin-bottom: 0.5rem;">Método con el que cancela la totalidad:</label>
-          <div class="payment-options-grid" id="payAllOptionsGrid">
-            <button type="button" class="payment-option-btn selected-cash" data-method="cash">
-              <span class="opt-icon">💵</span>
-              <span>Efectivo (Caja)</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="qr">
-              <span class="opt-icon">📱</span>
-              <span>QR / Transferencia</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="card">
-              <span class="opt-icon">💳</span>
-              <span>Tarjeta / Otro</span>
-            </button>
-            <button type="button" class="payment-option-btn" data-method="pending">
-              <span class="opt-icon">🔴</span>
-              <span>Marcar Pendientes</span>
-            </button>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; margin-top: 1rem;">
+            <label style="margin: 0;">Distribuir Pago:</label>
+            <span id="payAllStatusBadge" style="font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.1); color: var(--text-muted);">Calculando...</span>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">💵</span> Efectivo</label>
+              <input type="number" id="payAllInputCash" min="0" step="0.5" value="0">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">📱</span> QR</label>
+              <input type="number" id="payAllInputQr" min="0" step="0.5" value="0">
+            </div>
+            <div class="form-group" style="margin: 0;">
+              <label style="font-size: 0.8rem;"><span class="opt-icon">💳</span> Tarjeta</label>
+              <input type="number" id="payAllInputCard" min="0" step="0.5" value="0">
+            </div>
           </div>
         </div>
         <div class="modal-footer">
@@ -2111,12 +2262,36 @@
     </div>
   </div>
 
+  <!-- Activities Manager Modal -->
+  <div class="modal-backdrop" id="activitiesModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">📁 Actividades Guardadas</h3>
+        <button class="modal-close" id="btnCloseActivitiesModal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="activities-list" id="activitiesList">
+          <div class="activity-empty">
+            <div class="activity-empty-icon">📂</div>
+            <div>Cargando actividades...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-action" id="btnCloseActivitiesFooter">Cerrar</button>
+        <button type="button" class="btn-action primary" id="btnNewActivityFromModal">
+          ➕ Nueva Actividad
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Toast Notification -->
   <div class="toast" id="toast"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
-    import { getDatabase, ref, onValue, push, update, remove, set } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+    import { getDatabase, ref, onValue, push, update, remove, set, get } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCnFfhIVckJsTY1GQJfNT-xYhQTIiuhfUY",
@@ -2160,6 +2335,219 @@
     let statusFilter = 'all'; // 'all', 'ordered', 'available', 'pending_delivery', 'completed_delivery', 'unpaid', 'paid'
     let isAdmin = false;
     let currentFormItemCount = 3;
+
+    // --- Payment Helpers ---
+    function getPayments(item) {
+      if (item.payments) return item.payments;
+      const defaultPrice = item.price !== undefined ? parseFloat(item.price) : (parseFloat(appConfig.unitPrice) || 10);
+      if (item.paid) {
+        if (item.paymentMethod === 'cash') return { cash: defaultPrice, qr: 0, card: 0 };
+        if (item.paymentMethod === 'qr') return { cash: 0, qr: defaultPrice, card: 0 };
+        if (item.paymentMethod === 'card') return { cash: 0, qr: 0, card: defaultPrice };
+      }
+      return { cash: 0, qr: 0, card: 0 };
+    }
+
+    function itemPaidAmount(item) {
+      const p = getPayments(item);
+      return (p.cash || 0) + (p.qr || 0) + (p.card || 0);
+    }
+
+    function itemPendingAmount(item) {
+      const defaultPrice = item.price !== undefined ? parseFloat(item.price) : (parseFloat(appConfig.unitPrice) || 10);
+      return Math.max(0, defaultPrice - itemPaidAmount(item));
+    }
+
+    function itemIsPaid(item) {
+      const defaultPrice = item.price !== undefined ? parseFloat(item.price) : (parseFloat(appConfig.unitPrice) || 10);
+      return itemPaidAmount(item) >= defaultPrice;
+    }
+
+    // --- Multi-Activity State ---
+    let currentActivityId = localStorage.getItem('masaco_current_activity') || null;
+    let activitiesListenerUnsub = null; // to detach listener when modal closes
+
+    function generateActivityId() {
+      return push(ref(db, 'activities')).key;
+    }
+
+    function buildSnapshot() {
+      const peopleCopy = {};
+      for (const [key, val] of Object.entries(allPeople)) {
+        if (key === '_app_config') continue;
+        peopleCopy[key] = val;
+      }
+      return {
+        people: peopleCopy,
+        config: { ...appConfig }
+      };
+    }
+
+    async function saveCurrentActivity(customName) {
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return null;
+      }
+
+      const validKeys = Object.keys(allPeople).filter(k => !k.startsWith('_'));
+      if (validKeys.length === 0) {
+        showToast('No hay participantes para guardar', 'warning');
+        return null;
+      }
+
+      const now = new Date();
+      const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+      const defaultName = (appConfig.title || 'Actividad') + ' — ' + dateStr;
+      const name = customName || defaultName;
+
+      const id = currentActivityId || generateActivityId();
+      const snapshot = buildSnapshot();
+      const isUpdate = !!currentActivityId;
+
+      const metaData = {
+        id: id,
+        name: name,
+        updatedAt: now.toISOString(),
+        participantCount: validKeys.length
+      };
+      if (!isUpdate) {
+        metaData.createdAt = now.toISOString();
+      }
+
+      try {
+        if (isUpdate) {
+          // Preserve original name and createdAt on updates
+          const existingSnap = await get(ref(db, `activities/${id}`));
+          if (existingSnap.exists()) {
+            const existing = existingSnap.val();
+            metaData.name = existing.name || name;
+            metaData.createdAt = existing.createdAt || now.toISOString();
+          }
+          metaData.updatedAt = now.toISOString();
+          metaData.participantCount = validKeys.length;
+        }
+
+        await set(ref(db, `activities/${id}`), metaData);
+        await set(ref(db, `activitySnapshots/${id}`), snapshot);
+
+        currentActivityId = id;
+        localStorage.setItem('masaco_current_activity', id);
+
+        showToast(isUpdate ? '💾 Actividad actualizada correctamente' : '💾 Actividad guardada exitosamente');
+        return id;
+      } catch (err) {
+        console.error('Error guardando actividad:', err);
+        showToast('Error al guardar actividad: ' + err.message, 'error');
+        return null;
+      }
+    }
+
+    async function restoreActivity(id) {
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      try {
+        const snapRef = ref(db, `activitySnapshots/${id}`);
+        const snapResult = await get(snapRef);
+
+        if (!snapResult.exists()) {
+          showToast('No se encontró el snapshot de esta actividad', 'error');
+          return;
+        }
+
+        const snapshot = snapResult.val();
+        const configBackup = allPeople._app_config || null;
+
+        // Restore people: clear then write snapshot people + preserve _app_config
+        const newPeople = snapshot.people || {};
+        if (configBackup) {
+          newPeople._app_config = configBackup;
+        }
+        await set(ref(db, 'people'), newPeople);
+
+        // Restore config
+        if (snapshot.config) {
+          await set(ref(db, 'config'), snapshot.config);
+        }
+
+        currentActivityId = id;
+        localStorage.setItem('masaco_current_activity', id);
+
+        // The onValue listeners will auto-trigger renderBoard + applyConfig
+        showToast('📂 Actividad restaurada y sincronizada en todos los dispositivos');
+      } catch (err) {
+        console.error('Error restaurando actividad:', err);
+        showToast('Error al restaurar actividad: ' + err.message, 'error');
+      }
+    }
+
+    async function deleteActivity(id) {
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      try {
+        await remove(ref(db, `activities/${id}`));
+        await remove(ref(db, `activitySnapshots/${id}`));
+
+        if (currentActivityId === id) {
+          currentActivityId = null;
+          localStorage.removeItem('masaco_current_activity');
+        }
+
+        showToast('🗑️ Actividad eliminada correctamente');
+      } catch (err) {
+        console.error('Error eliminando actividad:', err);
+        showToast('Error al eliminar actividad: ' + err.message, 'error');
+      }
+    }
+
+    function openNewActivityFlow() {
+      if (!isAdmin) {
+        showToast('Acceso denegado: solo administradores', 'error');
+        return;
+      }
+
+      const validKeys = Object.keys(allPeople).filter(k => !k.startsWith('_'));
+
+      if (validKeys.length === 0) {
+        // No data to save, just reset
+        currentActivityId = null;
+        localStorage.removeItem('masaco_current_activity');
+        showToast('✨ Pizarra lista para una nueva actividad');
+        return;
+      }
+
+      openConfirmModal({
+        title: '➕ Nueva Actividad',
+        message: `Hay <strong>${validKeys.length} participantes</strong> en la pizarra actual.`,
+        subtext: '¿Deseas <strong>guardar la actividad actual</strong> antes de empezar una nueva? Si no guardas, los datos de la pizarra se perderán.',
+        acceptText: '💾 Guardar y empezar nueva',
+        onConfirm: async () => {
+          // Save current first
+          const savedId = await saveCurrentActivity();
+
+          // Clear the board for new activity
+          try {
+            const configBackup = allPeople._app_config || null;
+            await remove(ref(db, 'people'));
+            if (configBackup) {
+              await set(ref(db, 'people/_app_config'), configBackup);
+            }
+            currentActivityId = null;
+            localStorage.removeItem('masaco_current_activity');
+            allPeople = configBackup ? { _app_config: configBackup } : {};
+            renderBoard();
+            showToast('✨ Actividad guardada. Pizarra lista para nueva actividad');
+          } catch (err) {
+            showToast('Error al vaciar pizarra: ' + err.message, 'error');
+          }
+        }
+      });
+    }
 
     // Presets definitions
     const PRESETS = {
@@ -2373,6 +2761,7 @@
         isAdditional: true,
         paid: false,
         paymentMethod: 'pending',
+        payments: { cash: 0, qr: 0, card: 0 },
         price: unitPrice
       };
 
@@ -2388,11 +2777,44 @@
     // Custom In-App Modal: Configurar Pago de Ítem Individual
     let paymentTargetPersonKey = null;
     let paymentTargetItemIndex = null;
-    let selectedPaymentMethod = 'cash';
     const itemPaymentModal = document.getElementById('itemPaymentModal');
     const paymentItemName = document.getElementById('paymentItemName');
     const paymentPersonName = document.getElementById('paymentPersonName');
     const paymentItemPrice = document.getElementById('paymentItemPrice');
+    
+    const payInputCash = document.getElementById('payInputCash');
+    const payInputQr = document.getElementById('payInputQr');
+    const payInputCard = document.getElementById('payInputCard');
+    const paymentStatusBadge = document.getElementById('paymentStatusBadge');
+
+    function updatePaymentStatusBadge() {
+      const price = parseFloat(paymentItemPrice.value) || 0;
+      const cash = parseFloat(payInputCash.value) || 0;
+      const qr = parseFloat(payInputQr.value) || 0;
+      const card = parseFloat(payInputCard.value) || 0;
+      const totalPaid = cash + qr + card;
+      const diff = price - totalPaid;
+      
+      const curr = appConfig.currency || 'Bs';
+
+      if (diff > 0) {
+        paymentStatusBadge.textContent = `🔴 Por Pagar: ${diff} ${curr}`;
+        paymentStatusBadge.style.color = '#fda4af';
+        paymentStatusBadge.style.background = 'rgba(244, 63, 94, 0.15)';
+      } else if (diff < 0) {
+        paymentStatusBadge.textContent = `⚠️ Excede: ${Math.abs(diff)} ${curr}`;
+        paymentStatusBadge.style.color = '#fcd34d';
+        paymentStatusBadge.style.background = 'rgba(251, 191, 36, 0.15)';
+      } else {
+        paymentStatusBadge.textContent = `✅ Pagado Exacto`;
+        paymentStatusBadge.style.color = '#6ee7b7';
+        paymentStatusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    }
+
+    [paymentItemPrice, payInputCash, payInputQr, payInputCard].forEach(input => {
+      if(input) input.addEventListener('input', updatePaymentStatusBadge);
+    });
 
     function openItemPaymentModal(personKey, itemIndex, event) {
       if (event) event.stopPropagation();
@@ -2414,33 +2836,21 @@
       const currentPrice = item.price !== undefined ? parseFloat(item.price) : defaultPrice;
       paymentItemPrice.value = currentPrice;
 
-      // Determine initial method
-      if (!item.paid || item.paymentMethod === 'pending') {
-        selectedPaymentMethod = 'pending';
-      } else {
-        selectedPaymentMethod = item.paymentMethod || 'cash';
-      }
+      const p = getPayments(item);
+      payInputCash.value = p.cash || 0;
+      payInputQr.value = p.qr || 0;
+      payInputCard.value = p.card || 0;
 
-      updatePaymentOptionButtons();
+      updatePaymentStatusBadge();
       itemPaymentModal.classList.add('active');
     }
     window.openItemPaymentModal = openItemPaymentModal;
 
-    function updatePaymentOptionButtons() {
-      document.querySelectorAll('#paymentOptionsGrid .payment-option-btn').forEach(btn => {
-        const method = btn.getAttribute('data-method');
-        btn.className = 'payment-option-btn';
-        if (method === selectedPaymentMethod) {
-          btn.classList.add(`selected-${method}`);
-        }
-      });
-    }
-
-    document.querySelectorAll('#paymentOptionsGrid .payment-option-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        selectedPaymentMethod = btn.getAttribute('data-method');
-        updatePaymentOptionButtons();
-      });
+    document.getElementById('btnMarkPending').addEventListener('click', () => {
+      payInputCash.value = 0;
+      payInputQr.value = 0;
+      payInputCard.value = 0;
+      updatePaymentStatusBadge();
     });
 
     function closeItemPaymentModal() {
@@ -2457,36 +2867,45 @@
 
     document.getElementById('itemPaymentForm').addEventListener('submit', (e) => {
       e.preventDefault();
-      if (!paymentTargetPersonKey || paymentTargetItemIndex === null) return;
+      
+      const priceVal = parseFloat(paymentItemPrice.value) || 0;
+      const cash = parseFloat(payInputCash.value) || 0;
+      const qr = parseFloat(payInputQr.value) || 0;
+      const card = parseFloat(payInputCard.value) || 0;
+      const totalPaid = cash + qr + card;
 
-      const person = allPeople[paymentTargetPersonKey];
-      if (!person) {
-        closeItemPaymentModal();
+      if (totalPaid > priceVal) {
+        showToast('La suma pagada excede el precio. Por favor ajusta.', 'warning');
         return;
       }
+
+      if (!paymentTargetPersonKey || paymentTargetItemIndex === null) return;
+      const person = allPeople[paymentTargetPersonKey];
+      if (!person) { closeItemPaymentModal(); return; }
 
       const items = [...(person.masacos || person.items || [])];
       const item = items[paymentTargetItemIndex];
-      if (!item) {
-        closeItemPaymentModal();
-        return;
-      }
+      if (!item) { closeItemPaymentModal(); return; }
 
-      const priceVal = parseFloat(paymentItemPrice.value) || 0;
-      const isPaid = selectedPaymentMethod !== 'pending';
+      const isPaid = totalPaid >= priceVal;
+      let primaryMethod = 'pending';
+      if (isPaid || totalPaid > 0) {
+         if (cash >= qr && cash >= card) primaryMethod = 'cash';
+         else if (qr >= cash && qr >= card) primaryMethod = 'qr';
+         else primaryMethod = 'card';
+      }
 
       items[paymentTargetItemIndex] = {
         ...item,
+        price: priceVal,
+        payments: { cash, qr, card },
         paid: isPaid,
-        paymentMethod: selectedPaymentMethod,
-        price: priceVal
+        paymentMethod: primaryMethod
       };
 
       update(ref(db, `people/${paymentTargetPersonKey}`), { masacos: items }).then(() => {
         closeItemPaymentModal();
-        const curr = appConfig.currency || 'Bs';
-        const methodLabel = selectedPaymentMethod === 'cash' ? 'Efectivo' : (selectedPaymentMethod === 'qr' ? 'QR' : (selectedPaymentMethod === 'card' ? 'Tarjeta' : 'Por Cobrar'));
-        showToast(`💳 Pago de "${item.name}" actualizado a: ${methodLabel} (${priceVal} ${curr})`);
+        showToast(`💳 Pagos de "${item.name}" actualizados`);
       }).catch(err => {
         showToast('Error al actualizar pago: ' + err.message, 'error');
       });
@@ -2494,11 +2913,45 @@
 
     // Custom In-App Modal: Cobrar Todos los Pedidos de una Persona
     let payAllPersonKey = null;
-    let selectedPayAllMethod = 'cash';
     const payAllModal = document.getElementById('payAllModal');
     const payAllPersonName = document.getElementById('payAllPersonName');
     const payAllTotalAmount = document.getElementById('payAllTotalAmount');
     const payAllItemsCount = document.getElementById('payAllItemsCount');
+
+    const payAllInputCash = document.getElementById('payAllInputCash');
+    const payAllInputQr = document.getElementById('payAllInputQr');
+    const payAllInputCard = document.getElementById('payAllInputCard');
+    const payAllStatusBadge = document.getElementById('payAllStatusBadge');
+    
+    let currentPayAllUnpaidSum = 0;
+
+    function updatePayAllStatusBadge() {
+      const cash = parseFloat(payAllInputCash.value) || 0;
+      const qr = parseFloat(payAllInputQr.value) || 0;
+      const card = parseFloat(payAllInputCard.value) || 0;
+      const totalPaid = cash + qr + card;
+      const diff = currentPayAllUnpaidSum - totalPaid;
+      
+      const curr = appConfig.currency || 'Bs';
+
+      if (diff > 0) {
+        payAllStatusBadge.textContent = `🔴 Faltan: ${diff.toFixed(2)} ${curr}`;
+        payAllStatusBadge.style.color = '#fda4af';
+        payAllStatusBadge.style.background = 'rgba(244, 63, 94, 0.15)';
+      } else if (diff < 0) {
+        payAllStatusBadge.textContent = `⚠️ Excede: ${Math.abs(diff).toFixed(2)} ${curr}`;
+        payAllStatusBadge.style.color = '#fcd34d';
+        payAllStatusBadge.style.background = 'rgba(251, 191, 36, 0.15)';
+      } else {
+        payAllStatusBadge.textContent = `✅ Cubre Exacto`;
+        payAllStatusBadge.style.color = '#6ee7b7';
+        payAllStatusBadge.style.background = 'rgba(16, 185, 129, 0.15)';
+      }
+    }
+
+    [payAllInputCash, payAllInputQr, payAllInputCard].forEach(input => {
+      if(input) input.addEventListener('input', updatePayAllStatusBadge);
+    });
 
     function openPayAllModal(personKey, event) {
       if (event) event.stopPropagation();
@@ -2507,46 +2960,30 @@
       const person = allPeople[personKey];
       if (!person) return;
       const items = person.masacos || person.items || [];
-      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
       const curr = appConfig.currency || 'Bs';
 
       payAllPersonKey = personKey;
       payAllPersonName.textContent = person.name;
 
-      const unpaidItems = items.filter(m => !m.paid || m.paymentMethod === 'pending');
+      const unpaidItems = items.filter(m => itemPendingAmount(m) > 0);
       let unpaidSum = 0;
-      items.forEach(m => {
-        const itemPrice = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
-        if (!m.paid || m.paymentMethod === 'pending') {
-          unpaidSum += itemPrice;
-        }
+      unpaidItems.forEach(m => {
+        unpaidSum += itemPendingAmount(m);
       });
+
+      currentPayAllUnpaidSum = unpaidSum;
 
       payAllTotalAmount.textContent = `${unpaidSum} ${curr}`;
       payAllItemsCount.textContent = `${unpaidItems.length} de ${items.length} pedidos`;
 
-      selectedPayAllMethod = 'cash';
-      updatePayAllButtons();
+      payAllInputCash.value = unpaidSum;
+      payAllInputQr.value = 0;
+      payAllInputCard.value = 0;
+      updatePayAllStatusBadge();
+
       payAllModal.classList.add('active');
     }
     window.openPayAllModal = openPayAllModal;
-
-    function updatePayAllButtons() {
-      document.querySelectorAll('#payAllOptionsGrid .payment-option-btn').forEach(btn => {
-        const method = btn.getAttribute('data-method');
-        btn.className = 'payment-option-btn';
-        if (method === selectedPayAllMethod) {
-          btn.classList.add(`selected-${method}`);
-        }
-      });
-    }
-
-    document.querySelectorAll('#payAllOptionsGrid .payment-option-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        selectedPayAllMethod = btn.getAttribute('data-method');
-        updatePayAllButtons();
-      });
-    });
 
     function closePayAllModal() {
       payAllModal.classList.remove('active');
@@ -2569,19 +3006,79 @@
         return;
       }
 
-      const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
-      const isPaid = selectedPayAllMethod !== 'pending';
-      const items = (person.masacos || person.items || []).map(item => ({
-        ...item,
-        paid: isPaid,
-        paymentMethod: selectedPayAllMethod,
-        price: item.price !== undefined ? parseFloat(item.price) : defaultPrice
-      }));
+      const cash = parseFloat(payAllInputCash.value) || 0;
+      const qr = parseFloat(payAllInputQr.value) || 0;
+      const card = parseFloat(payAllInputCard.value) || 0;
+      const totalPaid = cash + qr + card;
+
+      if (totalPaid > currentPayAllUnpaidSum && currentPayAllUnpaidSum > 0) {
+        showToast('El pago excede el total pendiente. Por favor ajusta.', 'warning');
+        return;
+      }
+
+      const items = [...(person.masacos || person.items || [])];
+      const unpaidItemsIndices = [];
+      items.forEach((m, idx) => {
+        if (itemPendingAmount(m) > 0) unpaidItemsIndices.push(idx);
+      });
+
+      if (unpaidItemsIndices.length === 0 && totalPaid > 0) {
+        closePayAllModal();
+        return;
+      }
+
+      let remainingCash = cash;
+      let remainingQr = qr;
+      let remainingCard = card;
+
+      unpaidItemsIndices.forEach((idx, i) => {
+        const m = items[idx];
+        const pending = itemPendingAmount(m);
+        const p = getPayments(m);
+        
+        let addCash = 0, addQr = 0, addCard = 0;
+        
+        if (i === unpaidItemsIndices.length - 1) {
+          addCash = remainingCash;
+          addQr = remainingQr;
+          addCard = remainingCard;
+        } else {
+          const ratio = pending / currentPayAllUnpaidSum;
+          addCash = Math.min(remainingCash, Math.round((cash * ratio) * 100) / 100);
+          addQr = Math.min(remainingQr, Math.round((qr * ratio) * 100) / 100);
+          addCard = Math.min(remainingCard, Math.round((card * ratio) * 100) / 100);
+        }
+
+        remainingCash = Math.max(0, remainingCash - addCash);
+        remainingQr = Math.max(0, remainingQr - addQr);
+        remainingCard = Math.max(0, remainingCard - addCard);
+
+        const finalCash = (p.cash || 0) + addCash;
+        const finalQr = (p.qr || 0) + addQr;
+        const finalCard = (p.card || 0) + addCard;
+
+        const defaultPrice = m.price !== undefined ? parseFloat(m.price) : (parseFloat(appConfig.unitPrice) || 10);
+        const isPaid = (finalCash + finalQr + finalCard) >= defaultPrice;
+        let primaryMethod = m.paymentMethod || 'pending';
+        
+        if (isPaid || (finalCash + finalQr + finalCard) > 0) {
+           if (finalCash >= finalQr && finalCash >= finalCard) primaryMethod = 'cash';
+           else if (finalQr >= finalCash && finalQr >= finalCard) primaryMethod = 'qr';
+           else primaryMethod = 'card';
+        }
+
+        items[idx] = {
+          ...m,
+          price: defaultPrice,
+          payments: { cash: finalCash, qr: finalQr, card: finalCard },
+          paid: isPaid,
+          paymentMethod: primaryMethod
+        };
+      });
 
       update(ref(db, `people/${payAllPersonKey}`), { masacos: items }).then(() => {
         closePayAllModal();
-        const methodLabel = selectedPayAllMethod === 'cash' ? 'Efectivo' : (selectedPayAllMethod === 'qr' ? 'QR' : (selectedPayAllMethod === 'card' ? 'Tarjeta' : 'Pendiente'));
-        showToast(`💰 Todos los pedidos de ${person.name} marcados como: ${methodLabel}`);
+        showToast(`💰 Pagos distribuidos correctamente`);
       }).catch(err => {
         showToast('Error al procesar cobro: ' + err.message, 'error');
       });
@@ -2688,6 +3185,7 @@
           isAdditional: false,
           paid: false,
           paymentMethod: 'pending',
+          payments: { cash: 0, qr: 0, card: 0 },
           price: defaultPrice
         });
       }
@@ -2892,15 +3390,15 @@
           if (m.delivered) totalDelivered++;
 
           const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
-          if (m.paid && m.paymentMethod === 'cash') {
-            totalCash += price;
-          } else if (m.paid && m.paymentMethod === 'qr') {
-            totalQr += price;
-          } else if (m.paid && m.paymentMethod === 'card') {
-            totalCard += price;
-          } else {
-            totalPending += price;
-            personPending += price;
+          const p = getPayments(m);
+          totalCash += (p.cash || 0);
+          totalQr += (p.qr || 0);
+          totalCard += (p.card || 0);
+          
+          const pending = itemPendingAmount(m);
+          if (pending > 0) {
+            totalPending += pending;
+            personPending += pending;
             personPendingCount++;
           }
         });
@@ -2975,12 +3473,15 @@
           if (m.delivered) totalDelivered++;
 
           const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
-          if (m.paid && m.paymentMethod === 'cash') totalCash += price;
-          else if (m.paid && m.paymentMethod === 'qr') totalQr += price;
-          else if (m.paid && m.paymentMethod === 'card') totalCard += price;
-          else {
-            totalPending += price;
-            personPending += price;
+          const p = getPayments(m);
+          totalCash += (p.cash || 0);
+          totalQr += (p.qr || 0);
+          totalCard += (p.card || 0);
+          
+          const pending = itemPendingAmount(m);
+          if (pending > 0) {
+            totalPending += pending;
+            personPending += pending;
             personPendingCount++;
           }
         });
@@ -3067,26 +3568,28 @@
           let paymentMethodStr = 'Por Cobrar';
           let isPaid = false;
 
-          if (m.paid && m.paymentMethod === 'cash') {
-            totalCash += price;
-            pCash += price;
-            paymentMethodStr = 'Efectivo';
-            isPaid = true;
-          } else if (m.paid && m.paymentMethod === 'qr') {
-            totalQr += price;
-            pQr += price;
-            paymentMethodStr = 'QR / Banco';
-            isPaid = true;
-          } else if (m.paid && m.paymentMethod === 'card') {
-            totalCard += price;
-            pCard += price;
-            paymentMethodStr = 'Tarjeta';
-            isPaid = true;
-          } else {
-            totalPending += price;
-            pPendingAmount += price;
+          const p = getPayments(m);
+          totalCash += (p.cash || 0);
+          pCash += (p.cash || 0);
+          totalQr += (p.qr || 0);
+          pQr += (p.qr || 0);
+          totalCard += (p.card || 0);
+          pCard += (p.card || 0);
+
+          const pending = itemPendingAmount(m);
+          if (pending > 0) {
+            totalPending += pending;
+            pPendingAmount += pending;
             pPendingCount++;
           }
+
+          const methods = [];
+          if (p.cash > 0) methods.push('Efectivo');
+          if (p.qr > 0) methods.push('QR/Banco');
+          if (p.card > 0) methods.push('Tarjeta');
+          if (methods.length > 0) paymentMethodStr = methods.join(' + ');
+
+          isPaid = itemIsPaid(m);
 
           // Add to detailed orders sheet
           ordersDetailData.push({
@@ -3225,10 +3728,15 @@
           totalExpectedRevenue += price;
           pTotalCost += price;
 
-          if (m.paid && m.paymentMethod === 'cash') { totalCash += price; pCash += price; }
-          else if (m.paid && m.paymentMethod === 'qr') { totalQr += price; pQr += price; }
-          else if (m.paid && m.paymentMethod === 'card') { totalCard += price; pCard += price; }
-          else { totalPending += price; pPending += price; pPendingCount++; }
+          const p = getPayments(m);
+          totalCash += (p.cash || 0); pCash += (p.cash || 0);
+          totalQr += (p.qr || 0); pQr += (p.qr || 0);
+          totalCard += (p.card || 0); pCard += (p.card || 0);
+          
+          const pending = itemPendingAmount(m);
+          if (pending > 0) {
+            totalPending += pending; pPending += pending; pPendingCount++;
+          }
         });
 
         if (pPending > 0) debtors.push({ name: person.name, amount: pPending, count: pPendingCount });
@@ -3538,13 +4046,23 @@
         document.getElementById('btnOpenSettings').addEventListener('click', openSettingsModal);
         document.getElementById('btnLogout').addEventListener('click', handleLogout);
 
-        // Board header admin button (Nueva Actividad)
+        // Board header admin buttons (Guardar / Actividades / Nueva)
         boardAdminControls.innerHTML = `
-          <button class="btn-action danger" id="btnClearBoard" title="Eliminar todos los participantes actuales para empezar otra actividad">
-            🧹 Iniciar Nueva Actividad
-          </button>
+          <div class="board-admin-buttons">
+            <button class="btn-action" id="btnSaveActivity" title="Guardar la actividad actual">
+              💾 Guardar
+            </button>
+            <button class="btn-action" id="btnOpenActivities" title="Ver actividades guardadas">
+              📁 Actividades
+            </button>
+            <button class="btn-action danger" id="btnNewActivity" title="Empezar nueva actividad">
+              ➕ Nueva
+            </button>
+          </div>
         `;
-        document.getElementById('btnClearBoard').addEventListener('click', clearAllRecords);
+        document.getElementById('btnSaveActivity').addEventListener('click', () => saveCurrentActivity());
+        document.getElementById('btnOpenActivities').addEventListener('click', openActivitiesModal);
+        document.getElementById('btnNewActivity').addEventListener('click', openNewActivityFlow);
 
         // Build Initial Form Inputs according to defaultCount (base mandatory items)
         const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
@@ -3666,6 +4184,7 @@
               isAdditional: isAdd,
               paid: false,
               paymentMethod: 'pending',
+              payments: { cash: 0, qr: 0, card: 0 },
               price: unitPrice
             });
           });
@@ -3865,6 +4384,185 @@
       }
     });
 
+    // --- Activities Modal Control ---
+    const activitiesModal = document.getElementById('activitiesModal');
+    const activitiesList = document.getElementById('activitiesList');
+
+    function openActivitiesModal() {
+      if (!isAdmin) return;
+      activitiesModal.classList.add('active');
+
+      // Attach realtime listener to /activities
+      const activitiesRef = ref(db, 'activities');
+      activitiesListenerUnsub = onValue(activitiesRef, (snapshot) => {
+        const data = snapshot.val();
+        renderActivitiesList(data);
+      });
+    }
+
+    function closeActivitiesModal() {
+      activitiesModal.classList.remove('active');
+      // Detach listener
+      if (activitiesListenerUnsub) {
+        activitiesListenerUnsub();
+        activitiesListenerUnsub = null;
+      }
+    }
+
+    function renderActivitiesList(data) {
+      if (!data || Object.keys(data).length === 0) {
+        activitiesList.innerHTML = `
+          <div class="activity-empty">
+            <div class="activity-empty-icon">📂</div>
+            <div>No hay actividades guardadas aún</div>
+            <div style="font-size: 0.8rem; color: var(--text-dim); margin-top: 0.35rem;">Usa 💾 Guardar para crear la primera</div>
+          </div>
+        `;
+        return;
+      }
+
+      // Sort by updatedAt desc
+      const entries = Object.entries(data).sort((a, b) => {
+        const da = new Date(b[1].updatedAt || b[1].createdAt || 0);
+        const db2 = new Date(a[1].updatedAt || a[1].createdAt || 0);
+        return da - db2;
+      });
+
+      let html = '';
+      entries.forEach(([id, activity]) => {
+        const isActive = id === currentActivityId;
+        const date = activity.updatedAt || activity.createdAt;
+        const dateFormatted = date ? formatDateShort(date) : 'Sin fecha';
+        const count = activity.participantCount || 0;
+
+        html += `
+          <div class="activity-row ${isActive ? 'active' : ''}" data-activity-id="${id}">
+            <div class="activity-info">
+              <div class="activity-name" id="actName-${id}">
+                ${escapeHtml(activity.name || 'Sin nombre')}
+                ${isActive ? '<span class="activity-active-badge">Activa</span>' : ''}
+              </div>
+              <div class="activity-meta">
+                <span>📅 ${escapeHtml(dateFormatted)}</span>
+                <span>👥 ${count} participante${count !== 1 ? 's' : ''}</span>
+              </div>
+            </div>
+            <div class="activity-actions">
+              <button class="activity-action-btn primary" onclick="event.stopPropagation(); handleRestoreActivity('${id}')" title="Abrir / Continuar">
+                ▶️
+              </button>
+              <button class="activity-action-btn" onclick="event.stopPropagation(); handleRenameActivity('${id}')" title="Renombrar">
+                ✏️
+              </button>
+              <button class="activity-action-btn danger" onclick="event.stopPropagation(); handleDeleteActivity('${id}')" title="Eliminar">
+                🗑️
+              </button>
+            </div>
+          </div>
+        `;
+      });
+
+      activitiesList.innerHTML = html;
+
+      // Click on the row itself to open
+      activitiesList.querySelectorAll('.activity-row').forEach(row => {
+        row.addEventListener('click', () => {
+          const id = row.getAttribute('data-activity-id');
+          handleRestoreActivity(id);
+        });
+      });
+    }
+
+    function formatDateShort(isoString) {
+      try {
+        const d = new Date(isoString);
+        return String(d.getDate()).padStart(2, '0') + '/' +
+               String(d.getMonth() + 1).padStart(2, '0') + '/' +
+               d.getFullYear() + ' ' +
+               String(d.getHours()).padStart(2, '0') + ':' +
+               String(d.getMinutes()).padStart(2, '0');
+      } catch {
+        return 'Sin fecha';
+      }
+    }
+
+    // Global handlers for activities modal buttons
+    async function handleRestoreActivity(id) {
+      closeActivitiesModal();
+      await restoreActivity(id);
+      updateRoleUI(); // re-render admin UI
+    }
+    window.handleRestoreActivity = handleRestoreActivity;
+
+    function handleRenameActivity(id) {
+      const nameEl = document.getElementById(`actName-${id}`);
+      if (!nameEl) return;
+
+      const currentName = nameEl.textContent.replace('Activa', '').trim();
+
+      // Replace the name with an input field inline
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.className = 'activity-rename-input';
+      input.value = currentName;
+      nameEl.innerHTML = '';
+      nameEl.appendChild(input);
+      input.focus();
+      input.select();
+
+      const doRename = async () => {
+        const newName = input.value.trim();
+        if (newName && newName !== currentName) {
+          try {
+            await update(ref(db, `activities/${id}`), { name: newName });
+            showToast('✏️ Actividad renombrada');
+          } catch (err) {
+            showToast('Error al renombrar: ' + err.message, 'error');
+          }
+        }
+        // The onValue listener will re-render the list automatically
+      };
+
+      input.addEventListener('blur', doRename);
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          input.blur();
+        }
+        if (e.key === 'Escape') {
+          input.value = currentName;
+          input.blur();
+        }
+      });
+    }
+    window.handleRenameActivity = handleRenameActivity;
+
+    function handleDeleteActivity(id) {
+      closeActivitiesModal();
+      openConfirmModal({
+        title: '🗑️ Eliminar Actividad',
+        message: '¿Estás seguro de que deseas eliminar esta actividad guardada?',
+        subtext: 'Esta acción eliminará permanentemente el snapshot guardado. La pizarra actual no se verá afectada.',
+        acceptText: '🗑️ Sí, Eliminar',
+        onConfirm: async () => {
+          await deleteActivity(id);
+          // Re-open modal to show updated list
+          openActivitiesModal();
+        }
+      });
+    }
+    window.handleDeleteActivity = handleDeleteActivity;
+
+    document.getElementById('btnCloseActivitiesModal').addEventListener('click', closeActivitiesModal);
+    document.getElementById('btnCloseActivitiesFooter').addEventListener('click', closeActivitiesModal);
+    document.getElementById('btnNewActivityFromModal').addEventListener('click', () => {
+      closeActivitiesModal();
+      openNewActivityFlow();
+    });
+    activitiesModal.addEventListener('click', (e) => {
+      if (e.target === activitiesModal) closeActivitiesModal();
+    });
+
     // Statistics Calculation (Operational + Financial KPI)
     function updateStats() {
       const validPeople = Object.entries(allPeople)
@@ -3896,10 +4594,11 @@
             const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
             totalExpectedRevenue += price;
 
-            if (m.paid && m.paymentMethod === 'cash') cashTotal += price;
-            else if (m.paid && m.paymentMethod === 'qr') qrTotal += price;
-            else if (m.paid && m.paymentMethod === 'card') cardTotal += price;
-            else pendingTotal += price;
+            const p = getPayments(m);
+            cashTotal += (p.cash || 0);
+            qrTotal += (p.qr || 0);
+            cardTotal += (p.card || 0);
+            pendingTotal += itemPendingAmount(m);
           });
         }
       });
@@ -3970,7 +4669,7 @@
         const totalItems = items.length;
         const orderedItems = items.filter(m => m.ordered || m.delivered).length;
         const deliveredItems = items.filter(m => m.delivered).length;
-        const unpaidCount = items.filter(m => !m.paid || m.paymentMethod === 'pending').length;
+        const unpaidCount = items.filter(m => itemPendingAmount(m) > 0).length;
         const isAllPaid = totalItems > 0 && unpaidCount === 0;
 
         if (statusFilter === 'ordered') return orderedItems > 0;
@@ -4050,9 +4749,8 @@
         items.forEach(m => {
           const itemPrice = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
           personTotalCost += itemPrice;
-          if (m.paid && m.paymentMethod !== 'pending') {
-            personPaidCost += itemPrice;
-          } else {
+          personPaidCost += itemPaidAmount(m);
+          if (itemPendingAmount(m) > 0) {
             unpaidCount++;
           }
         });
@@ -4120,22 +4818,35 @@
 
           // Payment badge
           const itemPrice = item.price !== undefined ? parseFloat(item.price) : defaultPrice;
+          const p = getPayments(item);
+          const paidAmt = itemPaidAmount(item);
+          const isPaid = itemIsPaid(item);
+
           let paymentBadgeClass = 'pending';
           let paymentBadgeIcon = '🔴';
           let paymentBadgeLabel = 'Por Pagar';
+          let displayAmount = `${itemPrice} ${curr}`;
 
-          if (item.paid && item.paymentMethod === 'cash') {
-            paymentBadgeClass = 'cash';
-            paymentBadgeIcon = '💵';
-            paymentBadgeLabel = 'Efectivo';
-          } else if (item.paid && item.paymentMethod === 'qr') {
-            paymentBadgeClass = 'qr';
-            paymentBadgeIcon = '📱';
-            paymentBadgeLabel = 'QR/Transf.';
-          } else if (item.paid && item.paymentMethod === 'card') {
-            paymentBadgeClass = 'card';
-            paymentBadgeIcon = '💳';
-            paymentBadgeLabel = 'Tarjeta';
+          if (isPaid) {
+            let methods = [];
+            if (p.cash > 0) methods.push('EF');
+            if (p.qr > 0) methods.push('QR');
+            if (p.card > 0) methods.push('TJ');
+            
+            if (methods.length > 1) {
+              paymentBadgeClass = 'card';
+              paymentBadgeIcon = '✨';
+              paymentBadgeLabel = methods.join('+');
+            } else {
+              if (p.cash > 0) { paymentBadgeClass = 'cash'; paymentBadgeIcon = '💵'; paymentBadgeLabel = 'Efectivo'; }
+              else if (p.qr > 0) { paymentBadgeClass = 'qr'; paymentBadgeIcon = '📱'; paymentBadgeLabel = 'QR/Transf.'; }
+              else { paymentBadgeClass = 'card'; paymentBadgeIcon = '💳'; paymentBadgeLabel = 'Tarjeta'; }
+            }
+          } else if (paidAmt > 0) {
+            paymentBadgeClass = 'pending';
+            paymentBadgeIcon = '🟠';
+            paymentBadgeLabel = 'Parcial';
+            displayAmount = `${paidAmt}/${itemPrice} ${curr}`;
           }
 
           const onClickPayment = isAdmin
@@ -4174,7 +4885,7 @@
                 ${tagHtml}
                 <span class="payment-badge ${paymentBadgeClass}" ${onClickPayment}>
                   <span>${paymentBadgeIcon}</span>
-                  <span>${itemPrice} ${curr} (${paymentBadgeLabel})</span>
+                  <span>${displayAmount} (${paymentBadgeLabel})</span>
                 </span>
               </div>
               ${miniActionsHtml}
@@ -4239,7 +4950,8 @@
 
     // 2. People listener (syncs data across all users)
     const peopleRef = ref(db, 'people');
-    onValue(peopleRef, (snapshot) => {
+    let isFirstPeopleLoad = true;
+    onValue(peopleRef, async (snapshot) => {
       const data = snapshot.val() || {};
       if (data._app_config) {
         appConfig = { ...DEFAULT_CONFIG, ...data._app_config };
@@ -4248,6 +4960,49 @@
       }
       allPeople = data;
       renderBoard();
+
+      // Migration v1: auto-save existing data as first activity
+      if (isFirstPeopleLoad) {
+        isFirstPeopleLoad = false;
+        const migrated = localStorage.getItem('masaco_migration_v1');
+        if (!migrated) {
+          const validKeys = Object.keys(data).filter(k => !k.startsWith('_'));
+          if (validKeys.length > 0) {
+            try {
+              const activitiesSnap = await get(ref(db, 'activities'));
+              if (!activitiesSnap.exists()) {
+                // No activities yet and there are participants → auto-save
+                const now = new Date();
+                const dateStr = String(now.getDate()).padStart(2, '0') + '/' + String(now.getMonth() + 1).padStart(2, '0') + '/' + now.getFullYear();
+                const migrationName = 'Actividad inicial — ' + dateStr;
+                const id = generateActivityId();
+                const peopleCopy = {};
+                for (const [key, val] of Object.entries(data)) {
+                  if (key === '_app_config') continue;
+                  peopleCopy[key] = val;
+                }
+                await set(ref(db, `activities/${id}`), {
+                  id: id,
+                  name: migrationName,
+                  createdAt: now.toISOString(),
+                  updatedAt: now.toISOString(),
+                  participantCount: validKeys.length
+                });
+                await set(ref(db, `activitySnapshots/${id}`), {
+                  people: peopleCopy,
+                  config: { ...appConfig }
+                });
+                currentActivityId = id;
+                localStorage.setItem('masaco_current_activity', id);
+                console.log('Migración v1: actividad inicial guardada automáticamente como', migrationName);
+              }
+            } catch (err) {
+              console.warn('Error en migración v1:', err);
+            }
+          }
+          localStorage.setItem('masaco_migration_v1', 'done');
+        }
+      }
     });
 
     // Initialize Auth state
