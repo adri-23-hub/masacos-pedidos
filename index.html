@@ -3521,7 +3521,7 @@
       });
     });
 
-    // 📗 EXCEL EXPORT FEATURE (Sin tocar la base de datos)
+    // 📗 EXCEL EXPORT FEATURE (Diseño Limpio, Profesional con Hoja Exclusiva de Solo Deudores)
     function exportExcelReport() {
       if (typeof XLSX === 'undefined') {
         showToast('Cargando librería de Excel, por favor intenta en 3 segundos...', 'warning');
@@ -3539,18 +3539,24 @@
         return;
       }
 
-      // Sheet 1: Resumen por Participante
+      // Sheet 1: Resumen General de Participantes
       const participantsData = [];
-      // Sheet 2: Detalle por Pedido
+      // Sheet 2: Apartado Exclusivo - Solo Deudores
+      const debtorsData = [];
+      // Sheet 3: Detalle por Pedido
       const ordersDetailData = [];
 
       let totalItems = 0;
       let totalOrdered = 0;
       let totalDelivered = 0;
+      let totalToPay = 0;
       let totalCash = 0;
       let totalQr = 0;
       let totalCard = 0;
       let totalPending = 0;
+      let totalPendingCount = 0;
+
+      const debtorsList = [];
 
       validPeople.forEach(([personKey, person], index) => {
         const items = person.masacos || person.items || [];
@@ -3563,6 +3569,7 @@
         let pPendingAmount = 0;
         let pPendingCount = 0;
         let pTotalCost = 0;
+        const pendingItemNames = [];
 
         items.forEach((m, itemIndex) => {
           totalItems++;
@@ -3574,104 +3581,209 @@
           const price = m.price !== undefined ? parseFloat(m.price) : defaultPrice;
           pTotalCost += price;
 
-          let paymentMethodStr = 'Por Cobrar';
-          let isPaid = false;
-
           const p = getPayments(m);
-          totalCash += (p.cash || 0);
-          pCash += (p.cash || 0);
-          totalQr += (p.qr || 0);
-          pQr += (p.qr || 0);
-          totalCard += (p.card || 0);
-          pCard += (p.card || 0);
+          const itemPaid = itemPaidAmount(m);
+          const mCash = (p.cash || 0);
+          const mQr = (p.qr || 0);
+          const mCard = (p.card || 0);
+
+          totalCash += mCash;
+          pCash += mCash;
+          totalQr += mQr;
+          pQr += mQr;
+          totalCard += mCard;
+          pCard += mCard;
 
           const pending = itemPendingAmount(m);
           if (pending > 0) {
             totalPending += pending;
             pPendingAmount += pending;
             pPendingCount++;
+            totalPendingCount++;
+            pendingItemNames.push(m.name || `${singular} ${itemIndex + 1}`);
           }
 
+          let paymentMethodStr = 'Por Cobrar';
           const methods = [];
-          if (p.cash > 0) methods.push('Efectivo');
-          if (p.qr > 0) methods.push('QR/Banco');
-          if (p.card > 0) methods.push('Tarjeta');
-          if (methods.length > 0) paymentMethodStr = methods.join(' + ');
+          if (mCash > 0) methods.push(`Efectivo (${mCash})`);
+          if (mQr > 0) methods.push(`QR/Banco (${mQr})`);
+          if (mCard > 0) methods.push(`Tarjeta (${mCard})`);
+          if (methods.length > 0) {
+            paymentMethodStr = methods.join(' + ');
+          }
 
-          isPaid = itemIsPaid(m);
+          const isPaid = itemIsPaid(m);
 
           // Add to detailed orders sheet
           ordersDetailData.push({
-            "Nro": ordersDetailData.length + 1,
+            "N°": ordersDetailData.length + 1,
             "Participante": person.name || 'Sin nombre',
             "Ítem / Pedido": m.name || `${singular} ${itemIndex + 1}`,
             "Tipo": m.isAdditional ? 'Adicional' : 'Base',
             "Transferido De": m.transferredFrom || '—',
-            "Estado Venta": isItemOrdered ? 'Encargado / Vendido' : 'Libre / Disponible',
+            "Estado Venta": isItemOrdered ? 'Vendido' : 'Disponible',
             "Estado Entrega": isItemDelivered ? 'Entregado' : 'Por Entregar',
             "Estado Pago": isPaid ? 'PAGADO' : 'POR COBRAR',
             "Método de Pago": paymentMethodStr,
+            [`Cobrado (${curr})`]: itemPaid,
+            [`Debe (${curr})`]: pending,
             [`Precio (${curr})`]: price
           });
         });
 
+        totalToPay += pTotalCost;
         const pFree = pTotal - pOrdered;
         const pPaidAmount = pCash + pQr + pCard;
         const isDebtor = pPendingAmount > 0;
 
+        // Fila limpia de Resumen General
         participantsData.push({
-          "Nro": index + 1,
-          "Nombre del Participante": person.name || 'Sin nombre',
-          [`Total ${plural} Asignados`]: pTotal,
-          "Encargados (Vendidos)": pOrdered,
-          "Por Vender (Libres)": pFree,
-          "Entregados Físicamente": pDelivered,
+          "N°": index + 1,
+          "Participante": person.name || 'Sin nombre',
+          "Total Asignados": pTotal,
+          "Vendidos": pOrdered,
+          "Por Vender": pFree,
+          "Entregados": pDelivered,
           [`Total a Pagar (${curr})`]: pTotalCost,
           [`Total Cobrado (${curr})`]: pPaidAmount,
           [`Efectivo (${curr})`]: pCash,
           [`QR / Banco (${curr})`]: pQr,
           [`Tarjeta (${curr})`]: pCard,
-          [`Debe (Cant. ${plural})`]: pPendingCount,
+          "Cant. Debe": pPendingCount,
           [`Monto Deuda (${curr})`]: pPendingAmount,
-          "Estado": isDebtor ? `🔴 DEBE ${pPendingCount} (${pPendingAmount} ${curr})` : "✅ AL DÍA"
+          "Estado": isDebtor ? "DEBE" : "AL DÍA"
         });
+
+        if (isDebtor) {
+          debtorsList.push({
+            name: person.name || 'Sin nombre',
+            pendingCount: pPendingCount,
+            pendingAmount: pPendingAmount,
+            totalItems: pTotal,
+            totalCost: pTotalCost,
+            paidAmount: pPaidAmount,
+            pendingDetails: pendingItemNames.join(', ')
+          });
+        }
       });
+
+      // Fila de TOTALES en Resumen General
+      const totalRevenue = totalCash + totalQr + totalCard;
+      participantsData.push({
+        "N°": "TOTAL",
+        "Participante": `${validPeople.length} personas`,
+        "Total Asignados": totalItems,
+        "Vendidos": totalOrdered,
+        "Por Vender": totalItems - totalOrdered,
+        "Entregados": totalDelivered,
+        [`Total a Pagar (${curr})`]: totalToPay,
+        [`Total Cobrado (${curr})`]: totalRevenue,
+        [`Efectivo (${curr})`]: totalCash,
+        [`QR / Banco (${curr})`]: totalQr,
+        [`Tarjeta (${curr})`]: totalCard,
+        "Cant. Debe": totalPendingCount,
+        [`Monto Deuda (${curr})`]: totalPending,
+        "Estado": totalPending > 0 ? `${debtorsList.length} DEUDORES` : "AL DÍA"
+      });
+
+      // Sheet 2: Apartado Exclusivo - Solo Deudores
+      if (debtorsList.length === 0) {
+        debtorsData.push({
+          "N°": 1,
+          "Deudor / Participante": "¡Excelente! No hay deudores pendientes",
+          "Cant. Debe": 0,
+          [`Monto Deuda (${curr})`]: 0,
+          "Total Pedidos": 0,
+          [`Total a Pagar (${curr})`]: 0,
+          [`Total Abonado (${curr})`]: 0,
+          "Pedidos Pendientes": "Todos los pedidos están pagados al 100%",
+          "Estado": "AL DÍA"
+        });
+      } else {
+        debtorsList.forEach((d, i) => {
+          debtorsData.push({
+            "N°": i + 1,
+            "Deudor / Participante": d.name,
+            "Cant. Debe": d.pendingCount,
+            [`Monto Deuda (${curr})`]: d.pendingAmount,
+            "Total Pedidos": d.totalItems,
+            [`Total a Pagar (${curr})`]: d.totalCost,
+            [`Total Abonado (${curr})`]: d.paidAmount,
+            "Pedidos Pendientes": d.pendingDetails,
+            "Estado": "DEUDOR"
+          });
+        });
+
+        // Fila Total de Deudores
+        const sumDebtItems = debtorsList.reduce((acc, d) => acc + d.totalItems, 0);
+        const sumDebtCost = debtorsList.reduce((acc, d) => acc + d.totalCost, 0);
+        const sumDebtPaid = debtorsList.reduce((acc, d) => acc + d.paidAmount, 0);
+
+        debtorsData.push({
+          "N°": "TOTAL",
+          "Deudor / Participante": `${debtorsList.length} deudor(es)`,
+          "Cant. Debe": totalPendingCount,
+          [`Monto Deuda (${curr})`]: totalPending,
+          "Total Pedidos": sumDebtItems,
+          [`Total a Pagar (${curr})`]: sumDebtCost,
+          [`Total Abonado (${curr})`]: sumDebtPaid,
+          "Pedidos Pendientes": `Total Deuda: ${totalPending} ${curr}`,
+          "Estado": "PENDIENTE"
+        });
+      }
 
       // Create Workbook
       const wb = XLSX.utils.book_new();
 
-      // Create Sheet 1: Resumen de Participantes
+      // Create Sheet 1: Resumen General
       const ws1 = XLSX.utils.json_to_sheet(participantsData);
       ws1['!cols'] = [
-        { wch: 6 },  // Nro
-        { wch: 26 }, // Nombre
-        { wch: 18 }, // Total Asignados
-        { wch: 18 }, // Encargados
-        { wch: 18 }, // Por Vender
-        { wch: 18 }, // Entregados
-        { wch: 16 }, // Total a Pagar
-        { wch: 16 }, // Total Cobrado
+        { wch: 8 },  // N°
+        { wch: 28 }, // Participante
+        { wch: 16 }, // Total Asignados
+        { wch: 12 }, // Vendidos
+        { wch: 13 }, // Por Vender
+        { wch: 13 }, // Entregados
+        { wch: 18 }, // Total a Pagar
+        { wch: 18 }, // Total Cobrado
         { wch: 14 }, // Efectivo
-        { wch: 14 }, // QR
+        { wch: 14 }, // QR / Banco
         { wch: 14 }, // Tarjeta
-        { wch: 18 }, // Debe Cantidad
+        { wch: 14 }, // Cant. Debe
         { wch: 16 }, // Monto Deuda
-        { wch: 22 }  // Estado
+        { wch: 16 }  // Estado
       ];
-      XLSX.utils.book_append_sheet(wb, ws1, "Resumen Participantes");
+      XLSX.utils.book_append_sheet(wb, ws1, "Resumen General");
 
-      // Create Sheet 2: Detalle de Pedidos
+      // Create Sheet 2: Solo Deudores (Apartado exclusivo)
+      const wsDebtors = XLSX.utils.json_to_sheet(debtorsData);
+      wsDebtors['!cols'] = [
+        { wch: 8 },  // N°
+        { wch: 28 }, // Deudor / Participante
+        { wch: 14 }, // Cant. Debe
+        { wch: 18 }, // Monto Deuda
+        { wch: 15 }, // Total Pedidos
+        { wch: 18 }, // Total a Pagar
+        { wch: 18 }, // Total Abonado
+        { wch: 42 }, // Pedidos Pendientes
+        { wch: 14 }  // Estado
+      ];
+      XLSX.utils.book_append_sheet(wb, wsDebtors, "Solo Deudores");
+
+      // Create Sheet 3: Detalle de Pedidos
       const ws2 = XLSX.utils.json_to_sheet(ordersDetailData);
       ws2['!cols'] = [
-        { wch: 6 },  // Nro
-        { wch: 24 }, // Participante
-        { wch: 20 }, // Item
+        { wch: 8 },  // N°
+        { wch: 26 }, // Participante
+        { wch: 22 }, // Ítem / Pedido
         { wch: 12 }, // Tipo
-        { wch: 20 }, // Transferido De
-        { wch: 20 }, // Estado Venta
-        { wch: 18 }, // Estado Entrega
-        { wch: 16 }, // Estado Pago
-        { wch: 16 }, // Metodo Pago
+        { wch: 18 }, // Transferido De
+        { wch: 15 }, // Estado Venta
+        { wch: 16 }, // Estado Entrega
+        { wch: 15 }, // Estado Pago
+        { wch: 24 }, // Método de Pago
+        { wch: 15 }, // Cobrado
+        { wch: 14 }, // Debe
         { wch: 14 }  // Precio
       ];
       XLSX.utils.book_append_sheet(wb, ws2, "Detalle de Pedidos");
@@ -3683,7 +3795,7 @@
       const fileName = `${cleanTitle}_${dateStr}.xlsx`;
 
       XLSX.writeFile(wb, fileName);
-      showToast(`📗 ¡Reporte Excel "${fileName}" generado y descargado!`);
+      showToast(`📗 ¡Reporte Excel "${fileName}" generado con éxito!`);
     }
 
     // 📕 PDF EXPORT FEATURE (Diseño de Documento Ejecutivo Limpio, Proporcionado y Claro)
