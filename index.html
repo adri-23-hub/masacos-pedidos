@@ -3252,31 +3252,40 @@
       const defaultCount = parseInt(appConfig.defaultCount, 10) || 3;
       const defaultPrice = parseFloat(appConfig.unitPrice) || 10;
       const singular = appConfig.productSingular || 'Producto';
+      const plural = appConfig.productPlural || 'Productos';
+
+      // Check if this is the last item of the person
+      const isLastItem = items.length === 1;
+      const subtextMsg = isLastItem
+        ? `⚠️ Este es el último pedido de ${escapeHtml(person.name)}. Al eliminarlo, la persona quedará sin pedidos.`
+        : `Se eliminará el pedido y los restantes se renumerarán automáticamente.`;
 
       openConfirmModal({
-        title: '🗑️ Eliminar / Liberar Pedido',
-        message: `¿Deseas eliminar o liberar el pedido <strong>"${escapeHtml(item.name)}"</strong> de <strong>${escapeHtml(person.name)}</strong>?`,
-        subtext: item.transferredFrom ? 'Se liberará el pedido transferido dejándolo disponible.' : 'Este ítem será eliminado.',
-        acceptText: '🗑️ Eliminar / Liberar',
+        title: '🗑️ Eliminar Pedido',
+        message: `¿Deseas eliminar el pedido <strong>"${escapeHtml(item.name)}"</strong> de <strong>${escapeHtml(person.name)}</strong>?`,
+        subtext: subtextMsg,
+        acceptText: '🗑️ Eliminar Pedido',
         onConfirm: async () => {
           const updated = [...items];
-          if (itemIndex < defaultCount && !item.isAdditional) {
-            // Reset base slot back to clean unassigned state
-            updated[itemIndex] = {
-              name: `${singular} ${itemIndex + 1}`,
-              ordered: false,
-              delivered: false,
-              isAdditional: false,
-              paid: false,
-              paymentMethod: 'pending',
-              price: defaultPrice
-            };
-          } else {
-            updated.splice(itemIndex, 1);
+          // Always remove the item from the array
+          updated.splice(itemIndex, 1);
+
+          // Renumber remaining base items (non-additional, non-transferred) to keep sequential naming
+          let baseCounter = 1;
+          for (let i = 0; i < updated.length; i++) {
+            if (!updated[i].isAdditional && !updated[i].transferredFrom) {
+              // Only rename if the name follows the pattern "Singular N" (auto-generated names)
+              const autoNamePattern = new RegExp(`^${singular.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s+\\d+$`, 'i');
+              if (autoNamePattern.test(updated[i].name)) {
+                updated[i] = { ...updated[i], name: `${singular} ${baseCounter}` };
+              }
+              baseCounter++;
+            }
           }
+
           try {
             await update(ref(db, `people/${personKey}`), { masacos: updated });
-            showToast(`"${item.name}" actualizado en ${person.name}`);
+            showToast(`🗑️ "${item.name}" eliminado de ${person.name}`);
           } catch (err) {
             showToast('Error al eliminar: ' + err.message, 'error');
           }
@@ -4855,13 +4864,13 @@
 
           let miniActionsHtml = '';
           const canTransfer = isAdmin && (isAdditional || item.transferredFrom || isItemOrdered);
-          const canDelete = isAdmin && (isAdditional || Boolean(item.transferredFrom));
+          const canDelete = isAdmin;
 
           if (canTransfer || canDelete) {
             miniActionsHtml = `
               <div class="item-mini-actions" onclick="event.stopPropagation()">
                 ${canTransfer ? `<button type="button" class="btn-mini-action transfer" onclick="openTransferModal('${personKey}', ${itemIndex}, event)" title="Transferir este pedido a otra persona">🔄</button>` : ''}
-                ${canDelete ? `<button type="button" class="btn-mini-action delete" onclick="deleteSingleItem('${personKey}', ${itemIndex}, event)" title="Eliminar / Liberar este ítem">✕</button>` : ''}
+                ${canDelete ? `<button type="button" class="btn-mini-action delete" onclick="deleteSingleItem('${personKey}', ${itemIndex}, event)" title="Eliminar este pedido">✕</button>` : ''}
               </div>
             `;
           }
