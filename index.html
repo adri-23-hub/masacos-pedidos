@@ -2039,7 +2039,7 @@
             <span id="paymentStatusBadge" style="font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.1); color: var(--text-muted);">Calculando...</span>
           </div>
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
             <div class="form-group" style="margin: 0;">
               <label style="font-size: 0.8rem;"><span class="opt-icon">💵</span> Efectivo</label>
               <input type="number" id="payInputCash" min="0" step="0.5" value="0">
@@ -2047,10 +2047,6 @@
             <div class="form-group" style="margin: 0;">
               <label style="font-size: 0.8rem;"><span class="opt-icon">📱</span> QR</label>
               <input type="number" id="payInputQr" min="0" step="0.5" value="0">
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label style="font-size: 0.8rem;"><span class="opt-icon">💳</span> Tarjeta</label>
-              <input type="number" id="payInputCard" min="0" step="0.5" value="0">
             </div>
           </div>
 
@@ -2086,7 +2082,7 @@
             <span id="payAllStatusBadge" style="font-size: 0.8rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 4px; background: rgba(255,255,255,0.1); color: var(--text-muted);">Calculando...</span>
           </div>
           
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1rem;">
             <div class="form-group" style="margin: 0;">
               <label style="font-size: 0.8rem;"><span class="opt-icon">💵</span> Efectivo</label>
               <input type="number" id="payAllInputCash" min="0" step="0.5" value="0">
@@ -2094,10 +2090,6 @@
             <div class="form-group" style="margin: 0;">
               <label style="font-size: 0.8rem;"><span class="opt-icon">📱</span> QR</label>
               <input type="number" id="payAllInputQr" min="0" step="0.5" value="0">
-            </div>
-            <div class="form-group" style="margin: 0;">
-              <label style="font-size: 0.8rem;"><span class="opt-icon">💳</span> Tarjeta</label>
-              <input type="number" id="payAllInputCard" min="0" step="0.5" value="0">
             </div>
           </div>
         </div>
@@ -2784,15 +2776,13 @@
     
     const payInputCash = document.getElementById('payInputCash');
     const payInputQr = document.getElementById('payInputQr');
-    const payInputCard = document.getElementById('payInputCard');
     const paymentStatusBadge = document.getElementById('paymentStatusBadge');
 
     function updatePaymentStatusBadge() {
       const price = parseFloat(paymentItemPrice.value) || 0;
       const cash = parseFloat(payInputCash.value) || 0;
       const qr = parseFloat(payInputQr.value) || 0;
-      const card = parseFloat(payInputCard.value) || 0;
-      const totalPaid = cash + qr + card;
+      const totalPaid = cash + qr;
       const diff = price - totalPaid;
       
       const curr = appConfig.currency || 'Bs';
@@ -2812,7 +2802,7 @@
       }
     }
 
-    [paymentItemPrice, payInputCash, payInputQr, payInputCard].forEach(input => {
+    [paymentItemPrice, payInputCash, payInputQr].forEach(input => {
       if(input) input.addEventListener('input', updatePaymentStatusBadge);
     });
 
@@ -2838,8 +2828,7 @@
 
       const p = getPayments(item);
       payInputCash.value = p.cash || 0;
-      payInputQr.value = p.qr || 0;
-      payInputCard.value = p.card || 0;
+      payInputQr.value = (p.qr || 0) + (p.card || 0);
 
       updatePaymentStatusBadge();
       itemPaymentModal.classList.add('active');
@@ -2849,7 +2838,6 @@
     document.getElementById('btnMarkPending').addEventListener('click', () => {
       payInputCash.value = 0;
       payInputQr.value = 0;
-      payInputCard.value = 0;
       updatePaymentStatusBadge();
     });
 
@@ -2871,8 +2859,7 @@
       const priceVal = parseFloat(paymentItemPrice.value) || 0;
       const cash = parseFloat(payInputCash.value) || 0;
       const qr = parseFloat(payInputQr.value) || 0;
-      const card = parseFloat(payInputCard.value) || 0;
-      const totalPaid = cash + qr + card;
+      const totalPaid = cash + qr;
 
       if (totalPaid > priceVal) {
         showToast('La suma pagada excede el precio. Por favor ajusta.', 'warning');
@@ -2890,15 +2877,14 @@
       const isPaid = totalPaid >= priceVal;
       let primaryMethod = 'pending';
       if (isPaid || totalPaid > 0) {
-         if (cash >= qr && cash >= card) primaryMethod = 'cash';
-         else if (qr >= cash && qr >= card) primaryMethod = 'qr';
-         else primaryMethod = 'card';
+         if (cash >= qr) primaryMethod = 'cash';
+         else primaryMethod = 'qr';
       }
 
       items[paymentTargetItemIndex] = {
         ...item,
         price: priceVal,
-        payments: { cash, qr, card },
+        payments: { cash, qr, card: 0 },
         paid: isPaid,
         paymentMethod: primaryMethod
       };
@@ -2920,7 +2906,6 @@
 
     const payAllInputCash = document.getElementById('payAllInputCash');
     const payAllInputQr = document.getElementById('payAllInputQr');
-    const payAllInputCard = document.getElementById('payAllInputCard');
     const payAllStatusBadge = document.getElementById('payAllStatusBadge');
     
     let currentPayAllUnpaidSum = 0;
@@ -2928,8 +2913,7 @@
     function updatePayAllStatusBadge() {
       const cash = parseFloat(payAllInputCash.value) || 0;
       const qr = parseFloat(payAllInputQr.value) || 0;
-      const card = parseFloat(payAllInputCard.value) || 0;
-      const totalPaid = cash + qr + card;
+      const totalPaid = cash + qr;
       const diff = currentPayAllUnpaidSum - totalPaid;
       
       const curr = appConfig.currency || 'Bs';
@@ -2949,7 +2933,7 @@
       }
     }
 
-    [payAllInputCash, payAllInputQr, payAllInputCard].forEach(input => {
+    [payAllInputCash, payAllInputQr].forEach(input => {
       if(input) input.addEventListener('input', updatePayAllStatusBadge);
     });
 
@@ -2978,7 +2962,6 @@
 
       payAllInputCash.value = unpaidSum;
       payAllInputQr.value = 0;
-      payAllInputCard.value = 0;
       updatePayAllStatusBadge();
 
       payAllModal.classList.add('active');
@@ -3008,8 +2991,7 @@
 
       const cash = parseFloat(payAllInputCash.value) || 0;
       const qr = parseFloat(payAllInputQr.value) || 0;
-      const card = parseFloat(payAllInputCard.value) || 0;
-      const totalPaid = cash + qr + card;
+      const totalPaid = cash + qr;
 
       if (totalPaid > currentPayAllUnpaidSum && currentPayAllUnpaidSum > 0) {
         showToast('El pago excede el total pendiente. Por favor ajusta.', 'warning');
@@ -3029,48 +3011,42 @@
 
       let remainingCash = cash;
       let remainingQr = qr;
-      let remainingCard = card;
 
       unpaidItemsIndices.forEach((idx, i) => {
         const m = items[idx];
         const pending = itemPendingAmount(m);
         const p = getPayments(m);
         
-        let addCash = 0, addQr = 0, addCard = 0;
+        let addCash = 0, addQr = 0;
         
         if (i === unpaidItemsIndices.length - 1) {
           addCash = remainingCash;
           addQr = remainingQr;
-          addCard = remainingCard;
         } else {
           const ratio = pending / currentPayAllUnpaidSum;
           addCash = Math.min(remainingCash, Math.round((cash * ratio) * 100) / 100);
           addQr = Math.min(remainingQr, Math.round((qr * ratio) * 100) / 100);
-          addCard = Math.min(remainingCard, Math.round((card * ratio) * 100) / 100);
         }
 
         remainingCash = Math.max(0, remainingCash - addCash);
         remainingQr = Math.max(0, remainingQr - addQr);
-        remainingCard = Math.max(0, remainingCard - addCard);
 
         const finalCash = (p.cash || 0) + addCash;
         const finalQr = (p.qr || 0) + addQr;
-        const finalCard = (p.card || 0) + addCard;
 
         const defaultPrice = m.price !== undefined ? parseFloat(m.price) : (parseFloat(appConfig.unitPrice) || 10);
-        const isPaid = (finalCash + finalQr + finalCard) >= defaultPrice;
+        const isPaid = (finalCash + finalQr) >= defaultPrice;
         let primaryMethod = m.paymentMethod || 'pending';
         
-        if (isPaid || (finalCash + finalQr + finalCard) > 0) {
-           if (finalCash >= finalQr && finalCash >= finalCard) primaryMethod = 'cash';
-           else if (finalQr >= finalCash && finalQr >= finalCard) primaryMethod = 'qr';
-           else primaryMethod = 'card';
+        if (isPaid || (finalCash + finalQr) > 0) {
+           if (finalCash >= finalQr) primaryMethod = 'cash';
+           else primaryMethod = 'qr';
         }
 
         items[idx] = {
           ...m,
           price: defaultPrice,
-          payments: { cash: finalCash, qr: finalQr, card: finalCard },
+          payments: { cash: finalCash, qr: finalQr, card: 0 },
           paid: isPaid,
           paymentMethod: primaryMethod
         };
@@ -3552,7 +3528,6 @@
       let totalToPay = 0;
       let totalCash = 0;
       let totalQr = 0;
-      let totalCard = 0;
       let totalPending = 0;
       let totalPendingCount = 0;
 
@@ -3565,7 +3540,6 @@
         let pDelivered = 0;
         let pCash = 0;
         let pQr = 0;
-        let pCard = 0;
         let pPendingAmount = 0;
         let pPendingCount = 0;
         let pTotalCost = 0;
@@ -3584,15 +3558,12 @@
           const p = getPayments(m);
           const itemPaid = itemPaidAmount(m);
           const mCash = (p.cash || 0);
-          const mQr = (p.qr || 0);
-          const mCard = (p.card || 0);
+          const mQr = (p.qr || 0) + (p.card || 0);
 
           totalCash += mCash;
           pCash += mCash;
           totalQr += mQr;
           pQr += mQr;
-          totalCard += mCard;
-          pCard += mCard;
 
           const pending = itemPendingAmount(m);
           if (pending > 0) {
@@ -3607,7 +3578,6 @@
           const methods = [];
           if (mCash > 0) methods.push(`Efectivo (${mCash})`);
           if (mQr > 0) methods.push(`QR/Banco (${mQr})`);
-          if (mCard > 0) methods.push(`Tarjeta (${mCard})`);
           if (methods.length > 0) {
             paymentMethodStr = methods.join(' + ');
           }
@@ -3633,7 +3603,7 @@
 
         totalToPay += pTotalCost;
         const pFree = pTotal - pOrdered;
-        const pPaidAmount = pCash + pQr + pCard;
+        const pPaidAmount = pCash + pQr;
         const isDebtor = pPendingAmount > 0;
 
         // Fila limpia de Resumen General
@@ -3648,7 +3618,6 @@
           [`Total Cobrado (${curr})`]: pPaidAmount,
           [`Efectivo (${curr})`]: pCash,
           [`QR / Banco (${curr})`]: pQr,
-          [`Tarjeta (${curr})`]: pCard,
           "Cant. Debe": pPendingCount,
           [`Monto Deuda (${curr})`]: pPendingAmount,
           "Estado": isDebtor ? "DEBE" : "AL DÍA"
@@ -3668,7 +3637,7 @@
       });
 
       // Fila de TOTALES en Resumen General
-      const totalRevenue = totalCash + totalQr + totalCard;
+      const totalRevenue = totalCash + totalQr;
       participantsData.push({
         "N°": "TOTAL",
         "Participante": `${validPeople.length} personas`,
@@ -3680,7 +3649,6 @@
         [`Total Cobrado (${curr})`]: totalRevenue,
         [`Efectivo (${curr})`]: totalCash,
         [`QR / Banco (${curr})`]: totalQr,
-        [`Tarjeta (${curr})`]: totalCard,
         "Cant. Debe": totalPendingCount,
         [`Monto Deuda (${curr})`]: totalPending,
         "Estado": totalPending > 0 ? `${debtorsList.length} DEUDORES` : "AL DÍA"
@@ -3748,7 +3716,6 @@
         { wch: 18 }, // Total Cobrado
         { wch: 14 }, // Efectivo
         { wch: 14 }, // QR / Banco
-        { wch: 14 }, // Tarjeta
         { wch: 14 }, // Cant. Debe
         { wch: 16 }, // Monto Deuda
         { wch: 16 }  // Estado
@@ -4960,8 +4927,7 @@
               paymentBadgeLabel = methods.join('+');
             } else {
               if (p.cash > 0) { paymentBadgeClass = 'cash'; paymentBadgeIcon = '💵'; paymentBadgeLabel = 'Efectivo'; }
-              else if (p.qr > 0) { paymentBadgeClass = 'qr'; paymentBadgeIcon = '📱'; paymentBadgeLabel = 'QR/Transf.'; }
-              else { paymentBadgeClass = 'card'; paymentBadgeIcon = '💳'; paymentBadgeLabel = 'Tarjeta'; }
+              else { paymentBadgeClass = 'qr'; paymentBadgeIcon = '📱'; paymentBadgeLabel = 'QR/Banco'; }
             }
           } else if (paidAmt > 0) {
             paymentBadgeClass = 'pending';
